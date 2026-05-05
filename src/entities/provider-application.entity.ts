@@ -9,7 +9,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ProviderProfile } from './provider-profile.entity';
-import { ProviderApplicationStatus } from '../common/constants/user.enums';
 import { User } from './user.entity';
 
 @Entity('provider_applications')
@@ -31,12 +30,8 @@ export class ProviderApplication {
   @JoinColumn({ name: 'provider_profile_id' })
   providerProfile: ProviderProfile;
 
-  @Column({
-    type: 'enum',
-    enum: ProviderApplicationStatus,
-    default: ProviderApplicationStatus.PENDING,
-  })
-  status: ProviderApplicationStatus;
+  @Column({ default: 'pending' })
+  status: string;
 
   @Column({ nullable: true })
   businessName: string;

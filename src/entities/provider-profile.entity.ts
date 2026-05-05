@@ -48,12 +48,8 @@ export class ProviderProfile {
   @Column({ nullable: true })
   serviceRadiusKm: number;
 
-  @Column({
-    type: 'enum',
-    enum: ProviderVerificationStatus,
-    default: ProviderVerificationStatus.PENDING,
-  })
-  verificationStatus: ProviderVerificationStatus;
+  @Column({ default: 'pending' })
+  verificationStatus: string;
 
   @Column({ nullable: true })
   nationalId: string;

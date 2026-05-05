@@ -7,7 +7,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Job } from './job.entity';
-import { JobStatus } from '../common/constants/user.enums';
 
 @Entity('job_status_history')
 export class JobStatusHistory {
@@ -21,11 +20,8 @@ export class JobStatusHistory {
   @Column()
   jobId: string;
 
-  @Column({
-    type: 'enum',
-    enum: JobStatus,
-  })
-  status: JobStatus;
+  @Column()
+  status: string;
 
   @Column({ nullable: true })
   notes: string;

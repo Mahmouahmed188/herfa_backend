@@ -10,7 +10,6 @@ import {
   Index,
 } from 'typeorm';
 import { User } from './user.entity';
-import { JobStatus } from '../common/constants/user.enums';
 import { JobStatusHistory } from './job-status-history.entity';
 import { JobAssignment } from './job-assignment.entity';
 import { Review } from './review.entity';
@@ -36,12 +35,8 @@ export class Job {
   @Column({ nullable: true })
   providerId: string;
 
-  @Column({
-    type: 'enum',
-    enum: JobStatus,
-    default: JobStatus.PENDING,
-  })
-  status: JobStatus;
+  @Column({ default: 'pending' })
+  status: string;
 
   @Column({ nullable: true })
   title: string;

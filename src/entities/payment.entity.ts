@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { Job } from './job.entity';
 import { User } from './user.entity';
-import { PaymentStatus } from '../common/constants/user.enums';
 
 @Entity('payments')
 @Index(['jobId'])
@@ -51,12 +50,8 @@ export class Payment {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   providerPayout: number;
 
-  @Column({
-    type: 'enum',
-    enum: PaymentStatus,
-    default: PaymentStatus.PENDING,
-  })
-  status: PaymentStatus;
+  @Column({ default: 'pending' })
+  status: string;
 
   @Column({ nullable: true })
   paymentMethod: string;

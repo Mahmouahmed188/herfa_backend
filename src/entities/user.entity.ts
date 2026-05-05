@@ -9,7 +9,6 @@ import {
   Index,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { UserRole, UserStatus } from '../common/constants/user.enums';
 import { CustomerProfile } from './customer-profile.entity';
 import { ProviderProfile } from './provider-profile.entity';
 import { RefreshToken } from './refresh-token.entity';
@@ -32,11 +31,11 @@ export class User {
   @Exclude()
   password: string;
 
-  @Column({ default: UserRole.CUSTOMER })
-  role: UserRole;
+  @Column({ default: 'customer' })
+  role: string;
 
-  @Column({ default: UserStatus.PENDING })
-  status: UserStatus;
+  @Column({ default: 'pending' })
+  status: string;
 
   @Column({ nullable: true })
   firstName: string;

@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { Job } from './job.entity';
 import { ProviderProfile } from './provider-profile.entity';
-import { JobAssignmentStatus } from '../common/constants/user.enums';
 
 @Entity('job_assignments')
 @Index(['providerId', 'status'])
@@ -33,12 +32,8 @@ export class JobAssignment {
   @Column()
   providerId: string;
 
-  @Column({
-    type: 'enum',
-    enum: JobAssignmentStatus,
-    default: JobAssignmentStatus.PENDING,
-  })
-  status: JobAssignmentStatus;
+  @Column({ default: 'pending' })
+  status: string;
 
   @Column({ nullable: true })
   quotedPrice: number;
