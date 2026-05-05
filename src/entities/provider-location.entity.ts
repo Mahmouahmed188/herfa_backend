@@ -23,13 +23,7 @@ export class ProviderLocation {
   @Column()
   providerId: string;
 
-  @Column({
-    type: 'geography',
-    spatialFeatureType: 'Point',
-    srid: 4326,
-    nullable: true,
-  })
-  @Index({ spatial: true })
+  @Column({ type: 'text', nullable: true })
   location: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 8 })

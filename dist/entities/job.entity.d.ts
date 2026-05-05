@@ -1,0 +1,34 @@
+import { User } from './user.entity';
+import { JobStatusHistory } from './job-status-history.entity';
+import { JobAssignment } from './job-assignment.entity';
+import { Review } from './review.entity';
+import { Payment } from './payment.entity';
+export declare class Job {
+    id: string;
+    customer: User;
+    customerId: string;
+    serviceId: string;
+    providerId: string;
+    status: string;
+    title: string;
+    description: string;
+    address: string;
+    location: string;
+    latitude: number;
+    longitude: number;
+    estimatedPrice: number;
+    finalPrice: number;
+    scheduledDate: Date;
+    scheduledTime: string;
+    completedAt: Date;
+    cancelledAt: Date;
+    cancellationReason: string;
+    images: string[];
+    statusHistory: JobStatusHistory[];
+    assignments: JobAssignment[];
+    reviews: Review[];
+    payments: Payment[];
+    notes: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

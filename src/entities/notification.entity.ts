@@ -25,7 +25,7 @@ export class Notification {
   userId: string;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: NotificationType,
   })
   type: NotificationType;
@@ -45,7 +45,7 @@ export class Notification {
   @Column({ nullable: true })
   readAt: Date;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'json', nullable: true })
   data: Record<string, any>;
 
   @CreateDateColumn()

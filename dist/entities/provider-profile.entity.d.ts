@@ -1,0 +1,33 @@
+import { User } from './user.entity';
+import { ProviderApplication } from './provider-application.entity';
+import { JobAssignment } from './job-assignment.entity';
+import { ProviderService } from './provider-service.entity';
+export declare class ProviderProfile {
+    id: string;
+    user: User;
+    userId: string;
+    businessName: string;
+    businessDescription: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    isAvailable: boolean;
+    serviceRadiusKm: number;
+    verificationStatus: string;
+    nationalId: string;
+    nationalIdImage: string;
+    licenseImage: string;
+    profileImage: string;
+    portfolioImages: string;
+    bio: string;
+    rating: number;
+    totalJobsCompleted: number;
+    totalEarnings: number;
+    responseTimeMinutes: number;
+    applications: ProviderApplication[];
+    jobAssignments: JobAssignment[];
+    services: ProviderService[];
+    workingHours: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

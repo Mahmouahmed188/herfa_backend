@@ -41,7 +41,7 @@ export class Review {
   revieweeId: string;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: ReviewType,
   })
   type: ReviewType;

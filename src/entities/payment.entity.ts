@@ -74,7 +74,7 @@ export class Payment {
   @Column({ nullable: true })
   refundedAt: Date;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'json', nullable: true })
   metadata: Record<string, any>;
 
   @CreateDateColumn()
