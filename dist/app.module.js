@@ -47,6 +47,9 @@ exports.AppModule = AppModule = __decorate([
                             entities: [__dirname + '/entities/*.entity{.ts,.js}'],
                             synchronize: true,
                             logging: configService.get('NODE_ENV') !== 'production',
+                            extra: {
+                                timeout: 30000,
+                            },
                         };
                     }
                     return {

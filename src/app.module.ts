@@ -37,6 +37,9 @@ import { CustomersModule } from './modules/customers/customers.module';
             entities: [__dirname + '/entities/*.entity{.ts,.js}'],
             synchronize: true,
             logging: configService.get('NODE_ENV') !== 'production',
+            extra: {
+              timeout: 30000,
+            },
           };
         }
         
