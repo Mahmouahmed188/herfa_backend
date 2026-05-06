@@ -19,6 +19,8 @@ import { AdminModule } from './modules/admin/admin.module';
 import { TrackingModule } from './modules/tracking/tracking.module';
 import { CustomersModule } from './modules/customers/customers.module';
 
+import { TendersModule } from './modules/tenders/tenders.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -95,6 +97,7 @@ import { CustomersModule } from './modules/customers/customers.module';
     AdminModule,
     TrackingModule,
     CustomersModule,
+    TendersModule,
   ],
 })
 export class AppModule {}

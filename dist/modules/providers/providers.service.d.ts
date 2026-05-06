@@ -14,6 +14,7 @@ export declare class ProvidersService {
     constructor(userRepository: Repository<User>, providerProfileRepository: Repository<ProviderProfile>, applicationRepository: Repository<ProviderApplication>, providerServiceRepository: Repository<ProviderService>, serviceRepository: Repository<Service>);
     apply(userId: string, dto: CreateProviderApplicationDto): Promise<ProviderApplication>;
     getProfile(userId: string): Promise<ProviderProfile>;
+    getProfileByIdOrUserId(id: string): Promise<ProviderProfile>;
     updateProfile(userId: string, dto: UpdateProviderProfileDto): Promise<ProviderProfile>;
     setAvailability(userId: string, dto: SetAvailabilityDto): Promise<ProviderProfile>;
     updateLocation(userId: string, dto: UpdateLocationDto): Promise<ProviderProfile>;

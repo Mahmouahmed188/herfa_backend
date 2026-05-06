@@ -45,6 +45,9 @@ let ProvidersController = class ProvidersController {
     async removeService(user, serviceId) {
         return this.providersService.removeService(user.id, serviceId);
     }
+    async listProviders(dto) {
+        return this.providersService.searchProviders(dto);
+    }
     async searchProviders(dto) {
         return this.providersService.searchProviders(dto);
     }
@@ -55,8 +58,7 @@ let ProvidersController = class ProvidersController {
         return this.providersService.getProviderStats(user.id);
     }
     async getProviderById(id) {
-        const profile = await this.providersService.getProfile(id);
-        return profile;
+        return this.providersService.getProfileByIdOrUserId(id);
     }
 };
 exports.ProvidersController = ProvidersController;
@@ -137,6 +139,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProvidersController.prototype, "removeService", null);
 __decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'List all providers' }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [providers_dto_1.SearchProvidersDto]),
+    __metadata("design:returntype", Promise)
+], ProvidersController.prototype, "listProviders", null);
+__decorate([
     (0, common_1.Get)('search'),
     (0, swagger_1.ApiOperation)({ summary: 'Search providers' }),
     __param(0, (0, common_1.Query)()),
@@ -167,7 +177,7 @@ __decorate([
 ], ProvidersController.prototype, "getProviderStats", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get provider by ID' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Get provider by ID (userId or profileId)' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

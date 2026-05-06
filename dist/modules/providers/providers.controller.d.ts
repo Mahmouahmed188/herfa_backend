@@ -12,6 +12,15 @@ export declare class ProvidersController {
     removeService(user: any, serviceId: string): Promise<{
         message: string;
     }>;
+    listProviders(dto: SearchProvidersDto): Promise<{
+        data: import("../../entities").ProviderProfile[];
+        meta: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    }>;
     searchProviders(dto: SearchProvidersDto): Promise<{
         data: import("../../entities").ProviderProfile[];
         meta: {

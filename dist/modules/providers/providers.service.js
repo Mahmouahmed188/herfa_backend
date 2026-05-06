@@ -82,6 +82,22 @@ let ProvidersService = class ProvidersService {
         }
         return profile;
     }
+    async getProfileByIdOrUserId(id) {
+        let profile = await this.providerProfileRepository.findOne({
+            where: { id },
+            relations: ['user', 'services', 'services.service'],
+        });
+        if (!profile) {
+            profile = await this.providerProfileRepository.findOne({
+                where: { userId: id },
+                relations: ['user', 'services', 'services.service'],
+            });
+        }
+        if (!profile) {
+            throw new common_1.NotFoundException('Provider profile not found');
+        }
+        return profile;
+    }
     async updateProfile(userId, dto) {
         const profile = await this.providerProfileRepository.findOne({
             where: { userId },

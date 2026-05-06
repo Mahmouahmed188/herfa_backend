@@ -83,6 +83,14 @@ export class ProvidersController {
     return this.providersService.removeService(user.id, serviceId);
   }
 
+  @Get()
+  @ApiOperation({ summary: 'List all providers' })
+  async listProviders(
+    @Query() dto: SearchProvidersDto,
+  ) {
+    return this.providersService.searchProviders(dto);
+  }
+
   @Get('search')
   @ApiOperation({ summary: 'Search providers' })
   async searchProviders(@Query() dto: SearchProvidersDto) {
@@ -106,9 +114,8 @@ export class ProvidersController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get provider by ID' })
+  @ApiOperation({ summary: 'Get provider by ID (userId or profileId)' })
   async getProviderById(@Param('id') id: string) {
-    const profile = await this.providersService.getProfile(id);
-    return profile;
+    return this.providersService.getProfileByIdOrUserId(id);
   }
 }
