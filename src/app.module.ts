@@ -20,6 +20,9 @@ import { TrackingModule } from './modules/tracking/tracking.module';
 import { CustomersModule } from './modules/customers/customers.module';
 
 import { TendersModule } from './modules/tenders/tenders.module';
+import { MessagesModule } from './modules/messages/messages.module';
+import { VerificationModule } from './modules/verification/verification.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -98,6 +101,9 @@ import { TendersModule } from './modules/tenders/tenders.module';
     TrackingModule,
     CustomersModule,
     TendersModule,
+    MessagesModule,
+    VerificationModule,
+    UploadsModule,
   ],
 })
 export class AppModule {}

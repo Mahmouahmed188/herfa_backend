@@ -150,4 +150,12 @@ export class TendersService {
     offer.status = OfferStatus.REJECTED;
     return this.offerRepository.save(offer);
   }
+
+  async findProviderOffers(providerId: string): Promise<TenderOffer[]> {
+    return this.offerRepository.find({
+      where: { providerId },
+      relations: ['tender', 'tender.service', 'tender.user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

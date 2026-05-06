@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const jobs_service_1 = require("./jobs.service");
 const jobs_dto_1 = require("./dto/jobs.dto");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
+const verification_guard_1 = require("../../common/guards/verification.guard");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 let JobsController = class JobsController {
     jobsService;
@@ -153,7 +154,7 @@ __decorate([
 exports.JobsController = JobsController = __decorate([
     (0, swagger_1.ApiTags)('Jobs'),
     (0, common_1.Controller)('jobs'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, verification_guard_1.VerificationGuard),
     (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [jobs_service_1.JobsService])
 ], JobsController);

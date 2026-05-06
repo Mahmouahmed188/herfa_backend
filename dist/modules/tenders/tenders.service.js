@@ -152,6 +152,13 @@ let TendersService = class TendersService {
         offer.status = tender_offer_entity_1.OfferStatus.REJECTED;
         return this.offerRepository.save(offer);
     }
+    async findProviderOffers(providerId) {
+        return this.offerRepository.find({
+            where: { providerId },
+            relations: ['tender', 'tender.service', 'tender.user'],
+            order: { createdAt: 'DESC' },
+        });
+    }
 };
 exports.TendersService = TendersService;
 exports.TendersService = TendersService = __decorate([

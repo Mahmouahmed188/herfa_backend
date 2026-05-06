@@ -13,4 +13,5 @@ export declare class TendersController {
     getTenderOffers(tenderId: string): Promise<import("../../entities/tender-offer.entity").TenderOffer[]>;
     acceptOffer(offerId: string, user: any): Promise<import("../../entities/tender-offer.entity").TenderOffer>;
     rejectOffer(offerId: string, user: any): Promise<import("../../entities/tender-offer.entity").TenderOffer>;
+    getMyOffers(user: any): Promise<import("../../entities/tender-offer.entity").TenderOffer[]>;
 }

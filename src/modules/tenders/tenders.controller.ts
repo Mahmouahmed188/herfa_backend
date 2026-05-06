@@ -5,11 +5,12 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TendersService } from './tenders.service';
 import { CreateTenderDto, UpdateTenderDto, CreateOfferDto } from './dto/tenders.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { VerificationGuard } from '../../common/guards/verification.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Tenders')
 @Controller('tenders')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, VerificationGuard)
 @ApiBearerAuth()
 export class TendersController {
   constructor(private readonly tendersService: TendersService) {}
@@ -84,5 +85,11 @@ export class TendersController {
   @ApiOperation({ summary: 'Reject an offer' })
   async rejectOffer(@Param('offerId') offerId: string, @CurrentUser() user: any) {
     return this.tendersService.rejectOffer(offerId, user.id);
+  }
+
+  @Get('technician/my-offers')
+  @ApiOperation({ summary: 'Get all offers submitted by technician' })
+  async getMyOffers(@CurrentUser() user: any) {
+    return this.tendersService.findProviderOffers(user.id);
   }
 }

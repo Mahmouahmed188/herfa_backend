@@ -13,11 +13,12 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JobsService } from './jobs.service';
 import { CreateJobDto, UpdateJobDto, AcceptJobDto, RejectJobDto, JobQueryDto } from './dto/jobs.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { VerificationGuard } from '../../common/guards/verification.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Jobs')
 @Controller('jobs')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, VerificationGuard)
 @ApiBearerAuth()
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}

@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const tenders_service_1 = require("./tenders.service");
 const tenders_dto_1 = require("./dto/tenders.dto");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
+const verification_guard_1 = require("../../common/guards/verification.guard");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 let TendersController = class TendersController {
     tendersService;
@@ -53,6 +54,9 @@ let TendersController = class TendersController {
     }
     async rejectOffer(offerId, user) {
         return this.tendersService.rejectOffer(offerId, user.id);
+    }
+    async getMyOffers(user) {
+        return this.tendersService.findProviderOffers(user.id);
     }
 };
 exports.TendersController = TendersController;
@@ -143,10 +147,18 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], TendersController.prototype, "rejectOffer", null);
+__decorate([
+    (0, common_1.Get)('technician/my-offers'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all offers submitted by technician' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TendersController.prototype, "getMyOffers", null);
 exports.TendersController = TendersController = __decorate([
     (0, swagger_1.ApiTags)('Tenders'),
     (0, common_1.Controller)('tenders'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, verification_guard_1.VerificationGuard),
     (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [tenders_service_1.TendersService])
 ], TendersController);

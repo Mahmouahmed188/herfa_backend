@@ -16,4 +16,5 @@ export declare class TendersService {
     getTenderOffers(tenderId: string): Promise<TenderOffer[]>;
     acceptOffer(offerId: string, userId: string): Promise<TenderOffer>;
     rejectOffer(offerId: string, userId: string): Promise<TenderOffer>;
+    findProviderOffers(providerId: string): Promise<TenderOffer[]>;
 }

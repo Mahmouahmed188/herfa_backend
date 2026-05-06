@@ -27,6 +27,9 @@ const admin_module_1 = require("./modules/admin/admin.module");
 const tracking_module_1 = require("./modules/tracking/tracking.module");
 const customers_module_1 = require("./modules/customers/customers.module");
 const tenders_module_1 = require("./modules/tenders/tenders.module");
+const messages_module_1 = require("./modules/messages/messages.module");
+const verification_module_1 = require("./modules/verification/verification.module");
+const uploads_module_1 = require("./modules/uploads/uploads.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -106,6 +109,9 @@ exports.AppModule = AppModule = __decorate([
             tracking_module_1.TrackingModule,
             customers_module_1.CustomersModule,
             tenders_module_1.TendersModule,
+            messages_module_1.MessagesModule,
+            verification_module_1.VerificationModule,
+            uploads_module_1.UploadsModule,
         ],
     })
 ], AppModule);
