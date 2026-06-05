@@ -103,7 +103,16 @@
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
-## Success Criteria *(mandatory)*
+## API Contract & DTOs *(mandatory)*
+
+<!--
+  ACTION REQUIRED: Define the DTOs and Swagger requirements.
+  Align with Constitution Principles IV and VI.
+-->
+
+- **DTO-001**: [Request DTO Name] (Attributes, Validation Rules)
+- **DTO-002**: [Response DTO Name] (Fields, Examples)
+- **SWAG-001**: Swagger decorators for [endpoint] (Summary, Description, Examples)
 
 <!--
   ACTION REQUIRED: Define measurable success criteria.

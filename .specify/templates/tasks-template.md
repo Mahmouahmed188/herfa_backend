@@ -59,16 +59,14 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
 
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
+**⚠️ CRITICAL**: No user story work can begin until this phase is complete. Aligns with Constitution P15 steps 2-4.
 
-Examples of foundational tasks (adjust based on your project):
-
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T004 Design database entities and relationships (P1/P9)
+- [ ] T005 Generate database migration (P1/P15 step 3)
+- [ ] T006 [P] Create DTOs with validation rules and Swagger decorators (P4/P6)
+- [ ] T007 [P] Initialize NestJS Module and basic structure (P3)
+- [ ] T008 [P] Configure Module-specific Guards (P7/P8)
+- [ ] T009 Setup error handling and logging for this module (P10/P11)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -80,21 +78,13 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Implementation for User Story 1 (P15 steps 6-11)
 
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
-
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
-
-### Implementation for User Story 1
-
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T010 [P] [US1] Create Service logic and Repository calls (P2)
+- [ ] T011 [US1] Implement Controller endpoints (P5)
+- [ ] T012 [US1] Add Swagger documentation to endpoints (P6)
+- [ ] T013 [US1] Create Unit Tests for service and controller (P15 step 10)
+- [ ] T014 [US1] Verify API Contracts and generate integration notes (P15 step 11-12)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
