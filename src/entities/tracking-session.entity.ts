@@ -35,16 +35,16 @@ export class TrackingSession {
   customerId: string;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: TrackingSessionStatus,
     default: TrackingSessionStatus.INACTIVE,
   })
   status: TrackingSessionStatus;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   startedAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   endedAt: Date;
 
   @CreateDateColumn()

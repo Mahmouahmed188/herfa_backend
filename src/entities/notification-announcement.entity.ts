@@ -20,7 +20,7 @@ export class NotificationAnnouncement {
   targetAudience: string;
 
   @Column({ nullable: true })
-  targetUserId: string;
+  targetUserId?: string;
 
   @Column()
   createdBy: string;

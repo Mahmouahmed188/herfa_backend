@@ -11,6 +11,7 @@ import { AdminTrackingController } from './admin-tracking.controller';
 import { TrackingSession } from '../../entities/tracking-session.entity';
 import { TrackingLocation } from '../../entities/tracking-location.entity';
 import { TrackingAuditEvent } from '../../entities/tracking-audit-event.entity';
+import { Booking } from '../../entities/booking.entity';
 import { TrackingOwnershipGuard } from './guards/tracking-ownership.guard';
 
 @Module({
@@ -19,6 +20,7 @@ import { TrackingOwnershipGuard } from './guards/tracking-ownership.guard';
       TrackingSession,
       TrackingLocation,
       TrackingAuditEvent,
+      Booking,
     ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],

@@ -19,13 +19,18 @@ export class AnnouncementsService {
   ) {}
 
   async create(dto: CreateAnnouncementDto, adminId: string) {
-    const announcement = this.announcementRepository.create({
+    const announcementData: Partial<NotificationAnnouncement> = {
       title: dto.title,
       message: dto.message,
       targetAudience: dto.targetAudience,
-      targetUserId: dto.targetUserId || null,
       createdBy: adminId,
-    });
+    };
+
+    if (dto.targetUserId) {
+      announcementData.targetUserId = dto.targetUserId;
+    }
+
+    const announcement = this.announcementRepository.create(announcementData);
 
     const saved = await this.announcementRepository.save(announcement);
 

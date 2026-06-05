@@ -31,7 +31,7 @@ export class TrackingLocation {
   @Column({ nullable: true })
   heading: number;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'datetime' })
   recordedAt: Date;
 
   @ManyToOne(() => TrackingSession, (session) => session.locations, {
