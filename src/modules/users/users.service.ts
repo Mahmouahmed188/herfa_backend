@@ -40,7 +40,7 @@ export class UsersService {
   async deactivate(id: string) {
     return this.prisma.user.update({
       where: { id },
-      data: { isActive: false },
+      data: { status: 'inactive' },
     });
   }
 }

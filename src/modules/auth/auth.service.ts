@@ -68,7 +68,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!user.isActive) {
+    if (user.status !== 'active') {
       throw new UnauthorizedException('Account is inactive');
     }
 
@@ -96,7 +96,7 @@ export class AuthService {
     }
 
     const user = refreshToken.user;
-    if (!user || !user.isActive) {
+    if (!user || user.status !== 'active') {
       throw new UnauthorizedException('User is not active');
     }
 
@@ -151,7 +151,7 @@ export class AuthService {
         email: user.email,
         phone: user.phone,
         role: user.role,
-        isActive: user.isActive,
+        status: user.status,
       },
     };
   }
