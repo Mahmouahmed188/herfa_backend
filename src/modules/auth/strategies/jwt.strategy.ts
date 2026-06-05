@@ -2,10 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '../../../entities/user.entity';
-import { UserStatus } from '../../../common/constants/user.enums';
+import { PrismaService } from '../../prisma/prisma.service';
 
 export interface JwtPayload {
   sub: string;
@@ -17,8 +14,7 @@ export interface JwtPayload {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private configService: ConfigService,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private prisma: PrismaService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -27,13 +23,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id: payload.sub, status: UserStatus.ACTIVE },
-      relations: ['customerProfile', 'providerProfile'],
+  async validate(payload: JwtPayload) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
     });
 
-    if (!user) {
+    if (!user || !user.isActive) {
       throw new UnauthorizedException('User not found or inactive');
     }
 

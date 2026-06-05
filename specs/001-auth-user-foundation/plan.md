@@ -1,20 +1,20 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Authentication and User Foundation
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Branch**: `001-auth-user-foundation` | **Date**: 2026-06-05 | **Spec**: [specs/001-auth-user-foundation/spec.md](spec.md)
 
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Input**: Feature specification from `/specs/001-auth-user-foundation/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Implement the foundational authentication and user management system for the Herfa platform. The approach involves creating two core NestJS modules: `AuthModule` (for JWT, Passport, and session management) and `UsersModule` (for profile management and persistence via Prisma). Authentication will use a dual-token strategy (Access + Refresh) and passwords will be hashed with Bcrypt.
 
 ## Technical Context
 
 **Language/Version**: NestJS / Node.js
 
-**Primary Dependencies**: TypeORM, class-validator, class-transformer, @nestjs/swagger
+**Primary Dependencies**: Prisma ORM, @nestjs/passport, passport-jwt, bcrypt, class-validator, class-transformer, @nestjs/swagger
 
 **Storage**: PostgreSQL (UUID primary keys)
 
@@ -24,9 +24,9 @@
 
 **Project Type**: Web-service (NestJS Modules)
 
-**Performance Goals**: [e.g., <200ms p95 response time]
+**Performance Goals**: <500ms for auth requests (Login/Refresh), <200ms for profile retrieval.
 
-**Constraints**: REST conventions, UUIDs only, Bcrypt hashing
+**Constraints**: REST conventions, UUIDs only, Bcrypt hashing, RBAC (Customer, Provider, Admin).
 
 **Scale/Scope**: Herfa Platform (Customer/Provider Marketplace)
 
@@ -34,75 +34,58 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [ ] P1: Database schema defined?
-- [ ] P2: Clean Architecture followed (Controller -> Service -> Repository)?
-- [ ] P3: Dedicated NestJS module planned?
-- [ ] P4/P6: DTOs & Swagger decorators included?
-- [ ] P7/P8: JWT/Roles/Guards identified?
-- [ ] P9: PostgreSQL UUIDs & Timestamps included?
-- [ ] P10/P11: Structured Errors & Logging planned?
-- [ ] P15: All 12 workflow steps accounted for?
+- [x] P1: Database schema defined? (See data-model.md)
+- [x] P2: Clean Architecture followed (Controller -> Service -> Repository)?
+- [x] P3: Dedicated NestJS module planned? (AuthModule, UsersModule)
+- [x] P4/P6: DTOs & Swagger decorators included? (See contracts/)
+- [x] P7/P8: JWT/Roles/Guards identified? (See research.md)
+- [x] P9: PostgreSQL UUIDs & Timestamps included? (See data-model.md)
+- [x] P10/P11: Structured Errors & Logging planned?
+- [x] P15: All 12 workflow steps accounted for? (Integrated into tasks.md)
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
-├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output (/speckit.plan command)
-├── data-model.md        # Phase 1 output (/speckit.plan command)
-├── quickstart.md        # Phase 1 output (/speckit.plan command)
-├── contracts/           # Phase 1 output (/speckit.plan command)
-└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
+specs/001-auth-user-foundation/
+├── plan.md              # This file
+├── research.md          # Phase 0 output
+├── data-model.md        # Phase 1 output
+├── quickstart.md        # Phase 1 output
+├── contracts/           # Phase 1 output
+└── tasks.md             # Phase 2 output
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+├── modules/
+│   ├── auth/
+│   │   ├── dto/
+│   │   ├── strategies/
+│   │   ├── auth.controller.ts
+│   │   ├── auth.service.ts
+│   │   └── auth.module.ts
+│   └── users/
+│       ├── dto/
+│       ├── users.controller.ts
+│       ├── users.service.ts
+│       └── users.module.ts
+├── common/
+│   ├── decorators/
+│   ├── guards/
+│   └── filters/
+└── prisma/
+    └── schema.prisma
 
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+test/
+├── auth/
+└── users/
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Standard NestJS module-based structure as per Constitution P3. Modules are self-contained with DTOs, controllers, and services.
 
 ## Complexity Tracking
 
@@ -110,5 +93,4 @@ directories captured above]
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| None | N/A | N/A |

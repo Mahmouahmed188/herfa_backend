@@ -1,18 +1,14 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { BcryptService } from './bcrypt.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { User } from '../../entities/user.entity';
-import { CustomerProfile } from '../../entities/customer-profile.entity';
-import { RefreshToken } from '../../entities/refresh-token.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, CustomerProfile, RefreshToken]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -26,7 +22,7 @@ import { RefreshToken } from '../../entities/refresh-token.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, BcryptService],
+  exports: [AuthService, JwtStrategy, BcryptService],
 })
 export class AuthModule {}

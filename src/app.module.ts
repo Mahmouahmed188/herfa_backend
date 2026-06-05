@@ -23,6 +23,7 @@ import { TendersModule } from './modules/tenders/tenders.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UploadsModule } from './modules/uploads/uploads.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    PrismaModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {

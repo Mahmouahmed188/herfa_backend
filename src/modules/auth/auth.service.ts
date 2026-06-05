@@ -1,105 +1,90 @@
 import {
   Injectable,
   UnauthorizedException,
-  BadRequestException,
   ConflictException,
-  NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
-import { User } from '../../entities/user.entity';
-import { CustomerProfile } from '../../entities/customer-profile.entity';
-import { RefreshToken } from '../../entities/refresh-token.entity';
-import { UserRole, UserStatus } from '../../common/constants/user.enums';
-import { RegisterDto, LoginDto, RefreshTokenDto } from './dto/auth.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { BcryptService } from './bcrypt.service';
+import { UserRole } from '../../common/constants/user.enums';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    @InjectRepository(CustomerProfile)
-    private customerProfileRepository: Repository<CustomerProfile>,
-    @InjectRepository(RefreshToken)
-    private refreshTokenRepository: Repository<RefreshToken>,
+    private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private bcryptService: BcryptService,
   ) {}
 
-  async register(registerDto: RegisterDto) {
-    const existingUser = await this.userRepository.findOne({
-      where: [
-        { email: registerDto.email },
-        { phone: registerDto.phone },
-      ],
+  async register(registerDto: RegisterUserDto) {
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: registerDto.email },
+          { phone: registerDto.phone },
+        ],
+      },
     });
 
     if (existingUser) {
       throw new ConflictException('User with this email or phone already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(registerDto.password, 12);
+    const passwordHash = await this.bcryptService.hash(registerDto.password);
 
-    const user = this.userRepository.create({
-      ...registerDto,
-      password: hashedPassword,
-      role: registerDto.role || UserRole.CUSTOMER,
-      status: UserStatus.PENDING,
+    const user = await this.prisma.user.create({
+      data: {
+        firstName: registerDto.firstName,
+        lastName: registerDto.lastName,
+        email: registerDto.email,
+        phone: registerDto.phone,
+        passwordHash,
+        role: registerDto.role || UserRole.CUSTOMER,
+      },
     });
 
-    const savedUser = await this.userRepository.save(user);
-
-    if (savedUser.role === UserRole.CUSTOMER) {
-      const customerProfile = this.customerProfileRepository.create({
-        userId: savedUser.id,
-      });
-      await this.customerProfileRepository.save(customerProfile);
-    }
-
-    return this.generateTokens(savedUser);
+    this.logger.log(`User registered: ${user.email} (${user.role})`);
+    return this.generateTokens(user);
   }
 
-  async login(loginDto: LoginDto) {
-    const user = await this.userRepository.findOne({
-      where: [
-        { email: loginDto.identifier },
-        { phone: loginDto.identifier },
-      ],
-      relations: ['customerProfile', 'providerProfile'],
+  async login(email: string, pass: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
     });
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await this.bcryptService.compare(pass, user.passwordHash);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (user.status === UserStatus.SUSPENDED) {
-      throw new UnauthorizedException('Account is suspended');
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account is inactive');
     }
 
-    if (loginDto.fcmToken) {
-      user.fcmToken = loginDto.fcmToken;
-      await this.userRepository.save(user);
-    }
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    });
 
-    user.lastLoginAt = new Date();
-    await this.userRepository.save(user);
-
+    this.logger.log(`User logged in: ${user.email}`);
     return this.generateTokens(user);
   }
 
-  async refreshToken(refreshTokenDto: RefreshTokenDto) {
-    const refreshToken = await this.refreshTokenRepository.findOne({
-      where: { token: refreshTokenDto.refreshToken },
-      relations: ['user'],
+  async refreshToken(token: string) {
+    const refreshToken = await this.prisma.refreshToken.findUnique({
+      where: { token },
+      include: { user: true },
     });
 
     if (!refreshToken || refreshToken.isRevoked) {
@@ -111,97 +96,26 @@ export class AuthService {
     }
 
     const user = refreshToken.user;
-    if (user.status !== UserStatus.ACTIVE) {
+    if (!user || !user.isActive) {
       throw new UnauthorizedException('User is not active');
     }
 
-    await this.refreshTokenRepository.update(refreshToken.id, {
-      isRevoked: true,
-      revokedAt: new Date(),
+    // Revoke old token
+    await this.prisma.refreshToken.update({
+      where: { id: refreshToken.id },
+      data: { isRevoked: true, revokedAt: new Date() },
     });
 
     return this.generateTokens(user);
   }
 
-  async logout(userId: string, refreshToken?: string) {
-    if (refreshToken) {
-      await this.refreshTokenRepository.update(
-        { token: refreshToken, userId },
-        { isRevoked: true, revokedAt: new Date() },
-      );
-    }
-
-    await this.refreshTokenRepository.update(
-      { userId, isRevoked: false },
-      { isRevoked: true, revokedAt: new Date() },
-    );
+  async logout(userId: string) {
+    await this.prisma.refreshToken.updateMany({
+      where: { userId, isRevoked: false },
+      data: { isRevoked: true, revokedAt: new Date() },
+    });
 
     return { message: 'Logged out successfully' };
-  }
-
-  async forgotPassword(email: string) {
-    const user = await this.userRepository.findOne({ where: { email } });
-
-    if (!user) {
-      return { message: 'If the email exists, a reset link will be sent' };
-    }
-
-    const resetToken = uuidv4();
-    const resetTokenExpiry = new Date(Date.now() + 3600000);
-
-    await this.userRepository.update(user.id, {
-      resetToken,
-      resetTokenExpiry,
-    });
-
-    return { message: 'Password reset link sent', resetToken };
-  }
-
-  async resetPassword(token: string, newPassword: string) {
-    const user = await this.userRepository.findOne({
-      where: { resetToken: token },
-    });
-
-    if (!user) {
-      throw new BadRequestException('Invalid reset token');
-    }
-
-    if (user.resetTokenExpiry && new Date() > user.resetTokenExpiry) {
-      throw new BadRequestException('Reset token expired');
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
-
-    await this.userRepository.update(user.id, {
-      password: hashedPassword,
-      resetToken: undefined,
-      resetTokenExpiry: undefined,
-    });
-
-    return { message: 'Password reset successful' };
-  }
-
-  async changePassword(userId: string, currentPassword: string, newPassword: string) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Current password is incorrect');
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
-    await this.userRepository.update(userId, { password: hashedPassword });
-
-    await this.refreshTokenRepository.update(
-      { userId, isRevoked: false },
-      { isRevoked: true, revokedAt: new Date() },
-    );
-
-    return { message: 'Password changed successfully' };
   }
 
   private async generateTokens(user: User) {
@@ -211,9 +125,7 @@ export class AuthService {
       role: user.role,
     };
 
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get('JWT_ACCESS_EXPIRES_IN') || '15m',
-    });
+    const accessToken = this.jwtService.sign(payload);
 
     const refreshToken = this.jwtService.sign(payload, {
       expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN') || '7d',
@@ -223,23 +135,23 @@ export class AuthService {
       Date.now() + 7 * 24 * 60 * 60 * 1000,
     );
 
-    const savedRefreshToken = this.refreshTokenRepository.create({
-      userId: user.id,
-      token: refreshToken,
-      expiresAt: refreshTokenExpiry,
+    await this.prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        token: refreshToken,
+        expiresAt: refreshTokenExpiry,
+      },
     });
-    await this.refreshTokenRepository.save(savedRefreshToken);
 
     return {
       accessToken,
       refreshToken,
-      expiresIn: 900,
       user: {
         id: user.id,
         email: user.email,
         phone: user.phone,
         role: user.role,
-        status: user.status,
+        isActive: user.isActive,
       },
     };
   }

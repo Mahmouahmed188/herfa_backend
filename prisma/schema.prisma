@@ -1,0 +1,446 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                                   String                     @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email                                String                     @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar
+  phone                                String                     @unique(map: "IDX_a000cca60bcf04454e72769949") @db.VarChar
+  passwordHash                         String                     @map("password") @db.VarChar
+  role                                 String                     @default("customer") @db.VarChar
+  status                               String                     @default("pending") @db.VarChar
+  firstName                            String?                    @db.VarChar
+  lastName                             String?                    @db.VarChar
+  profileImage                         String?                    @db.VarChar
+  fcmToken                             String?                    @db.VarChar
+  isEmailVerified                      Boolean                    @default(false)
+  isPhoneVerified                      Boolean                    @default(false)
+  lastLoginAt                          DateTime?                  @db.Timestamp(6)
+  resetToken                           String?                    @db.VarChar
+  resetTokenExpiry                     DateTime?                  @db.Timestamp(6)
+  createdAt                            DateTime                   @default(now()) @db.Timestamp(6)
+  updatedAt                            DateTime                   @default(now()) @db.Timestamp(6)
+  customer_profiles                    customer_profiles?
+  jobs                                 jobs[]
+  messages_messages_sender_idTousers   messages[]                 @relation("messages_sender_idTousers")
+  messages_messages_receiver_idTousers messages[]                 @relation("messages_receiver_idTousers")
+  notifications                        notifications[]
+  payments_payments_customer_idTousers payments[]                 @relation("payments_customer_idTousers")
+  payments_payments_provider_idTousers payments[]                 @relation("payments_provider_idTousers")
+  provider_applications                provider_applications[]
+  provider_profiles                    provider_profiles?
+  refresh_tokens                       RefreshToken[]
+  reviews_reviews_reviewer_idTousers   reviews[]                  @relation("reviews_reviewer_idTousers")
+  reviews_reviews_reviewee_idTousers   reviews[]                  @relation("reviews_reviewee_idTousers")
+  technician_verifications             technician_verifications[]
+  tender_offers                        tender_offers[]
+  tenders                              tenders[]
+
+  @@index([role, status], map: "IDX_d6ee2d4bf901675877bb94977c")
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String    @id(map: "PK_7d8bee0204106019488c4c50ffa") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  token      String    @unique(map: "UQ_4542dd2f38a61354a040ba9fd57") @db.VarChar
+  expiresAt  DateTime  @db.Timestamp(6)
+  isRevoked  Boolean   @default(false)
+  revokedAt  DateTime? @db.Timestamp(6)
+  deviceInfo String?   @db.VarChar
+  ipAddress  String?   @db.VarChar
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  userId     String?   @map("user_id") @db.Uuid
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_3ddc983c5f7bcf132fd8732c3f4")
+
+  @@index([token], map: "IDX_4542dd2f38a61354a040ba9fd5")
+  @@index([userId], map: "IDX_610102b60fea1455310ccd299d")
+  @@map("refresh_tokens")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model customer_profiles {
+  id                String   @id(map: "PK_ece08ee55cbe707d9f870907727") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId            String?  @db.VarChar
+  defaultAddress    String?  @db.VarChar
+  defaultLatitude   Decimal? @db.Decimal(10, 8)
+  defaultLongitude  Decimal? @db.Decimal(11, 8)
+  preferredLanguage String   @default("en") @db.VarChar
+  preferredCurrency String?  @db.VarChar
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime @default(now()) @db.Timestamp(6)
+  user_id           String?  @unique(map: "REL_99617dd6d452ad43dd992a7993") @db.Uuid
+  users             User?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_99617dd6d452ad43dd992a79933")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model job_assignments {
+  id                String             @id(map: "PK_353e90dd5926795cc44eca343a9") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  jobId             String             @db.VarChar
+  providerId        String             @db.VarChar
+  status            String             @default("pending") @db.VarChar
+  quotedPrice       Int?
+  estimatedArrival  DateTime?          @db.Timestamp(6)
+  acceptedAt        DateTime?          @db.Timestamp(6)
+  rejectedAt        DateTime?          @db.Timestamp(6)
+  rejectionReason   String?            @db.VarChar
+  notes             String?            @db.VarChar
+  createdAt         DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime           @default(now()) @db.Timestamp(6)
+  job_id            String?            @db.Uuid
+  provider_id       String?            @db.Uuid
+  provider_profiles provider_profiles? @relation(fields: [provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_016b9ad43885e45f7d909af6565")
+  jobs              jobs?              @relation(fields: [job_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_9e3b18b714dd68565ac9cf33a4c")
+
+  @@index([providerId, status], map: "IDX_42c32698e4abdc915c8aac0f6a")
+  @@index([jobId, status], map: "IDX_4cc856f2d1cd3c73b2ef94373c")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model job_status_history {
+  id        String   @id(map: "PK_971859ffd3de1d3118837cb4d9d") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  jobId     String   @db.VarChar
+  status    String   @db.VarChar
+  notes     String?  @db.VarChar
+  changedBy String?  @db.VarChar
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  job_id    String?  @db.Uuid
+  jobs      jobs?    @relation(fields: [job_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_9b7b17a213607c7036e948701b7")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model jobs {
+  id                 String               @id(map: "PK_cf0a6c42b72fcc7f7c237def345") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  customerId         String               @db.VarChar
+  serviceId          String               @db.VarChar
+  providerId         String?              @db.VarChar
+  status             String               @default("pending") @db.VarChar
+  title              String?              @db.VarChar
+  description        String?
+  address            String?              @db.VarChar
+  location           String?
+  latitude           Decimal?             @db.Decimal(10, 8)
+  longitude          Decimal?             @db.Decimal(11, 8)
+  estimatedPrice     Decimal?             @db.Decimal(10, 2)
+  finalPrice         Decimal?             @db.Decimal(10, 2)
+  scheduledDate      DateTime?            @db.Timestamp(6)
+  scheduledTime      String?              @db.VarChar
+  completedAt        DateTime?            @db.Timestamp(6)
+  cancelledAt        DateTime?            @db.Timestamp(6)
+  cancellationReason String?              @db.VarChar
+  images             String?
+  notes              String?              @db.VarChar
+  createdAt          DateTime             @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime             @default(now()) @db.Timestamp(6)
+  customer_id        String?              @db.Uuid
+  job_assignments    job_assignments[]
+  job_status_history job_status_history[]
+  users              User?                @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_61855f3e378cc40ce4144d045b5")
+  payments           payments[]
+  reviews            reviews[]
+
+  @@index([status, createdAt], map: "IDX_af924c25aab35b33928211bb1f")
+  @@index([customerId, status], map: "IDX_b4b24663916399d8c8b505d313")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model messages {
+  id                                String   @id(map: "PK_18325f38ae6de43878487eff986") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  senderId                          String   @db.VarChar
+  receiverId                        String   @db.VarChar
+  content                           String
+  relatedType                       String?  @db.VarChar
+  relatedId                         String?  @db.VarChar
+  isRead                            Boolean  @default(false)
+  createdAt                         DateTime @default(now()) @db.Timestamp(6)
+  sender_id                         String?  @db.Uuid
+  receiver_id                       String?  @db.Uuid
+  users_messages_sender_idTousers   User?    @relation("messages_sender_idTousers", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_22133395bd13b970ccd0c34ab22")
+  users_messages_receiver_idTousers User?    @relation("messages_receiver_idTousers", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_b561864743d235f44e70addc1f5")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model notifications {
+  id        String                  @id(map: "PK_6a72c3c0f683f6462415e653c3a") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId    String                  @db.VarChar
+  type      notifications_type_enum
+  title     String                  @db.VarChar
+  message   String
+  actionUrl String?                 @db.VarChar
+  isRead    Boolean                 @default(false)
+  readAt    DateTime?               @db.Timestamp(6)
+  data      Json?                   @db.Json
+  createdAt DateTime                @default(now()) @db.Timestamp(6)
+  user_id   String?                 @db.Uuid
+  users     User?                   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_9a8a82462cab47c73d25f49261f")
+
+  @@index([userId, createdAt], map: "IDX_21e65af2f4f242d4c85a92aff4")
+  @@index([userId, isRead], map: "IDX_5340fc241f57310d243e5ab20b")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model payments {
+  id                                String    @id(map: "PK_197ab7af18c93fbb0c9b28b4a59") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  jobId                             String?   @db.VarChar
+  customerId                        String    @db.VarChar
+  providerId                        String?   @db.VarChar
+  amount                            Decimal   @db.Decimal(10, 2)
+  platformFee                       Decimal   @default(0) @db.Decimal(10, 2)
+  providerPayout                    Decimal   @default(0) @db.Decimal(10, 2)
+  status                            String    @default("pending") @db.VarChar
+  paymentMethod                     String?   @db.VarChar
+  transactionId                     String?   @db.VarChar
+  stripePaymentIntentId             String?   @db.VarChar
+  stripeTransferId                  String?   @db.VarChar
+  paidAt                            DateTime? @db.Timestamp(6)
+  failedAt                          DateTime? @db.Timestamp(6)
+  refundedAt                        DateTime? @db.Timestamp(6)
+  metadata                          Json?     @db.Json
+  createdAt                         DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt                         DateTime  @default(now()) @db.Timestamp(6)
+  job_id                            String?   @db.Uuid
+  customer_id                       String?   @db.Uuid
+  provider_id                       String?   @db.Uuid
+  users_payments_customer_idTousers User?     @relation("payments_customer_idTousers", fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_d0b02233df1c52323107fe7b4d7")
+  users_payments_provider_idTousers User?     @relation("payments_provider_idTousers", fields: [provider_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e92b64ae70df3f2453392dc44fd")
+  jobs                              jobs?     @relation(fields: [job_id], references: [id], onUpdate: NoAction, map: "FK_f83af8ea8055b85bde0e095e400")
+
+  @@index([status, createdAt], map: "IDX_3cc6f3e2f26955eaa64fd7f9ea")
+  @@index([jobId], map: "IDX_66de1c08544f6aa0f385751420")
+  @@index([customerId], map: "IDX_824be6feda5e655c49c4e0c534")
+  @@index([providerId], map: "IDX_a25d33dbd8e95a1875d42ac40c")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model provider_applications {
+  id                  String             @id(map: "PK_4262a1be4435ab71d0795cb8d19") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId              String             @db.VarChar
+  providerProfileId   String?            @db.VarChar
+  status              String             @default("pending") @db.VarChar
+  businessName        String?            @db.VarChar
+  businessDescription String?            @db.VarChar
+  nationalId          String?            @db.VarChar
+  nationalIdImage     String?            @db.VarChar
+  licenseImage        String?            @db.VarChar
+  portfolioImages     String?            @db.VarChar
+  notes               String?
+  reviewedBy          String?            @db.VarChar
+  reviewedAt          DateTime?          @db.Timestamp(6)
+  rejectionReason     String?            @db.VarChar
+  createdAt           DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime           @default(now()) @db.Timestamp(6)
+  user_id             String?            @db.Uuid
+  provider_profile_id String?            @db.Uuid
+  provider_profiles   provider_profiles? @relation(fields: [provider_profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_64b2804af5cdf7cfa93a4c83fcd")
+  users               User?              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_eba05ee9702912bfa7c2a5267da")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model provider_locations {
+  id                String             @id(map: "PK_1261f1380acfb33f74b8f9eb4a1") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  providerId        String             @db.VarChar
+  location          String?
+  latitude          Decimal            @db.Decimal(10, 8)
+  longitude         Decimal            @db.Decimal(11, 8)
+  accuracy          Int?
+  speed             Int?
+  heading           Int?
+  altitude          Int?
+  batteryLevel      Int?
+  isOnline          Boolean            @default(true)
+  isOnJob           Boolean            @default(false)
+  currentJobId      String?            @db.VarChar
+  createdAt         DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime           @default(now()) @db.Timestamp(6)
+  provider_id       String?            @db.Uuid
+  provider_profiles provider_profiles? @relation(fields: [provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_fde7a51ab97a39a429e3928d33c")
+
+  @@index([providerId, updatedAt], map: "IDX_67c266a85bc7e52845bc7804c1")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model provider_profiles {
+  id                    String                  @id(map: "PK_0197ced76e32133df96a97168df") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId                String?                 @db.VarChar
+  businessName          String?                 @db.VarChar
+  businessDescription   String?                 @db.VarChar
+  address               String?                 @db.VarChar
+  latitude              Decimal?                @db.Decimal(10, 8)
+  longitude             Decimal?                @db.Decimal(11, 8)
+  isAvailable           Boolean                 @default(false)
+  serviceRadiusKm       Int?
+  verificationStatus    String                  @default("pending") @db.VarChar
+  nationalId            String?                 @db.VarChar
+  nationalIdImage       String?                 @db.VarChar
+  licenseImage          String?                 @db.VarChar
+  profileImage          String?                 @db.VarChar
+  portfolioImages       String?                 @db.VarChar
+  bio                   String?                 @db.VarChar
+  rating                Decimal?                @db.Decimal(3, 2)
+  totalJobsCompleted    Int                     @default(0)
+  totalEarnings         Int                     @default(0)
+  responseTimeMinutes   Int                     @default(0)
+  workingHours          String?                 @db.VarChar
+  createdAt             DateTime                @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime                @default(now()) @db.Timestamp(6)
+  user_id               String?                 @unique(map: "REL_5d1880ed16ff13ea6fd9bca019") @db.Uuid
+  job_assignments       job_assignments[]
+  provider_applications provider_applications[]
+  provider_locations    provider_locations[]
+  users                 User?                   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_5d1880ed16ff13ea6fd9bca019d")
+  provider_services     provider_services[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model provider_services {
+  id                String             @id(map: "PK_c907262c804f6e6a2888ed5e630") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  providerId        String             @db.VarChar
+  serviceId         String             @db.VarChar
+  price             Decimal            @db.Decimal(10, 2)
+  priceUnit         String?            @db.VarChar
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime           @default(now()) @db.Timestamp(6)
+  provider_id       String?            @db.Uuid
+  service_id        String?            @db.Uuid
+  services          services?          @relation(fields: [service_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4155bec585f9bf02e99ba19a34c")
+  provider_profiles provider_profiles? @relation(fields: [provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_f7a9f75184826281d7e79449791")
+
+  @@unique([providerId, serviceId], map: "IDX_fe7e3ef22c6d503d252db27774")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model reviews {
+  id                               String            @id(map: "PK_231ae565c273ee700b283f15c1d") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  jobId                            String            @db.VarChar
+  reviewerId                       String            @db.VarChar
+  revieweeId                       String            @db.VarChar
+  type                             reviews_type_enum
+  rating                           Int
+  comment                          String?
+  images                           String?
+  isVisible                        Boolean           @default(true)
+  createdAt                        DateTime          @default(now()) @db.Timestamp(6)
+  job_id                           String?           @db.Uuid
+  reviewer_id                      String?           @db.Uuid
+  reviewee_id                      String?           @db.Uuid
+  jobs                             jobs?             @relation(fields: [job_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_6b129b5f4433000c7f97399bfe9")
+  users_reviews_reviewer_idTousers User?             @relation("reviews_reviewer_idTousers", fields: [reviewer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_92e950a2513a79bb3fab273c92e")
+  users_reviews_reviewee_idTousers User?             @relation("reviews_reviewee_idTousers", fields: [reviewee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_a7b3e1afadd6b52f3b6864745e3")
+
+  @@index([jobId], map: "IDX_c3c015435fedbf60baee6eac0e")
+  @@index([revieweeId], map: "IDX_c8f626e1e943aabb0f90fb8ee6")
+  @@index([reviewerId], map: "IDX_f9238c3e3739dc40322f577fc4")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model service_categories {
+  id          String     @id(map: "PK_fe4da5476c4ffe5aa2d3524ae68") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name        String     @unique(map: "UQ_7ef2e28b495d09a4eb28997c653") @db.VarChar
+  description String?    @db.VarChar
+  icon        String?    @db.VarChar
+  image       String?    @db.VarChar
+  isActive    Boolean    @default(true)
+  sortOrder   Int        @default(0)
+  createdAt   DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime   @default(now()) @db.Timestamp(6)
+  services    services[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model services {
+  id                 String              @id(map: "PK_ba2d347a3168a296416c6c5ccb2") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name               String              @db.VarChar
+  description        String?             @db.VarChar
+  image              String?             @db.VarChar
+  icon               String?             @db.VarChar
+  categoryId         String?             @db.VarChar
+  isActive           Boolean             @default(true)
+  sortOrder          Int                 @default(0)
+  basePrice          Decimal?            @db.Decimal(10, 2)
+  priceUnit          String?             @db.VarChar
+  isFeatured         Boolean             @default(false)
+  createdAt          DateTime            @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime            @default(now()) @db.Timestamp(6)
+  category_id        String?             @db.Uuid
+  provider_services  provider_services[]
+  service_categories service_categories? @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_1f8d1173481678a035b4a81a4ec")
+  tenders            tenders[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model technician_verifications {
+  id            String   @id(map: "PK_3b3adc1b3529e031b8ddf088692") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId        String   @db.Uuid
+  frontIdImage  String?  @db.VarChar
+  backIdImage   String?  @db.VarChar
+  personalPhoto String?  @db.VarChar
+  documents     String?
+  portfolio     String?
+  status        String   @default("pending") @db.VarChar
+  adminNote     String?  @db.VarChar
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @default(now()) @db.Timestamp(6)
+  users         User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_250a3f71b46ef3fcddd70a9b089")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tender_offers {
+  id            String   @id(map: "PK_1aca67fc12c45bb5319f87ed2a7") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  tenderId      String   @db.VarChar
+  providerId    String   @db.VarChar
+  price         Decimal  @db.Decimal(10, 2)
+  message       String?
+  estimatedDays Int?
+  status        String   @default("pending") @db.VarChar
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @default(now()) @db.Timestamp(6)
+  tender_id     String?  @db.Uuid
+  provider_id   String?  @db.Uuid
+  tenders       tenders? @relation(fields: [tender_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_002790ceb994c4b397a2a0112f6")
+  users         User?    @relation(fields: [provider_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_0f9f39dd3bf280fe91dd0051276")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tenders {
+  id              String          @id(map: "PK_13fdd4229818a97b5102199463b") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId          String          @db.VarChar
+  serviceId       String          @db.VarChar
+  title           String          @db.VarChar
+  description     String
+  status          String          @default("open") @db.VarChar
+  budgetMin       Decimal?        @db.Decimal(10, 2)
+  budgetMax       Decimal?        @db.Decimal(10, 2)
+  address         String?         @db.VarChar
+  deadline        DateTime?       @db.Timestamp(6)
+  images          String?
+  acceptedOfferId String?         @db.VarChar
+  createdAt       DateTime        @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime        @default(now()) @db.Timestamp(6)
+  user_id         String?         @db.Uuid
+  service_id      String?         @db.Uuid
+  tender_offers   tender_offers[]
+  users           User?           @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_126faf88381f2cbd9cec21b749f")
+  services        services?       @relation(fields: [service_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_5bc0f4814bca28c7240f202db62")
+}
+
+enum notifications_type_enum {
+  job_created
+  job_assigned
+  job_status_updated
+  job_completed
+  job_cancelled
+  review_received
+  payment_received
+  payment_failed
+  provider_application
+  system
+}
+
+enum reviews_type_enum {
+  customer_to_provider
+  provider_to_customer
+}
