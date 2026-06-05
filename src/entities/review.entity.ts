@@ -87,7 +87,7 @@ export class Review {
   @Column({ default: true })
   isVisible: boolean;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   editableUntil: Date;
 
   @Column({ default: false })
@@ -96,7 +96,7 @@ export class Review {
   @Column({ type: 'text', nullable: true })
   adminRemovalReason: string | null;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   removedAt: Date;
 
   @CreateDateColumn()

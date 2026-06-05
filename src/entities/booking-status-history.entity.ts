@@ -23,7 +23,7 @@ export class BookingStatusHistory {
   @Column()
   bookingId: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   oldStatus: string | null;
 
   @Column()
