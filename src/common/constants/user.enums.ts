@@ -55,6 +55,11 @@ export enum ReviewType {
   PROVIDER_TO_CUSTOMER = 'provider_to_customer',
 }
 
+export enum ReviewSortBy {
+  DATE = 'date',
+  RATING = 'rating',
+}
+
 export enum ApplicationStatus {
   PENDING = 'pending',
   APPROVED = 'approved',

@@ -8,6 +8,8 @@ export * from './job.entity';
 export * from './job-status-history.entity';
 export * from './job-assignment.entity';
 export * from './review.entity';
+export * from './provider-rating-stats.entity';
+export * from './moderation-log.entity';
 export * from './payment.entity';
 export * from './provider-application.entity';
 export * from './notification.entity';

@@ -3,18 +3,26 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
   Index,
+  Unique,
 } from 'typeorm';
-import { Job } from './job.entity';
+import { Booking } from './booking.entity';
 import { User } from './user.entity';
+import { ProviderProfile } from './provider-profile.entity';
+import { Job } from './job.entity';
 import { ReviewType } from '../common/constants/user.enums';
 
 @Entity('reviews')
 @Index(['jobId'])
 @Index(['reviewerId'])
 @Index(['revieweeId'])
+@Index(['bookingId'])
+@Index(['customerId'])
+@Index(['providerId', 'isVisible', 'createdAt'])
+@Unique(['bookingId'])
 export class Review {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -23,7 +31,7 @@ export class Review {
   @JoinColumn({ name: 'job_id' })
   job: Job;
 
-  @Column()
+  @Column({ nullable: true })
   jobId: string;
 
   @ManyToOne(() => User)
@@ -46,6 +54,27 @@ export class Review {
   })
   type: ReviewType;
 
+  @ManyToOne(() => Booking)
+  @JoinColumn({ name: 'booking_id' })
+  booking: Booking;
+
+  @Column()
+  bookingId: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'customer_id' })
+  customer: User;
+
+  @Column()
+  customerId: string;
+
+  @ManyToOne(() => ProviderProfile)
+  @JoinColumn({ name: 'provider_id' })
+  provider: ProviderProfile;
+
+  @Column()
+  providerId: string;
+
   @Column({ type: 'int' })
   rating: number;
 
@@ -58,6 +87,21 @@ export class Review {
   @Column({ default: true })
   isVisible: boolean;
 
+  @Column({ type: 'timestamp', nullable: true })
+  editableUntil: Date;
+
+  @Column({ default: false })
+  removedByAdmin: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  adminRemovalReason: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  removedAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
