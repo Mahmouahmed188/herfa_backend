@@ -170,8 +170,10 @@ model notifications {
   type      notifications_type_enum
   title     String                  @db.VarChar
   message   String
-  actionUrl String?                 @db.VarChar
-  isRead    Boolean                 @default(false)
+  actionUrl          String?                 @db.VarChar
+  relatedEntityType  String?                 @db.VarChar
+  relatedEntityId    String?                 @db.VarChar
+  isRead             Boolean                 @default(false)
   readAt    DateTime?               @db.Timestamp(6)
   data      Json?                   @db.Json
   createdAt DateTime                @default(now()) @db.Timestamp(6)
@@ -180,6 +182,16 @@ model notifications {
 
   @@index([userId, createdAt], map: "IDX_21e65af2f4f242d4c85a92aff4")
   @@index([userId, isRead], map: "IDX_5340fc241f57310d243e5ab20b")
+}
+
+model notification_announcements {
+  id             String   @id(map: "PK_notification_announcements") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title          String   @db.VarChar
+  message        String
+  targetAudience String   @db.VarChar
+  targetUserId   String?  @db.VarChar
+  createdBy      String   @db.VarChar
+  createdAt      DateTime @default(now()) @db.Timestamp(6)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -495,6 +507,16 @@ enum notifications_type_enum {
   payment_failed
   provider_application
   system
+  booking_created
+  booking_accepted
+  booking_rejected
+  booking_on_the_way
+  booking_in_progress
+  booking_completed
+  booking_cancelled
+  account_verified
+  account_suspended
+  refund_processed
 }
 
 enum reviews_type_enum {

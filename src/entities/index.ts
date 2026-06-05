@@ -13,6 +13,7 @@ export * from './moderation-log.entity';
 export * from './payment.entity';
 export * from './provider-application.entity';
 export * from './notification.entity';
+export * from './notification-announcement.entity';
 export * from './refresh-token.entity';
 export * from './provider-location.entity';
 export * from './booking.entity';

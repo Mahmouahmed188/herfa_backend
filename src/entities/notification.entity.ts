@@ -39,6 +39,12 @@ export class Notification {
   @Column({ nullable: true })
   actionUrl: string;
 
+  @Column({ nullable: true })
+  relatedEntityType: string;
+
+  @Column({ nullable: true })
+  relatedEntityId: string;
+
   @Column({ default: false })
   isRead: boolean;
 

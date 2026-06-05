@@ -26,6 +26,16 @@ export class CreateNotificationDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  relatedEntityType?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  relatedEntityId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsObject()
   data?: Record<string, any>;
 }
@@ -49,4 +59,19 @@ export class NotificationQueryDto {
   @IsOptional()
   @IsBoolean()
   isRead?: boolean;
+
+  @ApiPropertyOptional({ enum: NotificationType })
+  @IsOptional()
+  @IsEnum(NotificationType)
+  type?: NotificationType;
+
+  @ApiPropertyOptional({ description: 'Start date filter (ISO format)' })
+  @IsOptional()
+  @IsString()
+  startDate?: string;
+
+  @ApiPropertyOptional({ description: 'End date filter (ISO format)' })
+  @IsOptional()
+  @IsString()
+  endDate?: string;
 }

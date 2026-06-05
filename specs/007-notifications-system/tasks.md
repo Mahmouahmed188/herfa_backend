@@ -30,10 +30,10 @@ description: "Task list for Notifications System implementation"
 
 **Purpose**: Update existing project configuration, install any new dependencies, and establish the directory structure for the enhanced notifications module.
 
-- [ ] T001 [P] Add `notification-announcement.entity.ts` to `src/entities/` with fields: id (UUID), title, message, targetAudience, targetUserId (nullable), createdBy, createdAt
-- [ ] T002 [P] Add `notification_announcements` model to `prisma/schema.prisma` mirroring the TypeORM entity
-- [ ] T003 [P] Create `handlers/` and `channels/` subdirectories in `src/modules/notifications/`
-- [ ] T004 [P] Update `notifications_type_enum` in `prisma/schema.prisma` to include: booking_created, booking_accepted, booking_rejected, booking_on_the_way, booking_in_progress, booking_completed, booking_cancelled, account_verified, account_suspended, refund_processed (in addition to existing values)
+- [x] T001 [P] Add `notification-announcement.entity.ts` to `src/entities/` with fields: id (UUID), title, message, targetAudience, targetUserId (nullable), createdBy, createdAt
+- [x] T002 [P] Add `notification_announcements` model to `prisma/schema.prisma` mirroring the TypeORM entity
+- [x] T003 [P] Create `handlers/` and `channels/` subdirectories in `src/modules/notifications/`
+- [x] T004 [P] Update `notifications_type_enum` in `prisma/schema.prisma` to include: booking_created, booking_accepted, booking_rejected, booking_on_the_way, booking_in_progress, booking_completed, booking_cancelled, account_verified, account_suspended, refund_processed (in addition to existing values)
 
 ---
 
@@ -43,19 +43,19 @@ description: "Task list for Notifications System implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 [P] Update `NotificationType` enum in `src/common/constants/user.enums.ts` to match spec categories: Booking, Review, Payment, Account, System (map to full event names)
-- [ ] T006 [P] Add `relatedEntityType` (nullable VARCHAR) and `relatedEntityId` (nullable VARCHAR) columns to `notification.entity.ts`
-- [ ] T007 [P] Add `relatedEntityType` and `relatedEntityId` fields to Prisma `notifications` model in `schema.prisma`
-- [ ] T008 [P] Generate TypeORM migration for Notification entity changes (relatedEntityType, relatedEntityId) and new NotificationAnnouncement entity
-- [ ] T009 [P] Generate Prisma migration for schema changes
-- [ ] T010 [P] Create `NotificationTargetAudience` enum in `src/common/constants/notification.enums.ts` with values: all, customers, providers, individual
-- [ ] T011 [P] Create `NotificationChannel` interface in `src/modules/notifications/channels/notification-channel.interface.ts` with `name` property and `send(notification, user): Promise<void>` method
-- [ ] T012 [P] Create `InAppChannel` implementation in `src/modules/notifications/channels/in-app.channel.ts` that persists notification via TypeORM
-- [ ] T013 [P] Create `CreateAnnouncementDto` in `src/modules/notifications/dto/announcements.dto.ts` with title (required), message (required), targetAudience (required enum), targetUserId (optional UUID) with class-validator and Swagger decorators
-- [ ] T014 [P] Create `AnnouncementResponseDto` in `src/modules/notifications/dto/announcements.dto.ts` with all announcement fields and Swagger examples
-- [ ] T015 [P] Create `AnnouncementListResponseDto` in `src/modules/notifications/dto/announcements.dto.ts` with items array and total count
-- [ ] T016 [P] Update `NotificationQueryDto` in `src/modules/notifications/dto/notifications.dto.ts` to add optional `type` (enum), `startDate` (ISO date), `endDate` (ISO date) filter fields
-- [ ] T017 [P] Create `notification-announcement.entity.ts` TypeORM entity with fields: id (UUID PK), title, message, targetAudience (enum), targetUserId (nullable UUID), createdBy (VARCHAR), createdAt (timestamp)
+- [x] T005 [P] Update `NotificationType` enum in `src/common/constants/user.enums.ts` to match spec categories: Booking, Review, Payment, Account, System (map to full event names)
+- [x] T006 [P] Add `relatedEntityType` (nullable VARCHAR) and `relatedEntityId` (nullable VARCHAR) columns to `notification.entity.ts`
+- [x] T007 [P] Add `relatedEntityType` and `relatedEntityId` fields to Prisma `notifications` model in `schema.prisma`
+- [x] T008 [P] Generate TypeORM migration for Notification entity changes (relatedEntityType, relatedEntityId) and new NotificationAnnouncement entity
+- [x] T009 [P] Generate Prisma migration for schema changes
+- [x] T010 [P] Create `NotificationTargetAudience` enum in `src/common/constants/notification.enums.ts` with values: all, customers, providers, individual
+- [x] T011 [P] Create `NotificationChannel` interface in `src/modules/notifications/channels/notification-channel.interface.ts` with `name` property and `send(notification, user): Promise<void>` method
+- [x] T012 [P] Create `InAppChannel` implementation in `src/modules/notifications/channels/in-app.channel.ts` that persists notification via TypeORM
+- [x] T013 [P] Create `CreateAnnouncementDto` in `src/modules/notifications/dto/announcements.dto.ts` with title (required), message (required), targetAudience (required enum), targetUserId (optional UUID) with class-validator and Swagger decorators
+- [x] T014 [P] Create `AnnouncementResponseDto` in `src/modules/notifications/dto/announcements.dto.ts` with all announcement fields and Swagger examples
+- [x] T015 [P] Create `AnnouncementListResponseDto` in `src/modules/notifications/dto/announcements.dto.ts` with items array and total count
+- [x] T016 [P] Update `NotificationQueryDto` in `src/modules/notifications/dto/notifications.dto.ts` to add optional `type` (enum), `startDate` (ISO date), `endDate` (ISO date) filter fields
+- [x] T017 [P] Create `notification-announcement.entity.ts` TypeORM entity with fields: id (UUID PK), title, message, targetAudience (enum), targetUserId (nullable UUID), createdBy (VARCHAR), createdAt (timestamp)
 
 **Checkpoint**: Foundation ready — all entities, DTOs, channels, and migrations are prepared. User story implementation can now begin.
 
@@ -69,14 +69,14 @@ description: "Task list for Notifications System implementation"
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] Add `markAllAsRead(userId: string)` method to `NotificationsService` in `src/modules/notifications/notifications.service.ts` that updates all unread notifications for the user to read=true
-- [ ] T019 [US1] Add `PATCH /notifications/:id/read` endpoint to `NotificationsController` in `src/modules/notifications/notifications.controller.ts` that marks a single notification as read (verify ownership)
-- [ ] T020 [US1] Add `PATCH /notifications/read-all` endpoint to `NotificationsController` that calls `markAllAsRead` for the authenticated user
-- [ ] T021 [US1] Update `findByUser` in `NotificationsService` to support filtering by `type`, `startDate`, `endDate` query parameters from the enhanced `NotificationQueryDto`
-- [ ] T022 [US1] Update `NotificationsModule` to register `InAppChannel` as a provider
-- [ ] T023 [US1] Add Swagger `@ApiOperation`, `@ApiResponse`, and `@ApiBearerAuth` decorators to all notification endpoints in the controller with request/response/error examples
-- [ ] T024 [US1] Create unit test for `NotificationsService` in `src/modules/notifications/notifications.service.spec.ts` testing: findByUser (paginated, filtered), markAsRead (single), markAllAsRead, getUnreadCount, and ownership enforcement
-- [ ] T025 [US1] Create unit test for `NotificationsController` in `src/modules/notifications/notifications.controller.spec.ts` testing all endpoints with mocked service
+- [x] T018 [US1] Add `markAllAsRead(userId: string)` method to `NotificationsService` in `src/modules/notifications/notifications.service.ts` that updates all unread notifications for the user to read=true
+- [x] T019 [US1] Add `PATCH /notifications/:id/read` endpoint to `NotificationsController` in `src/modules/notifications/notifications.controller.ts` that marks a single notification as read (verify ownership)
+- [x] T020 [US1] Add `PATCH /notifications/read-all` endpoint to `NotificationsController` that calls `markAllAsRead` for the authenticated user
+- [x] T021 [US1] Update `findByUser` in `NotificationsService` to support filtering by `type`, `startDate`, `endDate` query parameters from the enhanced `NotificationQueryDto`
+- [x] T022 [US1] Update `NotificationsModule` to register `InAppChannel` as a provider
+- [x] T023 [US1] Add Swagger `@ApiOperation`, `@ApiResponse`, and `@ApiBearerAuth` decorators to all notification endpoints in the controller with request/response/error examples
+- [x] T024 [US1] Create unit test for `NotificationsService` in `src/modules/notifications/notifications.service.spec.ts` testing: findByUser (paginated, filtered), markAsRead (single), markAllAsRead, getUnreadCount, and ownership enforcement
+- [x] T025 [US1] Create unit test for `NotificationsController` in `src/modules/notifications/notifications.controller.spec.ts` testing all endpoints with mocked service
 
 **Checkpoint**: User Story 1 is fully functional. Users can view, filter, and manage their notification read status. This is the MVP.
 
@@ -90,16 +90,16 @@ description: "Task list for Notifications System implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T026 [P] [US2] Create `BookingEventsHandler` in `src/modules/notifications/handlers/booking-events.handler.ts` with `@OnEvent` listeners for: booking.created, booking.accepted, booking.rejected, booking.on.the.way, booking.in.progress, booking.completed, booking.cancelled — each constructs appropriate title/message and calls `NotificationsService.create()`
-- [ ] T027 [P] [US2] Create `ReviewEventsHandler` in `src/modules/notifications/handlers/review-events.handler.ts` with `@OnEvent('review.submitted')` listener
-- [ ] T028 [P] [US2] Create `PaymentEventsHandler` in `src/modules/notifications/handlers/payment-events.handler.ts` with `@OnEvent` listeners for: payment.received, payment.failed, payment.refunded
-- [ ] T029 [P] [US2] Create `AccountEventsHandler` in `src/modules/notifications/handlers/account-events.handler.ts` with `@OnEvent` listeners for: account.verified, account.suspended
-- [ ] T030 [US2] Update `NotificationsModule` to register all four event handlers as providers
-- [ ] T031 [US2] Update `NotificationsService.create()` to delegate to `InAppChannel.send()` instead of directly saving — ensuring the channel interface is used
-- [ ] T032 [P] [US2] Create unit test for `BookingEventsHandler` in `src/modules/notifications/handlers/booking-events.handler.spec.ts`
-- [ ] T033 [P] [US2] Create unit test for `ReviewEventsHandler` in `src/modules/notifications/handlers/review-events.handler.spec.ts`
-- [ ] T034 [P] [US2] Create unit test for `PaymentEventsHandler` in `src/modules/notifications/handlers/payment-events.handler.spec.ts`
-- [ ] T035 [P] [US2] Create unit test for `AccountEventsHandler` in `src/modules/notifications/handlers/account-events.handler.spec.ts`
+- [x] T026 [P] [US2] Create `BookingEventsHandler` in `src/modules/notifications/handlers/booking-events.handler.ts` with `@OnEvent` listeners for: booking.created, booking.accepted, booking.rejected, booking.on.the.way, booking.in.progress, booking.completed, booking.cancelled — each constructs appropriate title/message and calls `NotificationsService.create()`
+- [x] T027 [P] [US2] Create `ReviewEventsHandler` in `src/modules/notifications/handlers/review-events.handler.ts` with `@OnEvent('review.submitted')` listener
+- [x] T028 [P] [US2] Create `PaymentEventsHandler` in `src/modules/notifications/handlers/payment-events.handler.ts` with `@OnEvent` listeners for: payment.received, payment.failed, payment.refunded
+- [x] T029 [P] [US2] Create `AccountEventsHandler` in `src/modules/notifications/handlers/account-events.handler.ts` with `@OnEvent` listeners for: account.verified, account.suspended
+- [x] T030 [US2] Update `NotificationsModule` to register all four event handlers as providers
+- [x] T031 [US2] Update `NotificationsService.create()` to delegate to `InAppChannel.send()` instead of directly saving — ensuring the channel interface is used
+- [x] T032 [P] [US2] Create unit test for `BookingEventsHandler` in `src/modules/notifications/handlers/booking-events.handler.spec.ts`
+- [x] T033 [P] [US2] Create unit test for `ReviewEventsHandler` in `src/modules/notifications/handlers/review-events.handler.spec.ts`
+- [x] T034 [P] [US2] Create unit test for `PaymentEventsHandler` in `src/modules/notifications/handlers/payment-events.handler.spec.ts`
+- [x] T035 [P] [US2] Create unit test for `AccountEventsHandler` in `src/modules/notifications/handlers/account-events.handler.spec.ts`
 
 **Checkpoint**: User Stories 1 AND 2 are functional. Notifications are automatically generated from all platform events and users can view/manage them.
 
@@ -113,15 +113,15 @@ description: "Task list for Notifications System implementation"
 
 ### Implementation for User Story 3
 
-- [ ] T036 [US3] Create `AnnouncementsController` in `src/modules/notifications/announcements.controller.ts` with endpoints: `POST /notifications/announcements` (create), `GET /notifications/announcements` (list), `DELETE /notifications/announcements/:id` (delete)
-- [ ] T037 [US3] Create `AnnouncementsService` in `src/modules/notifications/announcements.service.ts` with methods: `create(dto, adminId)`, `findAll()`, `delete(id)` — on create, resolve target audience to user IDs and call `NotificationsService.create()` for each
-- [ ] T038 [US3] Create `AnnouncementOwnershipGuard` in `src/modules/notifications/guards/announcement-ownership.guard.ts` that verifies the requesting user has admin role
-- [ ] T039 [US3] Add `@Roles(UserRole.ADMIN)` and `@UseGuards(RolesGuard)` to `AnnouncementsController` for admin-only access
-- [ ] T040 [US3] Add `NOTIFICATION_CREATED` logger call in `NotificationsService.create()` using NestJS Logger (Constitution P11)
-- [ ] T041 [US3] Wire `AnnouncementsController` and `AnnouncementsService` into `NotificationsModule`
-- [ ] T042 [US3] Add Swagger `@ApiTags('Notifications - Admin')`, `@ApiOperation`, `@ApiResponse`, and `@ApiBearerAuth` decorators to all announcement endpoints with request/response/error examples
-- [ ] T043 [US3] Create unit test for `AnnouncementsService` in `src/modules/notifications/announcements.service.spec.ts` testing create (all audience types), findAll, delete, and validation
-- [ ] T044 [US3] Create unit test for `AnnouncementsController` in `src/modules/notifications/announcements.controller.spec.ts`
+- [x] T036 [US3] Create `AnnouncementsController` in `src/modules/notifications/announcements.controller.ts` with endpoints: `POST /notifications/announcements` (create), `GET /notifications/announcements` (list), `DELETE /notifications/announcements/:id` (delete)
+- [x] T037 [US3] Create `AnnouncementsService` in `src/modules/notifications/announcements.service.ts` with methods: `create(dto, adminId)`, `findAll()`, `delete(id)` — on create, resolve target audience to user IDs and call `NotificationsService.create()` for each
+- [x] T038 [US3] Create `AnnouncementOwnershipGuard` in `src/modules/notifications/guards/announcement-ownership.guard.ts` that verifies the requesting user has admin role
+- [x] T039 [US3] Add `@Roles(UserRole.ADMIN)` and `@UseGuards(RolesGuard)` to `AnnouncementsController` for admin-only access
+- [x] T040 [US3] Add `NOTIFICATION_CREATED` logger call in `NotificationsService.create()` using NestJS Logger (Constitution P11)
+- [x] T041 [US3] Wire `AnnouncementsController` and `AnnouncementsService` into `NotificationsModule`
+- [x] T042 [US3] Add Swagger `@ApiTags('Notifications - Admin')`, `@ApiOperation`, `@ApiResponse`, and `@ApiBearerAuth` decorators to all announcement endpoints with request/response/error examples
+- [x] T043 [US3] Create unit test for `AnnouncementsService` in `src/modules/notifications/announcements.service.spec.ts` testing create (all audience types), findAll, delete, and validation
+- [x] T044 [US3] Create unit test for `AnnouncementsController` in `src/modules/notifications/announcements.controller.spec.ts`
 
 **Checkpoint**: User Stories 1-3 are functional. Admins can manage announcements and targeted users receive them.
 
@@ -135,11 +135,11 @@ description: "Task list for Notifications System implementation"
 
 ### Implementation for User Story 4
 
-- [ ] T045 [US4] Enhance `findByUser` query builder in `NotificationsService` to support combined filtering by type, isRead, startDate, endDate — all as optional AND conditions
-- [ ] T046 [US4] Update `NotificationsController.GET /notifications` to pass all query params to the enhanced `findByUser`
-- [ ] T047 [US4] Add pagination metadata (page, limit, total, totalPages) consistency check — confirm `NotificationsService.findByUser` returns standard pagination format matching the project convention `{ data, meta: { page, limit, total, totalPages } }`
-- [ ] T048 [US4] Add Swagger `@ApiQuery` decorators to the GET /notifications endpoint documenting all filter parameters (page, limit, type, isRead, startDate, endDate)
-- [ ] T049 [US4] Create unit test for filter combinations in `notifications.service.spec.ts` testing type+status, type+date, status+date, and all three combined filters
+- [x] T045 [US4] Enhance `findByUser` query builder in `NotificationsService` to support combined filtering by type, isRead, startDate, endDate — all as optional AND conditions
+- [x] T046 [US4] Update `NotificationsController.GET /notifications` to pass all query params to the enhanced `findByUser`
+- [x] T047 [US4] Add pagination metadata (page, limit, total, totalPages) consistency check — confirm `NotificationsService.findByUser` returns standard pagination format matching the project convention `{ data, meta: { page, limit, total, totalPages } }`
+- [x] T048 [US4] Add Swagger `@ApiQuery` decorators to the GET /notifications endpoint documenting all filter parameters (page, limit, type, isRead, startDate, endDate)
+- [x] T049 [US4] Create unit test for filter combinations in `notifications.service.spec.ts` testing type+status, type+date, status+date, and all three combined filters
 
 **Checkpoint**: All four user stories are functional. The notification system is complete with full filtering, pagination, and search capabilities.
 
@@ -149,14 +149,14 @@ description: "Task list for Notifications System implementation"
 
 **Purpose**: Improvements that affect multiple user stories.
 
-- [ ] T050 [P] Add structured error responses for notification endpoints: 401 (no token), 403 (marking another user's notification), 404 (notification not found), 422 (validation errors for announcements)
-- [ ] T051 [P] Add NestJS Logger calls to all event handlers logging notification creation events
-- [ ] T052 Add `NotificationsGateway` (existing WebSocket in `src/modules/tracking/`) integration — emit notification to user's socket room when `InAppChannel.send()` completes
-- [ ] T053 Add idempotency check in event handlers: skip notification creation if identical event (same event ID) processed within last 5 minutes
-- [ ] T054 Update `NotificationsGateway` to send notification payload to user's WebSocket room when notification is created
-- [ ] T055 Run full test suite to ensure no regressions: `npm test` and `npm run test:e2e`
-- [ ] T056 Update Swagger documentation with examples for all new and enhanced endpoints — verify docs at `/api/docs`
-- [ ] T057 Verify API contract compliance: all endpoints return standardized `{ data, timestamp }` response format
+- [x] T050 [P] Add structured error responses for notification endpoints: 401 (no token), 403 (marking another user's notification), 404 (notification not found), 422 (validation errors for announcements)
+- [x] T051 [P] Add NestJS Logger calls to all event handlers logging notification creation events
+- [x] T052 Add `NotificationsGateway` (existing WebSocket in `src/modules/tracking/`) integration — emit notification to user's socket room when `InAppChannel.send()` completes
+- [x] T053 Add idempotency check in event handlers: skip notification creation if identical event (same event ID) processed within last 5 minutes
+- [x] T054 Update `NotificationsGateway` to send notification payload to user's WebSocket room when notification is created
+- [x] T055 Run full test suite to ensure no regressions: `npm test` and `npm run test:e2e`
+- [x] T056 Update Swagger documentation with examples for all new and enhanced endpoints — verify docs at `/api/docs`
+- [x] T057 Verify API contract compliance: all endpoints return standardized `{ data, timestamp }` response format
 
 ---
 

@@ -48,6 +48,16 @@ export enum NotificationType {
   PAYMENT_FAILED = 'payment_failed',
   PROVIDER_APPLICATION = 'provider_application',
   SYSTEM = 'system',
+  BOOKING_CREATED = 'booking_created',
+  BOOKING_ACCEPTED = 'booking_accepted',
+  BOOKING_REJECTED = 'booking_rejected',
+  BOOKING_ON_THE_WAY = 'booking_on_the_way',
+  BOOKING_IN_PROGRESS = 'booking_in_progress',
+  BOOKING_COMPLETED = 'booking_completed',
+  BOOKING_CANCELLED = 'booking_cancelled',
+  ACCOUNT_VERIFIED = 'account_verified',
+  ACCOUNT_SUSPENDED = 'account_suspended',
+  REFUND_PROCESSED = 'refund_processed',
 }
 
 export enum ReviewType {
