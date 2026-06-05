@@ -525,6 +525,61 @@ model tenders {
   services        services?       @relation(fields: [service_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_5bc0f4814bca28c7240f202db62")
 }
 
+model provider_verifications {
+  id               String                    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  providerId       String                    @unique @db.Uuid
+  status           String                    @default("pending") @db.VarChar
+  rejectionReason  String?                   @db.Text
+  suspensionReason String?                   @db.Text
+  submittedAt      DateTime?                 @db.Timestamp(6)
+  reviewedAt       DateTime?                 @db.Timestamp(6)
+  reviewedBy       String?                   @db.Uuid
+  createdAt        DateTime                  @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime                  @default(now()) @db.Timestamp(6)
+  documents        verification_documents[]
+  history          verification_history[]
+
+  @@index([providerId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([reviewedBy])
+  @@map("provider_verifications")
+}
+
+model verification_documents {
+  id              String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  verificationId  String                  @db.Uuid
+  documentType    String                  @db.VarChar
+  documentUrl     String                  @db.VarChar
+  originalName    String?                 @db.VarChar
+  mimeType        String?                 @db.VarChar
+  fileSize        Int?
+  uploadedAt      DateTime                @default(now()) @db.Timestamp(6)
+  createdAt       DateTime                @default(now()) @db.Timestamp(6)
+  provider_verifications provider_verifications @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+
+  @@index([verificationId])
+  @@index([documentType])
+  @@map("verification_documents")
+}
+
+model verification_history {
+  id              String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  verificationId  String                  @db.Uuid
+  oldStatus       String?                 @db.VarChar
+  newStatus       String                  @db.VarChar
+  changedBy       String                  @db.Uuid
+  changedByRole   String                  @db.VarChar(20)
+  notes           String?                 @db.Text
+  createdAt       DateTime                @default(now()) @db.Timestamp(6)
+  provider_verifications provider_verifications @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+
+  @@index([verificationId])
+  @@index([changedBy])
+  @@index([createdAt])
+  @@map("verification_history")
+}
+
 enum notifications_type_enum {
   job_created
   job_assigned

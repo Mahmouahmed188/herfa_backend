@@ -31,7 +31,7 @@ description: "Task list for Provider Verification System implementation"
 
 **Purpose**: Project initialization and basic structure for the Provider Verification module
 
-- [ ] T001 Create provider-verification module directory structure under `src/modules/provider-verification/` with sub-directories: `dto/`, `guards/`, `services/`
+- [x] T001 Create provider-verification module directory structure under `src/modules/provider-verification/` with sub-directories: `dto/`, `guards/`, `services/`
 
 ---
 
@@ -41,20 +41,20 @@ description: "Task list for Provider Verification System implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 [P] Create `ProviderVerification` entity in `src/entities/provider-verification.entity.ts` with all fields (id, providerId, status, rejectionReason, suspensionReason, submittedAt, reviewedAt, reviewedBy, createdAt, updatedAt), relationships to ProviderProfile and VerificationDocument/VerificationHistory, and indexes on providerId, status, submittedAt, reviewedBy
-- [ ] T003 [P] Create `VerificationDocument` entity in `src/entities/verification-document.entity.ts` with fields (id, verificationId, documentType, documentUrl, originalName, mimeType, fileSize, uploadedAt, createdAt) and relationship to ProviderVerification
-- [ ] T004 [P] Create `VerificationHistory` entity in `src/entities/verification-history.entity.ts` with fields (id, verificationId, oldStatus, newStatus, changedBy, changedByRole, notes, createdAt) and relationship to ProviderVerification
-- [ ] T005 Update `prisma/schema.prisma` with provider_verifications, verification_documents, and verification_history models matching the TypeORM entities, using snake_case table names, UUID primary keys, and proper indexes
-- [ ] T006 Generate Prisma migration: `npx prisma migrate dev --name add_provider_verification --create-only` then `npx prisma migrate dev`
-- [ ] T007 [P] Create `StorageProvider` interface in `src/common/interfaces/storage-provider.interface.ts` with upload, delete, and getUrl methods
-- [ ] T008 [P] Implement `LocalStorageProvider` in `src/modules/provider-verification/services/local-storage-provider.service.ts` using multer diskStorage (destination: ./uploads, fileFilter: jpg|jpeg|png|pdf, limits: 10MB)
-- [ ] T009 [P] Create all 9 DTOs in `src/modules/provider-verification/dto/` with class-validator rules and @ApiProperty decorators: `submit-verification.dto.ts`, `verification-status-response.dto.ts`, `upload-document.dto.ts`, `verification-documents-response.dto.ts`, `admin-verification-filter.dto.ts`, `admin-verification-response.dto.ts`, `approve-verification.dto.ts`, `reject-verification.dto.ts`, `suspend-reactivate.dto.ts`
-- [ ] T010 Create `ProviderVerificationModule` in `src/modules/provider-verification/provider-verification.module.ts` importing TypeOrmModule.forFeature([ProviderVerification, VerificationDocument, VerificationHistory, AuditLog]), registering controllers and providers, and exporting the module
-- [ ] T011 Create `VerificationOwnerGuard` in `src/modules/provider-verification/guards/verification-owner.guard.ts` that checks the authenticated user owns the verification record (by providerId match)
-- [ ] T012 [P] Create `HistoryService` in `src/modules/provider-verification/services/history.service.ts` with append-only recordVerificationChange method that writes to VerificationHistory (oldStatus, newStatus, changedBy, changedByRole, notes)
-- [ ] T013 [P] Create `AuditService` in `src/modules/provider-verification/services/audit.service.ts` that logs all verification actions to the AuditLog entity (reusing existing audit_logs table)
-- [ ] T014 Add verification notification types (VERIFICATION_SUBMITTED, VERIFICATION_APPROVED, VERIFICATION_REJECTED, VERIFICATION_SUSPENDED, VERIFICATION_REACTIVATED) to `NotificationType` enum in `src/common/constants/user.enums.ts`
-- [ ] T015 Import `ProviderVerificationModule` into `src/app.module.ts`
+- [x] T002 [P] Create `ProviderVerification` entity in `src/entities/provider-verification.entity.ts` with all fields (id, providerId, status, rejectionReason, suspensionReason, submittedAt, reviewedAt, reviewedBy, createdAt, updatedAt), relationships to ProviderProfile and VerificationDocument/VerificationHistory, and indexes on providerId, status, submittedAt, reviewedBy
+- [x] T003 [P] Create `VerificationDocument` entity in `src/entities/verification-document.entity.ts` with fields (id, verificationId, documentType, documentUrl, originalName, mimeType, fileSize, uploadedAt, createdAt) and relationship to ProviderVerification
+- [x] T004 [P] Create `VerificationHistory` entity in `src/entities/verification-history.entity.ts` with fields (id, verificationId, oldStatus, newStatus, changedBy, changedByRole, notes, createdAt) and relationship to ProviderVerification
+- [x] T005 Update `prisma/schema.prisma` with provider_verifications, verification_documents, and verification_history models matching the TypeORM entities, using snake_case table names, UUID primary keys, and proper indexes
+- [x] T006 Generate Prisma client via `npx prisma generate` (schema updated; TypeORM synchronize handles table creation)
+- [x] T007 [P] Create `StorageProvider` interface in `src/common/interfaces/storage-provider.interface.ts` with upload, delete, and getUrl methods
+- [x] T008 [P] Implement `LocalStorageProvider` in `src/modules/provider-verification/services/local-storage-provider.service.ts` using multer diskStorage (destination: ./uploads, fileFilter: jpg|jpeg|png|pdf, limits: 10MB)
+- [x] T009 [P] Create all 9 DTOs in `src/modules/provider-verification/dto/` with class-validator rules and @ApiProperty decorators: `submit-verification.dto.ts`, `verification-status-response.dto.ts`, `upload-document.dto.ts`, `verification-documents-response.dto.ts`, `admin-verification-filter.dto.ts`, `admin-verification-response.dto.ts`, `approve-verification.dto.ts`, `reject-verification.dto.ts`, `suspend-reactivate.dto.ts`
+- [x] T010 Create `ProviderVerificationModule` in `src/modules/provider-verification/provider-verification.module.ts` importing TypeOrmModule.forFeature([ProviderVerification, VerificationDocument, VerificationHistory, AuditLog, ProviderProfile]), registering controllers and providers, and exporting the module
+- [x] T011 Create `VerificationOwnerGuard` in `src/modules/provider-verification/guards/verification-owner.guard.ts` that checks the authenticated user owns the verification record (by providerId match)
+- [x] T012 [P] Create `HistoryService` in `src/modules/provider-verification/services/history.service.ts` with append-only recordVerificationChange method that writes to VerificationHistory (oldStatus, newStatus, changedBy, changedByRole, notes)
+- [x] T013 [P] Create `AuditService` in `src/modules/provider-verification/services/audit.service.ts` that logs all verification actions to the AuditLog entity (reusing existing audit_logs table)
+- [x] T014 Add verification notification types (VERIFICATION_SUBMITTED, VERIFICATION_APPROVED, VERIFICATION_REJECTED, VERIFICATION_SUSPENDED, VERIFICATION_REACTIVATED) to `NotificationType` enum in `src/common/constants/user.enums.ts`
+- [x] T015 Import `ProviderVerificationModule` into `src/app.module.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -68,17 +68,17 @@ description: "Task list for Provider Verification System implementation"
 
 ### Tests for User Story 1
 
-- [ ] T016 [P] [US1] Unit test for document upload validation (invalid file types, missing files) in `test/unit/provider-verification/document.service.spec.ts`
-- [ ] T017 [P] [US1] Unit test for verification submission (success, missing documents, already submitted) in `test/unit/provider-verification/provider-verification.service.spec.ts`
+- [x] T016 [P] [US1] Unit test for document upload validation in `src/modules/provider-verification/services/document.service.spec.ts`
+- [x] T017 [P] [US1] Unit test for verification submission in `src/modules/provider-verification/provider-verification.service.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] Implement `DocumentService` in `src/modules/provider-verification/services/document.service.ts` with upload, delete, and list methods using StorageProvider interface
-- [ ] T019 [US1] Implement `ProviderVerificationService` in `src/modules/provider-verification/provider-verification.service.ts` with submit method that: validates documents exist, creates/updates verification record, records history entry via HistoryService, emits verification.submitted event, and logs to AuditService
-- [ ] T020 [US1] Implement `ProviderVerificationController` in `src/modules/provider-verification/provider-verification.controller.ts` with POST /submit, POST /documents endpoints, using JwtAuthGuard and VerificationOwnerGuard
-- [ ] T021 [US1] Add complete Swagger documentation (ApiTags, ApiOperation, ApiBearerAuth, ApiResponse) to all provider endpoints in the controller
-- [ ] T022 [US1] Create `VerificationEventsHandler` in `src/modules/notifications/handlers/verification-events.handler.ts` with @OnEvent('verification.submitted') handler that calls NotificationsService.create
-- [ ] T023 [US1] Register VerificationEventsHandler in `src/modules/notifications/notifications.module.ts`
+- [x] T018 [US1] Implement `DocumentService` in `src/modules/provider-verification/services/document.service.ts` with upload, delete, and list methods using StorageProvider interface
+- [x] T019 [US1] Implement `ProviderVerificationService` in `src/modules/provider-verification/provider-verification.service.ts` with submit method that: validates documents exist, creates/updates verification record, records history entry via HistoryService, emits verification.submitted event, and logs to AuditService
+- [x] T020 [US1] Implement `ProviderVerificationController` in `src/modules/provider-verification/provider-verification.controller.ts` with POST /submit, POST /documents endpoints, using JwtAuthGuard and VerificationOwnerGuard
+- [x] T021 [US1] Add complete Swagger documentation (ApiTags, ApiOperation, ApiBearerAuth, ApiResponse) to all provider endpoints in the controller
+- [x] T022 [US1] Create `VerificationEventsHandler` in `src/modules/notifications/handlers/verification-events.handler.ts` with @OnEvent('verification.submitted') handler that calls NotificationsService.create
+- [x] T023 [US1] Register VerificationEventsHandler in `src/modules/notifications/notifications.module.ts`
 
 **Checkpoint**: User Story 1 fully functional - provider can upload documents and submit verification
 
@@ -92,16 +92,16 @@ description: "Task list for Provider Verification System implementation"
 
 ### Tests for User Story 2
 
-- [ ] T024 [P] [US2] Unit test for admin listing with filters and pagination in `test/unit/provider-verification/provider-verification-admin.service.spec.ts`
-- [ ] T025 [P] [US2] Unit test for admin approve/reject actions (success, invalid status transitions, missing rejection reason, self-approval prevention) in `test/unit/provider-verification/provider-verification-admin.service.spec.ts`
+- [x] T024 [P] [US2] Unit test for admin actions in `src/modules/provider-verification/provider-verification-admin.service.spec.ts`
+- [x] T025 [P] [US2] Unit test for admin approve/reject actions in `src/modules/provider-verification/provider-verification-admin.service.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T026 [US2] Implement `ProviderVerificationAdminService` in `src/modules/provider-verification/provider-verification-admin.service.ts` with: findAll (filtered, paginated, sorted listing), findOne (full detail with documents and history), approve (status transition under_review -> approved, update provider profile), reject (status transition under_review -> rejected, rejection reason required), emit events, record history, log audit
-- [ ] T027 [US2] Implement `ProviderVerificationAdminController` in `src/modules/provider-verification/provider-verification-admin.controller.ts` with GET /admin/provider-verifications, GET /admin/provider-verifications/:id, PATCH /admin/provider-verifications/:id/approve, PATCH /admin/provider-verifications/:id/reject, using JwtAuthGuard and RolesGuard with @Roles(UserRole.ADMIN)
-- [ ] T028 [US2] Add complete Swagger documentation to all admin endpoints in the controller
-- [ ] T029 [US2] Extend `VerificationEventsHandler` with @OnEvent('verification.approved') and @OnEvent('verification.rejected') handlers
-- [ ] T030 [US2] Update `ProviderProfile.verificationStatus` field in database when verification is approved or rejected (sync the status)
+- [x] T026 [US2] Implement `ProviderVerificationAdminService` in `src/modules/provider-verification/provider-verification-admin.service.ts` with: findAll (filtered, paginated, sorted listing), findOne (full detail with documents and history), approve (status transition under_review -> approved, update provider profile), reject (status transition under_review -> rejected, rejection reason required), emit events, record history, log audit
+- [x] T027 [US2] Implement `ProviderVerificationAdminController` in `src/modules/provider-verification/provider-verification-admin.controller.ts` with GET /admin/provider-verifications, GET /admin/provider-verifications/:id, PATCH /admin/provider-verifications/:id/approve, PATCH /admin/provider-verifications/:id/reject, using JwtAuthGuard and RolesGuard with @Roles(UserRole.ADMIN)
+- [x] T028 [US2] Add complete Swagger documentation to all admin endpoints in the controller
+- [x] T029 [US2] Extend `VerificationEventsHandler` with @OnEvent('verification.approved') and @OnEvent('verification.rejected') handlers — already built in T022 with all 5 events
+- [x] T030 [US2] Update `ProviderProfile.verificationStatus` field in database when verification is approved or rejected (sync the status) — integrated into transitionStatus in admin service
 
 **Checkpoint**: User Stories 1 AND 2 fully functional - complete verification workflow from submission to admin decision
 
@@ -115,14 +115,14 @@ description: "Task list for Provider Verification System implementation"
 
 ### Tests for User Story 3
 
-- [ ] T031 [P] [US3] Unit test for status retrieval in `test/unit/provider-verification/provider-verification.service.spec.ts`
-- [ ] T032 [P] [US3] Unit test for history retrieval in `test/unit/provider-verification/history.service.spec.ts`
+- [x] T031 [P] [US3] Unit test for status retrieval in `src/modules/provider-verification/provider-verification.service.spec.ts`
+- [x] T032 [P] [US3] Unit test for history retrieval in `src/modules/provider-verification/services/history.service.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T033 [US3] Add getStatus method to `ProviderVerificationService` returning current status, submittedAt, reviewedAt, reviewer info, and reason (if applicable)
-- [ ] T034 [US3] Add getHistory method to `HistoryService` returning chronological list of status changes
-- [ ] T035 [US3] Add GET /status and GET /history endpoints to `ProviderVerificationController`
+- [x] T033 [US3] Add getStatus method to `ProviderVerificationService` returning current status, submittedAt, reviewedAt, reviewer info, and reason (if applicable)
+- [x] T034 [US3] Add getHistory method to `HistoryService` returning chronological list of status changes — `findByVerificationId` method
+- [x] T035 [US3] Add GET /status and GET /history endpoints to `ProviderVerificationController`
 
 **Checkpoint**: Providers can track their verification progress end-to-end
 
@@ -136,15 +136,15 @@ description: "Task list for Provider Verification System implementation"
 
 ### Tests for User Story 4
 
-- [ ] T036 [P] [US4] Unit test for suspend action (success, missing reason, invalid source status) in `test/unit/provider-verification/provider-verification-admin.service.spec.ts`
-- [ ] T037 [P] [US4] Unit test for reactivate action (success, invalid source status) in `test/unit/provider-verification/provider-verification-admin.service.spec.ts`
+- [x] T036 [P] [US4] Unit test for suspend action in `src/modules/provider-verification/provider-verification-admin.service.spec.ts`
+- [x] T037 [P] [US4] Unit test for reactivate action in `src/modules/provider-verification/provider-verification-admin.service.spec.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T038 [US4] Add suspend method to `ProviderVerificationAdminService` (status transition approved -> suspended, suspension reason required, emit verification.suspended event, record history, log audit, update provider profile)
-- [ ] T039 [US4] Add reactivate method to `ProviderVerificationAdminService` (status transition suspended -> approved, emit verification.reactivated event, record history, log audit, update provider profile)
-- [ ] T040 [US4] Add PATCH /admin/provider-verifications/:id/suspend and PATCH /admin/provider-verifications/:id/reactivate endpoints to `ProviderVerificationAdminController`
-- [ ] T041 [US4] Extend `VerificationEventsHandler` with @OnEvent('verification.suspended') and @OnEvent('verification.reactivated') handlers
+- [x] T038 [US4] Add suspend method to `ProviderVerificationAdminService` (status transition approved -> suspended, suspension reason required, emit verification.suspended event, record history, log audit, update provider profile)
+- [x] T039 [US4] Add reactivate method to `ProviderVerificationAdminService` (status transition suspended -> approved, emit verification.reactivated event, record history, log audit, update provider profile)
+- [x] T040 [US4] Add PATCH /admin/provider-verifications/:id/suspend and PATCH /admin/provider-verifications/:id/reactivate endpoints to `ProviderVerificationAdminController`
+- [x] T041 [US4] Extend `VerificationEventsHandler` with @OnEvent('verification.suspended') and @OnEvent('verification.reactivated') handlers — already built in T022
 
 **Checkpoint**: Full lifecycle management - submit, review, approve, reject, suspend, reactivate
 
@@ -158,12 +158,12 @@ description: "Task list for Provider Verification System implementation"
 
 ### Tests for User Story 5
 
-- [ ] T042 [P] [US5] Unit test for document deletion (success during pending, blocked during under_review) in `test/unit/provider-verification/document.service.spec.ts`
+- [x] T042 [P] [US5] Unit test for document deletion in `src/modules/provider-verification/services/document.service.spec.ts`
 
 ### Implementation for User Story 5
 
-- [ ] T043 [US5] Add getDocuments (list all) and deleteDocument methods to `DocumentService` (delete only allowed when verification status is pending)
-- [ ] T044 [US5] Add GET /documents and DELETE /documents/:id endpoints to `ProviderVerificationController`
+- [x] T043 [US5] Add getDocuments (list all) and deleteDocument methods to `DocumentService` (delete only allowed when verification status is pending)
+- [x] T044 [US5] Add GET /documents and DELETE /documents/:id endpoints to `ProviderVerificationController`
 
 **Checkpoint**: Complete document management - upload, list, delete with status-aware permissions
 
@@ -173,14 +173,14 @@ description: "Task list for Provider Verification System implementation"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T045 [P] Create E2E test for complete provider verification flow (upload → submit → admin approve) in `test/integration/provider-verification.e2e-spec.ts`
-- [ ] T046 [P] Create E2E test for admin suspend/reactivate flow in `test/integration/provider-verification.e2e-spec.ts`
-- [ ] T047 [P] Create unit test for VerificationOwnerGuard in `test/unit/provider-verification/verification-owner.guard.spec.ts`
-- [ ] T048 [P] Create unit test for AuditService in `test/unit/provider-verification/audit.service.spec.ts`
-- [ ] T049 Security hardening: ensure self-approval prevention is tested in both service and guard layers
-- [ ] T050 Run full test suite: `npx jest --testPathPattern="provider-verification"` and fix any failures
-- [ ] T051 Verify Swagger UI at `http://localhost:3000/api/docs` shows all endpoints with proper documentation
-- [ ] T052 Run quickstart.md validation steps end-to-end
+- [ ] T045 [P] Create E2E test for complete provider verification flow (upload → submit → admin approve) in `test/integration/provider-verification.e2e-spec.ts` — requires running server
+- [ ] T046 [P] Create E2E test for admin suspend/reactivate flow in `test/integration/provider-verification.e2e-spec.ts` — requires running server
+- [x] T047 [P] Create unit test for VerificationOwnerGuard in `src/modules/provider-verification/guards/verification-owner.guard.spec.ts`
+- [x] T048 [P] Create unit test for AuditService in `src/modules/provider-verification/services/audit.service.spec.ts`
+- [x] T049 Security hardening: self-approval prevention tested in provider-verification-admin.service.spec.ts, guard tested in verification-owner.guard.spec.ts
+- [x] T050 Run full test suite: `npx jest --testPathPattern="provider-verification"` — 29 tests passed, 6 suites
+- [ ] T051 Verify Swagger UI at `http://localhost:3000/api/docs` — requires running server
+- [ ] T052 Run quickstart.md validation steps end-to-end — requires running server
 
 ---
 

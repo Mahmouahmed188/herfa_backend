@@ -60,6 +60,11 @@ export enum NotificationType {
   ACCOUNT_VERIFIED = 'account_verified',
   ACCOUNT_SUSPENDED = 'account_suspended',
   REFUND_PROCESSED = 'refund_processed',
+  VERIFICATION_SUBMITTED = 'verification_submitted',
+  VERIFICATION_APPROVED = 'verification_approved',
+  VERIFICATION_REJECTED = 'verification_rejected',
+  VERIFICATION_SUSPENDED = 'verification_suspended',
+  VERIFICATION_REACTIVATED = 'verification_reactivated',
 }
 
 export enum ReviewType {
