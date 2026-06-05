@@ -140,7 +140,6 @@ model jobs {
   job_assignments    job_assignments[]
   job_status_history job_status_history[]
   users              User?                @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_61855f3e378cc40ce4144d045b5")
-  payments           payments[]
   reviews            reviews[]
 
   @@index([status, createdAt], map: "IDX_af924c25aab35b33928211bb1f")
@@ -196,35 +195,65 @@ model notification_announcements {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model payments {
-  id                                String    @id(map: "PK_197ab7af18c93fbb0c9b28b4a59") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  jobId                             String?   @db.VarChar
-  customerId                        String    @db.VarChar
-  providerId                        String?   @db.VarChar
-  amount                            Decimal   @db.Decimal(10, 2)
-  platformFee                       Decimal   @default(0) @db.Decimal(10, 2)
-  providerPayout                    Decimal   @default(0) @db.Decimal(10, 2)
-  status                            String    @default("pending") @db.VarChar
-  paymentMethod                     String?   @db.VarChar
-  transactionId                     String?   @db.VarChar
-  stripePaymentIntentId             String?   @db.VarChar
-  stripeTransferId                  String?   @db.VarChar
-  paidAt                            DateTime? @db.Timestamp(6)
-  failedAt                          DateTime? @db.Timestamp(6)
-  refundedAt                        DateTime? @db.Timestamp(6)
-  metadata                          Json?     @db.Json
-  createdAt                         DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt                         DateTime  @default(now()) @db.Timestamp(6)
-  job_id                            String?   @db.Uuid
-  customer_id                       String?   @db.Uuid
-  provider_id                       String?   @db.Uuid
-  users_payments_customer_idTousers User?     @relation("payments_customer_idTousers", fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_d0b02233df1c52323107fe7b4d7")
-  users_payments_provider_idTousers User?     @relation("payments_provider_idTousers", fields: [provider_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e92b64ae70df3f2453392dc44fd")
-  jobs                              jobs?     @relation(fields: [job_id], references: [id], onUpdate: NoAction, map: "FK_f83af8ea8055b85bde0e095e400")
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  paymentNumber       String    @unique @db.VarChar(30)
+  bookingId           String    @db.Uuid
+  customerId          String    @db.Uuid
+  providerId          String    @db.Uuid
+  amount              Decimal   @db.Decimal(10, 2)
+  currency            String    @default("EGP") @db.VarChar(3)
+  paymentMethod       String    @db.VarChar(30)
+  paymentStatus       String    @default("pending") @db.VarChar(20)
+  transactionReference String? @db.VarChar(255)
+  notes               String?  @db.Text
+  paidAt              DateTime? @db.Timestamp(6)
+  createdAt           DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime  @default(now()) @db.Timestamp(6)
 
-  @@index([status, createdAt], map: "IDX_3cc6f3e2f26955eaa64fd7f9ea")
-  @@index([jobId], map: "IDX_66de1c08544f6aa0f385751420")
-  @@index([customerId], map: "IDX_824be6feda5e655c49c4e0c534")
-  @@index([providerId], map: "IDX_a25d33dbd8e95a1875d42ac40c")
+  booking  Booking @relation(fields: [bookingId], references: [id])
+  customer User    @relation("payments_customer_idTousers", fields: [customerId], references: [id])
+  provider User    @relation("payments_provider_idTousers", fields: [providerId], references: [id])
+  refunds  refunds[]
+
+  @@index([bookingId])
+  @@index([customerId])
+  @@index([providerId])
+  @@index([paymentStatus])
+  @@index([paymentStatus, createdAt])
+  @@map("payments")
+}
+
+model refunds {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  paymentId    String   @db.Uuid
+  refundAmount Decimal  @db.Decimal(10, 2)
+  refundReason String   @db.VarChar(255)
+  refundedBy   String   @db.Uuid
+  refundedAt   DateTime @default(now()) @db.Timestamp(6)
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+
+  payment payments @relation(fields: [paymentId], references: [id])
+
+  @@index([paymentId])
+  @@index([refundedBy])
+  @@map("refunds")
+}
+
+model audit_logs {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  action     String   @db.VarChar(50)
+  entityType String   @db.VarChar(30)
+  entityId   String   @db.Uuid
+  actorId    String   @db.Uuid
+  actorRole  String   @db.VarChar(20)
+  metadata   Json?    @db.Json
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -554,6 +583,7 @@ model Booking {
   createdAt          DateTime              @default(now()) @db.Timestamp(6)
   updatedAt          DateTime              @default(now()) @db.Timestamp(6)
   statusHistory      BookingStatusHistory[]
+  payments           payments[]
 
   @@index([customerId, status], map: "idx_booking_customer_status")
   @@index([providerId, status], map: "idx_booking_provider_status")

@@ -5,27 +5,33 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
   Index,
 } from 'typeorm';
-import { Job } from './job.entity';
+import { Booking } from './booking.entity';
 import { User } from './user.entity';
+import { Refund } from './refund.entity';
 
 @Entity('payments')
-@Index(['jobId'])
+@Index(['bookingId'])
 @Index(['customerId'])
 @Index(['providerId'])
-@Index(['status', 'createdAt'])
+@Index(['paymentStatus'])
+@Index(['paymentStatus', 'createdAt'])
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Job, (job) => job.payments, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'job_id' })
-  job: Job;
+  @Column({ unique: true, length: 30 })
+  paymentNumber: string;
 
-  @Column({ nullable: true })
-  jobId: string;
+  @ManyToOne(() => Booking, (booking) => booking.payments)
+  @JoinColumn({ name: 'booking_id' })
+  booking: Booking;
+
+  @Column()
+  bookingId: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'customer_id' })
@@ -34,48 +40,36 @@ export class Payment {
   @Column()
   customerId: string;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'provider_id' })
   provider: User;
 
-  @Column({ nullable: true })
+  @Column()
   providerId: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
-  platformFee: number;
+  @Column({ length: 3, default: 'EGP' })
+  currency: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
-  providerPayout: number;
-
-  @Column({ default: 'pending' })
-  status: string;
-
-  @Column({ nullable: true })
+  @Column({ length: 30 })
   paymentMethod: string;
 
-  @Column({ nullable: true })
-  transactionId: string;
+  @Column({ length: 20, default: 'pending' })
+  paymentStatus: string;
 
-  @Column({ nullable: true })
-  stripePaymentIntentId: string;
+  @Column({ length: 255, nullable: true })
+  transactionReference: string;
 
-  @Column({ nullable: true })
-  stripeTransferId: string;
+  @Column({ type: 'text', nullable: true })
+  notes: string;
 
   @Column({ nullable: true })
   paidAt: Date;
 
-  @Column({ nullable: true })
-  failedAt: Date;
-
-  @Column({ nullable: true })
-  refundedAt: Date;
-
-  @Column({ type: 'json', nullable: true })
-  metadata: Record<string, any>;
+  @OneToMany(() => Refund, (refund) => refund.payment)
+  refunds: Refund[];
 
   @CreateDateColumn()
   createdAt: Date;

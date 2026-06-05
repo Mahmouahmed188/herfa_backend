@@ -89,9 +89,6 @@ export class Job {
   @OneToMany(() => Review, (review) => review.job)
   reviews: Review[];
 
-  @OneToMany(() => Payment, (payment) => payment.job)
-  payments: Payment[];
-
   @Column({ nullable: true })
   notes: string;
 

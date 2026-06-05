@@ -18,39 +18,38 @@ import {
   PaginatedPaymentResponseDto,
 } from './dto/payment-response.dto';
 
-@ApiTags('Payments - Customer')
-@Controller('payments')
-@UseGuards(JwtAuthGuard)
+@ApiTags('Payments - Provider')
+@Controller('provider/payments')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.PROVIDER)
 @ApiBearerAuth()
-export class PaymentsController {
+export class ProviderPaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Get()
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.CUSTOMER)
   @ApiOperation({
-    summary: 'List customer payments',
+    summary: 'List provider payments',
     description:
-      'Get paginated list of authenticated customer payments with filtering and sorting.',
+      'Get paginated list of payments related to the authenticated provider bookings with filtering and sorting.',
   })
   @ApiResponse({
     status: 200,
     description: 'Paginated list of payments',
     type: PaginatedPaymentResponseDto,
   })
-  async getCustomerPayments(
+  async getProviderPayments(
     @CurrentUser() user: any,
     @Query() filters: PaymentFilterDto,
   ) {
-    return this.paymentsService.getCustomerPayments(user.id, filters);
+    return this.paymentsService.getProviderPayments(user.id, filters);
   }
 
   @Get(':id')
-  @UseGuards(RolesGuard, PaymentOwnerGuard)
-  @Roles(UserRole.CUSTOMER)
+  @UseGuards(PaymentOwnerGuard)
   @ApiOperation({
-    summary: 'Get payment details',
-    description: 'Get detailed information about a specific payment.',
+    summary: 'Get payment details (provider)',
+    description:
+      'Get detailed information about a payment related to one of your bookings.',
   })
   @ApiResponse({
     status: 200,

@@ -19,3 +19,5 @@ export * from './provider-location.entity';
 export * from './booking.entity';
 export * from './booking-status-history.entity';
 export * from './address.entity';
+export * from './refund.entity';
+export * from './audit-log.entity';

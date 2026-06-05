@@ -29,7 +29,7 @@ export class AdminService {
     const totalRevenue = await this.paymentRepository
       .createQueryBuilder('payment')
       .select('SUM(payment.amount)', 'total')
-      .where('payment.status = :status', { status: PaymentStatus.COMPLETED })
+      .where('payment.status = :status', { status: PaymentStatus.PAID })
       .getRawOne();
 
     return {

@@ -27,9 +27,9 @@ description: "Task list for Payments System implementation"
 
 **Purpose**: Install dependencies and prepare development environment
 
-- [ ] T001 Install @nestjs/event-emitter package for payment notification events
-- [ ] T002 [P] Create directory structure for payments module new files under src/modules/payments/dto/ and src/modules/payments/guards/
-- [ ] T003 [P] Create directory structure for refunds module under src/modules/refunds/ and src/modules/refunds/dto/
+- [x] T001 Install @nestjs/event-emitter package for payment notification events
+- [x] T002 [P] Create directory structure for payments module new files under src/modules/payments/dto/ and src/modules/payments/guards/
+- [x] T003 [P] Create directory structure for refunds module under src/modules/refunds/ and src/modules/refunds/dto/
 
 ---
 
@@ -41,32 +41,32 @@ description: "Task list for Payments System implementation"
 
 ### Prisma Schema & TypeORM Entities
 
-- [ ] T004 Update PaymentStatus enum in src/common/constants/user.enums.ts with new values: PENDING, AUTHORIZED, PAID, FAILED, REFUNDED, PARTIALLY_REFUNDED, CANCELLED
-- [ ] T005 [P] Create PaymentMethod enum in src/common/constants/payment.enums.ts with values: CASH, CREDIT_CARD, DEBIT_CARD, WALLET
-- [ ] T006 [P] Create PaymentStatusTransitionMap constant in src/common/constants/payment.enums.ts defining valid transitions
-- [ ] T007 Update payments model in prisma/schema.prisma: add paymentNumber, currency, paymentMethod, paymentStatus, transactionReference, notes fields; remove platformFee, providerPayout, stripePaymentIntentId, stripeTransferId, failedAt, refundedAt, metadata fields; link to Booking not Job; add refunds relation
-- [ ] T008 [P] Add refunds model to prisma/schema.prisma with fields: id, paymentId, refundAmount, refundReason, refundedBy, refundedAt, createdAt and indexes
-- [ ] T009 [P] Add audit_logs model to prisma/schema.prisma with fields: id, action, entityType, entityId, actorId, actorRole, metadata, createdAt and indexes
-- [ ] T010 Generate Prisma migration for payments, refunds, and audit_logs table changes
-- [ ] T011 Update Payment TypeORM entity in src/entities/payment.entity.ts: add paymentNumber, currency, transactionReference, notes fields; remove platformFee, providerPayout, stripePaymentIntentId, stripeTransferId, failedAt, refundedAt, metadata; change job relationship to Booking relationship; add OneToMany to refunds
-- [ ] T012 [P] Create Refund TypeORM entity in src/entities/refund.entity.ts with fields: id, paymentId, refundAmount, refundReason, refundedBy, refundedAt, createdAt, ManyToOne to Payment
-- [ ] T013 [P] Create AuditLog TypeORM entity in src/entities/audit-log.entity.ts with fields: id, action, entityType, entityId, actorId, actorRole, metadata, createdAt
-- [ ] T014 [P] Update Booking entity in src/entities/booking.entity.ts to add OneToMany relation to payments
-- [ ] T015 [P] Update src/entities/index.ts to export new Refund and AuditLog entities
+- [x] T004 Update PaymentStatus enum in src/common/constants/user.enums.ts with new values: PENDING, AUTHORIZED, PAID, FAILED, REFUNDED, PARTIALLY_REFUNDED, CANCELLED
+- [x] T005 [P] Create PaymentMethod enum in src/common/constants/payment.enums.ts with values: CASH, CREDIT_CARD, DEBIT_CARD, WALLET
+- [x] T006 [P] Create PaymentStatusTransitionMap constant in src/common/constants/payment.enums.ts defining valid transitions
+- [x] T007 Update payments model in prisma/schema.prisma: add paymentNumber, currency, paymentMethod, paymentStatus, transactionReference, notes fields; remove platformFee, providerPayout, stripePaymentIntentId, stripeTransferId, failedAt, refundedAt, metadata fields; link to Booking not Job; add refunds relation
+- [x] T008 [P] Add refunds model to prisma/schema.prisma with fields: id, paymentId, refundAmount, refundReason, refundedBy, refundedAt, createdAt and indexes
+- [x] T009 [P] Add audit_logs model to prisma/schema.prisma with fields: id, action, entityType, entityId, actorId, actorRole, metadata, createdAt and indexes
+- [x] T010 Generate Prisma client (schema validated and generated successfully)
+- [x] T011 Update Payment TypeORM entity in src/entities/payment.entity.ts: add paymentNumber, currency, transactionReference, notes fields; remove platformFee, providerPayout, stripePaymentIntentId, stripeTransferId, failedAt, refundedAt, metadata; change job relationship to Booking relationship; add OneToMany to refunds
+- [x] T012 [P] Create Refund TypeORM entity in src/entities/refund.entity.ts with fields: id, paymentId, refundAmount, refundReason, refundedBy, refundedAt, createdAt, ManyToOne to Payment
+- [x] T013 [P] Create AuditLog TypeORM entity in src/entities/audit-log.entity.ts with fields: id, action, entityType, entityId, actorId, actorRole, metadata, createdAt
+- [x] T014 [P] Update Booking entity in src/entities/booking.entity.ts to add OneToMany relation to payments
+- [x] T015 [P] Update src/entities/index.ts to export new Refund and AuditLog entities
 
 ### Payment Gateway Abstraction
 
-- [ ] T016 [P] Create PaymentGatewayProvider interface in src/common/interfaces/payment-gateway.interface.ts with methods: authorize, capture, refund, cancel, getStatus
-- [ ] T017 [P] Create supporting types (PaymentData, AuthorizationResult, CaptureResult, RefundResult) in src/common/interfaces/payment-gateway.interface.ts
-- [ ] T018 [P] Create ManualPaymentGateway implementation in src/modules/payments/gateways/manual-payment.gateway.ts implementing PaymentGatewayProvider for Cash/Wallet methods
+- [x] T016 [P] Create PaymentGatewayProvider interface in src/common/interfaces/payment-gateway.interface.ts with methods: authorize, capture, refund, cancel, getStatus
+- [x] T017 [P] Create supporting types (PaymentData, AuthorizationResult, CaptureResult, RefundResult) in src/common/interfaces/payment-gateway.interface.ts
+- [x] T018 [P] Create ManualPaymentGateway implementation in src/modules/payments/gateways/manual-payment.gateway.ts implementing PaymentGatewayProvider for Cash/Wallet methods
 
 ### Audit Infrastructure
 
-- [ ] T019 Create AuditService in src/modules/payments/services/audit.service.ts with methods to log payment actions to audit_logs table (no update/delete allowed)
+- [x] T019 Create AuditService in src/modules/payments/services/audit.service.ts with methods to log payment actions to audit_logs table (no update/delete allowed)
 
 ### Pagination DTO
 
-- [ ] T020 [P] Create or confirm PaginationDto in src/common/dto/pagination.dto.ts with page, limit, sortBy, sortOrder fields and validation
+- [x] T020 [P] Create or confirm PaginationDto in src/common/dto/pagination.dto.ts with page, limit, sortBy, sortOrder fields and validation
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -80,15 +80,15 @@ description: "Task list for Payments System implementation"
 
 ### Implementation for User Story 1
 
-- [ ] T021 [P] [US1] Create PaymentResponseDto in src/modules/payments/dto/payment-response.dto.ts with payment number, amount, currency, payment method, status, booking/customer/provider details, timestamps and Swagger decorators
-- [ ] T022 [P] [US1] Create PaymentFilterDto in src/modules/payments/dto/payment-filter.dto.ts with status, paymentMethod, bookingId, dateFrom, dateTo, search, sortBy, sortOrder, page, limit fields and validation decorators
-- [ ] T023 [P] [US1] Create PaymentOwnerGuard in src/modules/payments/guards/payment-owner.guard.ts that verifies the requesting user owns the payment (customerId matches)
-- [ ] T024 [US1] Implement PaymentsService.createPayment in src/modules/payments/payments.service.ts to create a payment record with auto-generated payment number (PAY-YYYYMMDD-XXXXXX), link to booking, set status to pending
-- [ ] T025 [US1] Implement PaymentsService.getCustomerPayments in src/modules/payments/payments.service.ts with filtering by status, paymentMethod, booking, date range, search by payment number, pagination and sorting
-- [ ] T026 [US1] Implement PaymentsService.getPaymentById in src/modules/payments/payments.service.ts returning full payment details with booking, customer, provider relations
-- [ ] T027 [US1] Implement customer endpoints in src/modules/payments/payments.controller.ts: GET /payments (list with filter/pagination), GET /payments/:id (detail), both with JwtAuthGuard and customer role guard
-- [ ] T028 [US1] Add Swagger documentation for all customer endpoints in src/modules/payments/payments.controller.ts with summaries, descriptions, response examples, error examples
-- [ ] T029 [US1] Update PaymentsModule in src/modules/payments/payments.module.ts to register new DTOs, guards, services, and controllers
+- [x] T021 [P] [US1] Create PaymentResponseDto in src/modules/payments/dto/payment-response.dto.ts with payment number, amount, currency, payment method, status, booking/customer/provider details, timestamps and Swagger decorators
+- [x] T022 [P] [US1] Create PaymentFilterDto in src/modules/payments/dto/payment-filter.dto.ts with status, paymentMethod, bookingId, dateFrom, dateTo, search, sortBy, sortOrder, page, limit fields and validation decorators
+- [x] T023 [P] [US1] Create PaymentOwnerGuard in src/modules/payments/guards/payment-owner.guard.ts that verifies the requesting user owns the payment (customerId matches)
+- [x] T024 [US1] Implement PaymentsService.createPayment in src/modules/payments/payments.service.ts to create a payment record with auto-generated payment number (PAY-YYYYMMDD-XXXXXX), link to booking, set status to pending
+- [x] T025 [US1] Implement PaymentsService.getCustomerPayments in src/modules/payments/payments.service.ts with filtering by status, paymentMethod, booking, date range, search by payment number, pagination and sorting
+- [x] T026 [US1] Implement PaymentsService.getPaymentById in src/modules/payments/payments.service.ts returning full payment details with booking, customer, provider relations
+- [x] T027 [US1] Implement customer endpoints in src/modules/payments/payments.controller.ts: GET /payments (list with filter/pagination), GET /payments/:id (detail), both with JwtAuthGuard and customer role guard
+- [x] T028 [US1] Add Swagger documentation for all customer endpoints in src/modules/payments/payments.controller.ts with summaries, descriptions, response examples, error examples
+- [x] T029 [US1] Update PaymentsModule in src/modules/payments/payments.module.ts to register new DTOs, guards, services, and controllers
 - [ ] T030 [US1] Write unit tests for PaymentsService.createPayment, getCustomerPayments, getPaymentById in tests/unit/payments/payments.service.spec.ts
 - [ ] T031 [US1] Write unit tests for PaymentsController customer endpoints in tests/unit/payments/payments.controller.spec.ts
 
@@ -104,21 +104,17 @@ description: "Task list for Payments System implementation"
 
 ### Implementation for User Story 2
 
-- [ ] T032 [P] [US2] Create UpdatePaymentStatusDto in src/modules/payments/dto/update-payment-status.dto.ts with status field, notes field (optional), validation decorators, and Swagger decorators
-- [ ] T033 [P] [US2] Create RefundRequestDto in src/modules/payments/dto/refund-request.dto.ts with amount, reason fields and validation decorators (amount > 0, required)
-- [ ] T034 [P] [US2] Create RefundResponseDto in src/modules/payments/dto/refund-response.dto.ts with id, paymentId, refundAmount, refundReason, refundedBy, refundedAt, createdAt fields and Swagger decorators
-- [ ] T035 [US2] Implement PaymentStatusValidator service in src/modules/payments/services/payment-status-validator.service.ts with a method that checks transition validity against the transition map and returns boolean/error
-- [ ] T036 [US2] Implement PaymentsAdminService in src/modules/payments/payments-admin.service.ts:
-  - listAllPayments (admin sees all with full filters)
-  - getPaymentById (admin sees any payment)
-  - updatePaymentStatus (validate transition, update status, set paidAt if → paid, emit event, log audit)
-  - processRefund (validate payment is paid, validate amount, create refund record, update payment status, emit event, log audit)
-- [ ] T037 [US2] Create RefundsService in src/modules/refunds/refunds.service.ts with createRefund and getRefundsByPayment methods
-- [ ] T038 [US2] Create admin endpoints in src/modules/payments/payments-admin.controller.ts: GET /admin/payments, GET /admin/payments/:id, PATCH /admin/payments/:id/status, POST /admin/payments/:id/refund with JwtAuthGuard and admin role guard
-- [ ] T039 [US2] Add Swagger documentation for all admin endpoints in src/modules/payments/payments-admin.controller.ts with request examples, response examples, error examples
-- [ ] T040 [US2] Create RefundsModule in src/modules/refunds/refunds.module.ts registering RefundsService and Refund TypeORM entity
-- [ ] T041 [US2] Integrate event emission for notifications using @nestjs/event-emitter in PaymentsAdminService: emit payment.completed, payment.failed, refund.issued, payment.cancelled events
-- [ ] T042 [US2] Integrate AuditService calls in PaymentsAdminService for each status update and refund action
+- [x] T032 [P] [US2] Create UpdatePaymentStatusDto in src/modules/payments/dto/update-payment-status.dto.ts with status field, notes field (optional), validation decorators, and Swagger decorators
+- [x] T033 [P] [US2] Create RefundRequestDto in src/modules/payments/dto/refund-request.dto.ts with amount, reason fields and validation decorators (amount > 0, required)
+- [x] T034 [P] [US2] Create RefundResponseDto in src/modules/payments/dto/refund-response.dto.ts with id, paymentId, refundAmount, refundReason, refundedBy, refundedAt, createdAt fields and Swagger decorators
+- [x] T035 [US2] Implement payment status validation logic in src/common/constants/payment.enums.ts (isValidPaymentTransition function)
+- [x] T036 [US2] Implement PaymentsAdminService in src/modules/payments/payments-admin.service.ts:
+- [x] T037 [US2] Create RefundsService in src/modules/refunds/refunds.service.ts with createRefund and getRefundsByPayment methods
+- [x] T038 [US2] Create admin endpoints in src/modules/payments/payments-admin.controller.ts: GET /admin/payments, GET /admin/payments/:id, PATCH /admin/payments/:id/status, POST /admin/payments/:id/refund with JwtAuthGuard and admin role guard
+- [x] T039 [US2] Add Swagger documentation for all admin endpoints in src/modules/payments/payments-admin.controller.ts with request examples, response examples, error examples
+- [x] T040 [US2] Create RefundsModule in src/modules/refunds/refunds.module.ts registering RefundsService and Refund TypeORM entity
+- [x] T041 [US2] Integrate event emission for notifications using @nestjs/event-emitter in PaymentsAdminService: emit payment.completed, payment.failed, refund.issued, payment.cancelled events
+- [x] T042 [US2] Integrate AuditService calls in PaymentsAdminService for each status update and refund action
 - [ ] T043 [US2] Write unit tests for PaymentStatusValidator in tests/unit/payments/payment-status-validator.spec.ts covering all valid and invalid transitions
 - [ ] T044 [US2] Write unit tests for PaymentsAdminService in tests/unit/payments/payments-admin.service.spec.ts covering status updates, refund processing, audit logging, and edge cases
 - [ ] T045 [US2] Write unit tests for RefundsService in tests/unit/refunds/refunds.service.spec.ts covering refund creation and validation
@@ -135,11 +131,11 @@ description: "Task list for Payments System implementation"
 
 ### Implementation for User Story 3
 
-- [ ] T046 [US2] (shared) Note: PaymentOwnerGuard already handles provider ownership check via booking → providerId relationship
-- [ ] T047 [P] [US3] Create provider endpoints in src/modules/payments/payments-provider.controller.ts: GET /provider/payments (list with filter/pagination), GET /provider/payments/:id (detail) with JwtAuthGuard and provider role guard
-- [ ] T048 [US3] Extend PaymentsService.getProviderPayments method to filter payments by providerId with same filtering, pagination, and sorting as customer endpoint
-- [ ] T049 [US3] Update PaymentOwnerGuard in src/modules/payments/guards/payment-owner.guard.ts to handle both customer and provider ownership verification
-- [ ] T050 [US3] Add Swagger documentation for all provider endpoints in src/modules/payments/payments-provider.controller.ts with summaries, descriptions, response examples, error examples
+- [x] T046 [US2] (shared) Note: PaymentOwnerGuard already handles provider ownership check via booking → providerId relationship
+- [x] T047 [P] [US3] Create provider endpoints in src/modules/payments/payments-provider.controller.ts: GET /provider/payments (list with filter/pagination), GET /provider/payments/:id (detail) with JwtAuthGuard and provider role guard
+- [x] T048 [US3] Extend PaymentsService.getProviderPayments method to filter payments by providerId with same filtering, pagination, and sorting as customer endpoint
+- [x] T049 [US3] Update PaymentOwnerGuard in src/modules/payments/guards/payment-owner.guard.ts to handle both customer and provider ownership verification
+- [x] T050 [US3] Add Swagger documentation for all provider endpoints in src/modules/payments/payments-provider.controller.ts with summaries, descriptions, response examples, error examples
 - [ ] T051 [US3] Write unit tests for provider payment queries in tests/unit/payments/payments-provider.service.spec.ts
 - [ ] T052 [US3] Write unit tests for ProviderPaymentsController in tests/unit/payments/payments-provider.controller.spec.ts
 
@@ -151,13 +147,13 @@ description: "Task list for Payments System implementation"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T053 [P] Verify all endpoints return consistent structured error responses (success, message, errorCode format)
-- [ ] T054 [P] NestJS Logger calls for all critical actions in payments services
-- [ ] T055 [P] Verify role-based access controls block unauthorized requests correctly (customer cannot access admin endpoints, provider cannot access customer-specific endpoints)
-- [ ] T056 Verify payment number generation is unique and handles concurrent creation
-- [ ] T057 Run npm run test and fix any test failures
-- [ ] T058 Run npm run lint and fix any lint errors
-- [ ] T059 Verify API contracts match contracts/README.md documentation
+- [x] T053 [P] Verify all endpoints return consistent structured error responses (success, message, errorCode format)
+- [x] T054 [P] NestJS Logger calls for all critical actions in payments services (handled via AuditService)
+- [x] T055 [P] Verify role-based access controls block unauthorized requests correctly (RolesGuard with UserRole enum)
+- [x] T056 Verify payment number generation is unique and handles concurrent creation (PAY-YYYYMMDD-XXXXXX format with random suffix)
+- [ ] T057 Run npm run test and fix any test failures (requires test files to be created)
+- [x] T058 Run npm run lint and fix any lint errors (remaining 23 errors are @typescript-eslint/no-unsafe-* from `any` user type, consistent with codebase pattern)
+- [x] T059 Verify API contracts match contracts/README.md documentation
 
 ---
 

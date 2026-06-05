@@ -13,6 +13,7 @@ import { User } from './user.entity';
 import { ProviderProfile } from './provider-profile.entity';
 import { Service } from './service.entity';
 import { BookingStatusHistory } from './booking-status-history.entity';
+import { Payment } from './payment.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',
@@ -92,6 +93,9 @@ export class Booking {
 
   @OneToMany(() => BookingStatusHistory, (history) => history.booking)
   statusHistory: BookingStatusHistory[];
+
+  @OneToMany(() => Payment, (payment) => payment.booking)
+  payments: Payment[];
 
   @CreateDateColumn()
   createdAt: Date;
