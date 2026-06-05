@@ -12,6 +12,7 @@ import {
 import { User } from './user.entity';
 import { ProviderVerificationStatus } from '../common/constants/user.enums';
 import { ProviderApplication } from './provider-application.entity';
+import { ProviderCategory } from './provider-category.entity';
 import { JobAssignment } from './job-assignment.entity';
 import { ProviderService } from './provider-service.entity';
 
@@ -89,6 +90,12 @@ export class ProviderProfile {
 
   @OneToMany(() => ProviderService, (ps) => ps.provider)
   services: ProviderService[];
+
+  @OneToMany(() => ProviderCategory, (pc) => pc.provider)
+  categories: ProviderCategory[];
+
+  @Column({ nullable: true })
+  experienceYears: number;
 
   @Column({ nullable: true })
   workingHours: string;

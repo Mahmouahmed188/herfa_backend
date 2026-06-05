@@ -10,9 +10,9 @@
 
 **Purpose**: Project initialization and dependency setup
 
-- [ ] T001 Create module structure for Categories and Providers per plan.md
-- [ ] T002 [P] Configure Prisma schema for Categories and ProviderProfile entities in prisma/schema.prisma (P1/P9)
-- [ ] T003 Generate Prisma client and migration: npx prisma migrate dev --name add_categories_and_profiles (P15 step 3)
+- [X] T001 Create module structure for Categories and Providers per plan.md
+- [X] T002 [P] Configure Prisma schema for Categories and ProviderProfile entities in prisma/schema.prisma (P1/P9)
+- [X] T003 Generate Prisma client and migration: npx prisma migrate dev --name add_categories_and_profiles (P15 step 3)
 
 ---
 
@@ -22,9 +22,9 @@
 
 **⚠️ CRITICAL**: Must complete before user stories
 
-- [ ] T004 [P] Initialize CategoriesModule and ProvidersModule in src/modules/
-- [ ] T005 [P] Setup pagination and sorting utilities in src/common/dto/pagination.dto.ts
-- [ ] T006 Configure global RolesGuard for protected endpoints (P8)
+- [X] T004 [P] Initialize CategoriesModule and ProvidersModule in src/modules/
+- [X] T005 [P] Setup pagination and sorting utilities in src/common/dto/pagination.dto.ts
+- [X] T006 Configure global RolesGuard for protected endpoints (P8)
 
 **Checkpoint**: Core structure and database layer ready
 
@@ -38,11 +38,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [P] [US1] Create CreateCategoryDto and UpdateCategoryDto in src/modules/categories/dto/category.dto.ts (P4)
-- [ ] T008 [US1] Implement CRUD logic in CategoriesService in src/modules/categories/categories.service.ts (P2)
-- [ ] T009 [US1] Implement Admin endpoints in CategoriesController in src/modules/categories/categories.controller.ts (P5)
-- [ ] T010 [US1] Add Swagger documentation for category endpoints (P6)
-- [ ] T011 [US1] Create unit tests for category management in src/modules/categories/categories.service.spec.ts (P15)
+- [X] T007 [P] [US1] Create CreateCategoryDto and UpdateCategoryDto in src/modules/categories/dto/category.dto.ts (P4)
+- [X] T008 [US1] Implement CRUD logic in CategoriesService in src/modules/categories/categories.service.ts (P2)
+- [X] T009 [US1] Implement Admin endpoints in CategoriesController in src/modules/categories/categories.controller.ts (P5)
+- [X] T010 [US1] Add Swagger documentation for category endpoints (P6)
+- [X] T011 [US1] Create unit tests for category management in src/modules/categories/categories.service.spec.ts (P15)
 
 **Checkpoint**: Category management is functional
 
@@ -56,11 +56,11 @@
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Create UpdateProviderProfileDto and ProviderCategoryDto in src/modules/providers/dto/provider.dto.ts (P4)
-- [ ] T013 [US2] Implement profile update and category linking in ProvidersService in src/modules/providers/providers.service.ts (P2)
-- [ ] T014 [US2] Implement Provider self-service endpoints in ProvidersController in src/modules/providers/providers.controller.ts (P5)
-- [ ] T015 [US2] Add Swagger documentation for provider profile endpoints (P6)
-- [ ] T016 [US2] Create unit tests for provider profile logic in src/modules/providers/providers.service.spec.ts (P15)
+- [X] T012 [P] [US2] Create UpdateProviderProfileDto and ProviderCategoryDto in src/modules/providers/dto/provider.dto.ts (P4)
+- [X] T013 [US2] Implement profile update and category linking in ProvidersService in src/modules/providers/providers.service.ts (P2)
+- [X] T014 [US2] Implement Provider self-service endpoints in ProvidersController in src/modules/providers/providers.controller.ts (P5)
+- [X] T015 [US2] Add Swagger documentation for provider profile endpoints (P6)
+- [X] T016 [US2] Create unit tests for provider profile logic in src/modules/providers/providers.service.spec.ts (P15)
 
 **Checkpoint**: Provider profile management is functional
 
@@ -74,10 +74,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Implement search and filtering logic with pagination in ProvidersService (P2)
-- [ ] T018 [US3] Implement public GET /providers and GET /providers/:id in ProvidersController (P5)
-- [ ] T019 [US3] Add Swagger documentation for discovery endpoints with filtering/pagination schemas (P6)
-- [ ] T020 [US3] Create unit tests for provider discovery and filtering (P15)
+- [X] T017 [US3] Implement search and filtering logic with pagination in ProvidersService (P2)
+- [X] T018 [US3] Implement public GET /providers and GET /providers/:id in ProvidersController (P5)
+- [X] T019 [US3] Add Swagger documentation for discovery endpoints with filtering/pagination schemas (P6)
+- [X] T020 [US3] Create unit tests for provider discovery and filtering (P15)
 
 **Checkpoint**: Provider discovery is functional
 
@@ -87,8 +87,8 @@
 
 **Purpose**: Final verification and compliance
 
-- [ ] T021 Implement Admin verification/suspension logic for providers (FR-009)
-- [ ] T022 Final verification of API contracts and Swagger documentation completeness (P15)
+- [X] T021 Implement Admin verification/suspension logic for providers (FR-009)
+- [X] T022 Final verification of API contracts and Swagger documentation completeness (P15)
 - [ ] T023 Run integration tests for full category-to-provider flow (P15)
 
 ---

@@ -6,6 +6,8 @@ import { ProviderProfile } from '../../entities/provider-profile.entity';
 import { ProviderApplication } from '../../entities/provider-application.entity';
 import { ProviderService } from '../../entities/provider-service.entity';
 import { Service } from '../../entities/service.entity';
+import { ProviderCategory } from '../../entities/provider-category.entity';
+import { ServiceCategory } from '../../entities/service-category.entity';
 import { UserRole, UserStatus, ProviderApplicationStatus, ProviderVerificationStatus } from '../../common/constants/user.enums';
 import {
   CreateProviderApplicationDto,
@@ -13,8 +15,9 @@ import {
   SetAvailabilityDto,
   UpdateLocationDto,
   ProviderServiceDto,
-  SearchProvidersDto,
 } from './dto/providers.dto';
+import { ProviderCategoryDto } from './dto/provider-category.dto';
+import { ProviderSearchDto, SortOrder } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class ProvidersService {
@@ -29,6 +32,10 @@ export class ProvidersService {
     private providerServiceRepository: Repository<ProviderService>,
     @InjectRepository(Service)
     private serviceRepository: Repository<Service>,
+    @InjectRepository(ProviderCategory)
+    private providerCategoryRepository: Repository<ProviderCategory>,
+    @InjectRepository(ServiceCategory)
+    private categoryRepository: Repository<ServiceCategory>,
   ) {}
 
   async apply(userId: string, dto: CreateProviderApplicationDto) {
@@ -79,7 +86,7 @@ export class ProvidersService {
   async getProfile(userId: string) {
     const profile = await this.providerProfileRepository.findOne({
       where: { userId },
-      relations: ['user', 'services', 'services.service', 'applications'],
+      relations: ['user', 'services', 'services.service', 'applications', 'categories', 'categories.category'],
     });
     if (!profile) {
       throw new NotFoundException('Provider profile not found');
@@ -88,16 +95,14 @@ export class ProvidersService {
   }
 
   async getProfileByIdOrUserId(id: string) {
-    // Try finding by profile ID first
     let profile = await this.providerProfileRepository.findOne({
       where: { id },
-      relations: ['user', 'services', 'services.service'],
+      relations: ['user', 'services', 'services.service', 'categories', 'categories.category'],
     });
     if (!profile) {
-      // Fallback: try by userId
       profile = await this.providerProfileRepository.findOne({
         where: { userId: id },
-        relations: ['user', 'services', 'services.service'],
+        relations: ['user', 'services', 'services.service', 'categories', 'categories.category'],
       });
     }
     if (!profile) {
@@ -194,20 +199,77 @@ export class ProvidersService {
     return { message: 'Service removed successfully' };
   }
 
-  async searchProviders(dto: SearchProvidersDto) {
+  async getCategories(userId: string) {
+    const profile = await this.providerProfileRepository.findOne({
+      where: { userId },
+    });
+    if (!profile) {
+      throw new NotFoundException('Provider profile not found');
+    }
+
+    const categories = await this.providerCategoryRepository.find({
+      where: { providerId: profile.id },
+      relations: ['category'],
+    });
+    return categories.map((pc) => pc.category);
+  }
+
+  async setCategories(userId: string, dto: ProviderCategoryDto) {
+    const profile = await this.providerProfileRepository.findOne({
+      where: { userId },
+    });
+    if (!profile) {
+      throw new NotFoundException('Provider profile not found');
+    }
+
+    const categories = await this.categoryRepository.findByIds(dto.categoryIds);
+    if (categories.length !== dto.categoryIds.length) {
+      throw new BadRequestException('One or more category IDs do not exist');
+    }
+
+    await this.providerCategoryRepository.delete({ providerId: profile.id });
+
+    const providerCategories = dto.categoryIds.map((categoryId) =>
+      this.providerCategoryRepository.create({ providerId: profile.id, categoryId }),
+    );
+    await this.providerCategoryRepository.save(providerCategories);
+
+    return { providerId: profile.id, categoryIds: dto.categoryIds };
+  }
+
+  async removeCategory(userId: string, categoryId: string) {
+    const profile = await this.providerProfileRepository.findOne({
+      where: { userId },
+    });
+    if (!profile) {
+      throw new NotFoundException('Provider profile not found');
+    }
+
+    const result = await this.providerCategoryRepository.delete({
+      providerId: profile.id,
+      categoryId,
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException('Category not assigned to provider');
+    }
+    return { message: 'Category removed from profile' };
+  }
+
+  async searchProviders(dto: ProviderSearchDto) {
     const query = this.providerProfileRepository
       .createQueryBuilder('profile')
       .leftJoinAndSelect('profile.user', 'user')
-      .leftJoinAndSelect('profile.services', 'ps')
-      .leftJoinAndSelect('ps.service', 'service')
+      .leftJoinAndSelect('profile.categories', 'pc')
+      .leftJoinAndSelect('pc.category', 'category')
       .where('user.status = :status', { status: UserStatus.ACTIVE });
 
     if (dto.isAvailable !== undefined) {
-      query.andWhere('profile.isAvailable = :isAvailable', { isAvailable: dto.isAvailable });
+      const isAvailable = dto.isAvailable === 'true';
+      query.andWhere('profile.isAvailable = :isAvailable', { isAvailable });
     }
 
-    if (dto.serviceId) {
-      query.andWhere('ps.serviceId = :serviceId', { serviceId: dto.serviceId });
+    if (dto.categoryId) {
+      query.andWhere('pc.categoryId = :categoryId', { categoryId: dto.categoryId });
     }
 
     if (dto.latitude && dto.longitude && dto.radiusKm) {
@@ -220,6 +282,10 @@ export class ProvidersService {
         { latitude: dto.latitude, longitude: dto.longitude, radius: dto.radiusKm },
       );
     }
+
+    const sortBy = dto.sortBy === 'rating' ? 'profile.rating' : 'profile.experienceYears';
+    const sortOrder = dto.sortOrder === SortOrder.DESC ? 'DESC' : 'ASC';
+    query.orderBy(sortBy, sortOrder as 'ASC' | 'DESC');
 
     const page = dto.page || 1;
     const limit = dto.limit || 20;
@@ -275,6 +341,41 @@ export class ProvidersService {
       rating: profile.rating,
       responseTimeMinutes: profile.responseTimeMinutes,
       isAvailable: profile.isAvailable,
+      experienceYears: profile.experienceYears,
     };
+  }
+
+  async verifyProvider(profileId: string, status: string) {
+    const validStatuses = ['verified', 'rejected'];
+    if (!validStatuses.includes(status)) {
+      throw new BadRequestException('Invalid verification status. Must be "verified" or "rejected"');
+    }
+
+    const profile = await this.providerProfileRepository.findOne({
+      where: { id: profileId },
+    });
+    if (!profile) {
+      throw new NotFoundException('Provider profile not found');
+    }
+
+    profile.verificationStatus = status;
+    return this.providerProfileRepository.save(profile);
+  }
+
+  async suspendProvider(profileId: string, isSuspended: boolean) {
+    const profile = await this.providerProfileRepository.findOne({
+      where: { id: profileId },
+    });
+    if (!profile) {
+      throw new NotFoundException('Provider profile not found');
+    }
+
+    const user = await this.userRepository.findOne({ where: { id: profile.userId } });
+    if (user) {
+      user.status = isSuspended ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
+      await this.userRepository.save(user);
+    }
+
+    return { message: isSuspended ? 'Provider has been suspended' : 'Provider has been reactivated' };
   }
 }

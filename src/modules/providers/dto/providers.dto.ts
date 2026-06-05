@@ -79,6 +79,11 @@ export class UpdateProviderProfileDto {
   @IsString()
   bio?: string;
 
+  @ApiPropertyOptional({ description: 'Years of professional experience' })
+  @IsOptional()
+  @IsNumber()
+  experienceYears?: number;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

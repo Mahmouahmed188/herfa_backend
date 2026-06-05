@@ -23,6 +23,7 @@ import { TendersModule } from './modules/tenders/tenders.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 
 @Module({
@@ -104,6 +105,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     MessagesModule,
     VerificationModule,
     UploadsModule,
+    CategoriesModule,
   ],
 })
 export class AppModule { }
