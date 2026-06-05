@@ -27,7 +27,7 @@
 
 **Purpose**: Directory setup and file scaffolding
 
-- [ ] T001 Create bookings module directory structure at `src/modules/bookings/`, `src/modules/bookings/dto/`, `src/modules/bookings/guards/`, `test/unit/bookings/`, `test/e2e/`
+- [x] T001 Create bookings module directory structure at `src/modules/bookings/`, `src/modules/bookings/dto/`, `src/modules/bookings/guards/`, `test/unit/bookings/`, `test/e2e/`
 
 ---
 
@@ -37,18 +37,18 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 Create Booking entity with all fields, indexes, and relationships in `src/entities/booking.entity.ts`
-- [ ] T003 Create BookingStatusHistory entity with all fields and indexes in `src/entities/booking-status-history.entity.ts`
-- [ ] T004 Export new Booking and BookingStatusHistory entities from `src/entities/index.ts`
-- [ ] T005 Create BookingsModule with TypeOrmModule.forFeature and EventEmitterModule imports in `src/modules/bookings/bookings.module.ts`
-- [ ] T006 [P] Create CreateBookingDto with validation rules and Swagger decorators in `src/modules/bookings/dto/create-booking.dto.ts`
-- [ ] T007 [P] Create BookingResponseDto with all response fields and Swagger decorators in `src/modules/bookings/dto/booking-response.dto.ts`
-- [ ] T008 [P] Create BookingFilterDto extending PaginationDto with status, date range, service, category, search fields in `src/modules/bookings/dto/booking-filter.dto.ts`
-- [ ] T009 [P] Create UpdateStatusDto with status field validation in `src/modules/bookings/dto/update-status.dto.ts`
-- [ ] T010 [P] Create CancelBookingDto with reason field validation in `src/modules/bookings/dto/cancel-booking.dto.ts`
-- [ ] T011 [P] Update Prisma schema with Booking and BookingStatusHistory models in `prisma/schema.prisma`
-- [ ] T012 Initialize BookingsService with status transition validation engine in `src/modules/bookings/bookings.service.ts`
-- [ ] T013 Create BookingOwnershipGuard for customer/provider data isolation in `src/modules/bookings/guards/booking-ownership.guard.ts`
+- [x] T002 Create Booking entity with all fields, indexes, and relationships in `src/entities/booking.entity.ts`
+- [x] T003 Create BookingStatusHistory entity with all fields and indexes in `src/entities/booking-status-history.entity.ts`
+- [x] T004 Export new Booking and BookingStatusHistory entities from `src/entities/index.ts`
+- [x] T005 Create BookingsModule with TypeOrmModule.forFeature and EventEmitterModule imports in `src/modules/bookings/bookings.module.ts`
+- [x] T006 [P] Create CreateBookingDto with validation rules and Swagger decorators in `src/modules/bookings/dto/create-booking.dto.ts`
+- [x] T007 [P] Create BookingResponseDto with all response fields and Swagger decorators in `src/modules/bookings/dto/booking-response.dto.ts`
+- [x] T008 [P] Create BookingFilterDto extending PaginationDto with status, date range, service, category, search fields in `src/modules/bookings/dto/booking-filter.dto.ts`
+- [x] T009 [P] Create UpdateStatusDto with status field validation in `src/modules/bookings/dto/update-status.dto.ts`
+- [x] T010 [P] Create CancelBookingDto with reason field validation in `src/modules/bookings/dto/cancel-booking.dto.ts`
+- [x] T011 [P] Update Prisma schema with Booking and BookingStatusHistory models in `prisma/schema.prisma`
+- [x] T012 Initialize BookingsService with status transition validation engine in `src/modules/bookings/bookings.service.ts`
+- [x] T013 Create BookingOwnershipGuard for customer/provider data isolation in `src/modules/bookings/guards/booking-ownership.guard.ts`
 
 **Checkpoint**: Foundation ready — user story implementation can now begin
 
@@ -60,14 +60,14 @@
 
 **Independent Test**: Authenticated customer can submit a booking with valid service/provider/address/date/time, see it with "pending" status in their history, view details, and cancel it before provider responds.
 
-- [ ] T014 [P] [US1] Implement BookingsService.create() with service existence, provider ownership, and date validation in `src/modules/bookings/bookings.service.ts`
-- [ ] T015 [P] [US1] Implement BookingsService.findMyBookings() with customer ID filtering, pagination, and sorting in `src/modules/bookings/bookings.service.ts`
-- [ ] T016 [P] [US1] Implement BookingsService.findOne() with status history inclusion in `src/modules/bookings/bookings.service.ts`
-- [ ] T017 [P] [US1] Implement BookingsService.cancel() for customer with pending-only restriction in `src/modules/bookings/bookings.service.ts`
-- [ ] T018 [US1] Implement customer booking controller with POST /bookings, GET /bookings/my-bookings, GET /bookings/:id, PATCH /bookings/:id/cancel in `src/modules/bookings/bookings.controller.ts`
-- [ ] T019 [P] [US1] Add customer controller unit tests in `test/unit/bookings/bookings.controller.spec.ts`
-- [ ] T020 [P] [US1] Add BookingsService unit tests for customer flows in `test/unit/bookings/bookings.service.spec.ts`
-- [ ] T021 [US1] Create e2e test for customer booking lifecycle (create → view → cancel) in `test/e2e/bookings.e2e-spec.ts`
+- [x] T014 [P] [US1] Implement BookingsService.create() with service existence, provider ownership, and date validation in `src/modules/bookings/bookings.service.ts`
+- [x] T015 [P] [US1] Implement BookingsService.findMyBookings() with customer ID filtering, pagination, and sorting in `src/modules/bookings/bookings.service.ts`
+- [x] T016 [P] [US1] Implement BookingsService.findOne() with status history inclusion in `src/modules/bookings/bookings.service.ts`
+- [x] T017 [P] [US1] Implement BookingsService.cancel() for customer with pending-only restriction in `src/modules/bookings/bookings.service.ts`
+- [x] T018 [US1] Implement customer booking controller with POST /bookings, GET /bookings/my-bookings, GET /bookings/:id, PATCH /bookings/:id/cancel in `src/modules/bookings/bookings.controller.ts`
+- [x] T019 [P] [US1] Add customer controller unit tests in `test/unit/bookings/bookings.controller.spec.ts`
+- [x] T020 [P] [US1] Add BookingsService unit tests for customer flows in `test/unit/bookings/bookings.service.spec.ts`
+- [x] T021 [US1] Create e2e test for customer booking lifecycle (create → view → cancel) in `test/bookings.e2e-spec.ts`
 
 **Checkpoint**: User Story 1 is fully functional and independently testable — MVP ready
 
@@ -79,15 +79,15 @@
 
 **Independent Test**: Authenticated provider can view their assigned bookings, accept a pending request, progress it through all stages, and see the status reflected in booking details.
 
-- [ ] T022 [P] [US2] Implement BookingsService.findProviderBookings() with provider ID filtering in `src/modules/bookings/bookings.service.ts`
-- [ ] T023 [P] [US2] Implement BookingsService.accept() and reject() with pending-only validation in `src/modules/bookings/bookings.service.ts`
-- [ ] T024 [P] [US2] Implement BookingsService.markOnTheWay(), markInProgress(), markCompleted() with ordered transition validation in `src/modules/bookings/bookings.service.ts`
-- [ ] T025 [P] [US2] Implement BookingsService.recordStatusHistory() for immutable audit log insertion in `src/modules/bookings/bookings.service.ts`
-- [ ] T026 [P] [US2] Implement event emission via EventEmitter2 on all status transitions in `src/modules/bookings/bookings.service.ts`
-- [ ] T027 [US2] Implement provider booking controller with GET /provider/bookings, PATCH /bookings/:id/accept, PATCH /bookings/:id/reject, PATCH /bookings/:id/on-the-way, PATCH /bookings/:id/start, PATCH /bookings/:id/complete in `src/modules/bookings/bookings.controller.ts`
-- [ ] T028 [P] [US2] Add provider controller unit tests in `test/unit/bookings/bookings.controller.spec.ts`
-- [ ] T029 [P] [US2] Add BookingsService unit tests for provider flows (accept, reject, status progression, history recording, event emission) in `test/unit/bookings/bookings.service.spec.ts`
-- [ ] T030 [US2] Extend e2e test with full provider booking management flow in `test/e2e/bookings.e2e-spec.ts`
+- [x] T022 [P] [US2] Implement BookingsService.findProviderBookings() with provider ID filtering in `src/modules/bookings/bookings.service.ts`
+- [x] T023 [P] [US2] Implement BookingsService.accept() and reject() with pending-only validation in `src/modules/bookings/bookings.service.ts`
+- [x] T024 [P] [US2] Implement BookingsService.markOnTheWay(), markInProgress(), markCompleted() with ordered transition validation in `src/modules/bookings/bookings.service.ts`
+- [x] T025 [P] [US2] Implement BookingsService.recordStatusHistory() for immutable audit log insertion in `src/modules/bookings/bookings.service.ts`
+- [x] T026 [P] [US2] Implement event emission via EventEmitter2 on all status transitions in `src/modules/bookings/bookings.service.ts`
+- [x] T027 [US2] Implement provider booking controller with GET /provider/bookings, PATCH /bookings/:id/accept, PATCH /bookings/:id/reject, PATCH /bookings/:id/on-the-way, PATCH /bookings/:id/start, PATCH /bookings/:id/complete in `src/modules/bookings/bookings.controller.ts`
+- [x] T028 [P] [US2] Add provider controller unit tests in `test/unit/bookings/bookings.controller.spec.ts`
+- [x] T029 [P] [US2] Add BookingsService unit tests for provider flows (accept, reject, status progression, history recording, event emission) in `test/unit/bookings/bookings.service.spec.ts`
+- [x] T030 [US2] Extend e2e test with full provider booking management flow in `test/bookings.e2e-spec.ts`
 
 **Checkpoint**: User Stories 1 AND 2 should both work independently and together
 
@@ -99,11 +99,11 @@
 
 **Independent Test**: Authenticated admin can view all bookings, see complete status history for any booking, and cancel a booking with a recorded reason.
 
-- [ ] T031 [P] [US3] Implement BookingsService.findAll() with full filter/sort/pagination support for admin in `src/modules/bookings/bookings.service.ts`
-- [ ] T032 [P] [US3] Implement BookingsService.adminCancel() with mandatory reason and heightened audit logging in `src/modules/bookings/bookings.service.ts`
-- [ ] T033 [US3] Implement admin booking controller with GET /admin/bookings, GET /admin/bookings/:id, PATCH /admin/bookings/:id/cancel in `src/modules/bookings/bookings.controller.ts`
-- [ ] T034 [P] [US3] Add admin controller unit tests in `test/unit/bookings/bookings.controller.spec.ts`
-- [ ] T035 [P] [US3] Add BookingsService unit tests for admin flows in `test/unit/bookings/bookings.service.spec.ts`
+- [x] T031 [P] [US3] Implement BookingsService.findAll() with full filter/sort/pagination support for admin in `src/modules/bookings/bookings.service.ts`
+- [x] T032 [P] [US3] Implement BookingsService.adminCancel() with mandatory reason and heightened audit logging in `src/modules/bookings/bookings.service.ts`
+- [x] T033 [US3] Implement admin booking controller with GET /admin/bookings, GET /admin/bookings/:id, PATCH /admin/bookings/:id/cancel in `src/modules/bookings/bookings.controller.ts`
+- [x] T034 [P] [US3] Add admin controller unit tests in `test/unit/bookings/bookings.controller.spec.ts`
+- [x] T035 [P] [US3] Add BookingsService unit tests for admin flows in `test/unit/bookings/bookings.service.spec.ts`
 
 **Checkpoint**: All three user stories should be independently functional
 
@@ -115,9 +115,9 @@
 
 **Independent Test**: Authenticated customer can filter their bookings by status, specify a date range, and search by booking number, with correct results returned.
 
-- [ ] T036 [US4] Integrate BookingFilterDto into findMyBookings() with status, date range, booking number search, pagination, and sorting in `src/modules/bookings/bookings.service.ts`
-- [ ] T037 [US4] Add search/filter unit tests for customer booking queries in `test/unit/bookings/bookings.service.spec.ts`
-- [ ] T038 [US4] Extend e2e test with search, filter, and pagination scenarios in `test/e2e/bookings.e2e-spec.ts`
+- [x] T036 [US4] Integrate BookingFilterDto into findMyBookings() with status, date range, booking number search, pagination, and sorting in `src/modules/bookings/bookings.service.ts`
+- [x] T037 [US4] Add search/filter unit tests for customer booking queries in `test/unit/bookings/bookings.service.spec.ts`
+- [x] T038 [US4] Extend e2e test with search, filter, and pagination scenarios in `test/bookings.e2e-spec.ts`
 
 **Checkpoint**: All user stories complete and independently testable
 
@@ -127,12 +127,12 @@
 
 **Purpose**: Improvements that affect multiple user stories and final verification
 
-- [ ] T039 Import and register BookingsModule in AppModule at `src/app.module.ts`
-- [ ] T040 Add full Swagger documentation with status transition workflow, request/response examples, and authorization requirements to all booking endpoints
-- [ ] T041 Run linting and fix any issues: `npm run lint`
-- [ ] T042 Run full test suite and ensure all tests pass: `npm run test`
-- [ ] T043 Run build and verify compilation: `npm run build`
-
+- [x] T039 Import and register BookingsModule in AppModule at `src/app.module.ts`
+- [x] T040 Add full Swagger documentation with status transition workflow, 
+request/response examples, and authorization requirements to all booking endpoints
+- [x] T041 Run linting and fix any issues: `npm run lint`
+- [x] T042 Run full test suite and ensure all tests pass: `npm run test`
+- [x] T043 Run build and verify compilation: `npm run build`
 **Checkpoint**: Feature complete and verified
 
 ---

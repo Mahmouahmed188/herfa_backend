@@ -501,3 +501,55 @@ enum reviews_type_enum {
   customer_to_provider
   provider_to_customer
 }
+
+enum booking_status_enum {
+  pending
+  accepted
+  rejected
+  on_the_way
+  in_progress
+  completed
+  cancelled
+}
+
+model Booking {
+  id                 String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingNumber      String                @unique @db.VarChar(20)
+  customerId         String                @db.Uuid
+  providerId         String                @db.Uuid
+  serviceId          String                @db.Uuid
+  addressLine        String                @db.VarChar(255)
+  city               String                @db.VarChar(100)
+  latitude           Decimal?              @db.Decimal(10, 7)
+  longitude          Decimal?              @db.Decimal(11, 7)
+  scheduledDate      DateTime              @db.Date
+  scheduledTime      String                @db.VarChar(5)
+  notes              String?               @db.Text
+  status             String                @default("pending") @db.VarChar
+  completedAt        DateTime?             @db.Timestamp(6)
+  cancelledAt        DateTime?             @db.Timestamp(6)
+  cancellationReason String?               @db.Text
+  createdAt          DateTime              @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime              @default(now()) @db.Timestamp(6)
+  statusHistory      BookingStatusHistory[]
+
+  @@index([customerId, status], map: "idx_booking_customer_status")
+  @@index([providerId, status], map: "idx_booking_provider_status")
+  @@index([status], map: "idx_booking_status")
+  @@index([scheduledDate], map: "idx_booking_scheduled_date")
+  @@map("bookings")
+}
+
+model BookingStatusHistory {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingId String   @db.Uuid
+  oldStatus String   @db.VarChar
+  newStatus String   @db.VarChar
+  changedBy String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId], map: "idx_history_booking")
+  @@index([createdAt], map: "idx_history_created")
+  @@map("booking_status_history")
+}
