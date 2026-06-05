@@ -17,3 +17,4 @@ export * from './refresh-token.entity';
 export * from './provider-location.entity';
 export * from './booking.entity';
 export * from './booking-status-history.entity';
+export * from './address.entity';
