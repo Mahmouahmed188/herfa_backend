@@ -38,6 +38,7 @@ model User {
   reviews_reviews_reviewee_idTousers   reviews[]                  @relation("reviews_reviewee_idTousers")
   technician_verifications             technician_verifications[]
   tender_offers                        tender_offers[]
+  service_listings                     service_listings[]
   tenders                              tenders[]
 
   @@index([role, status], map: "IDX_d6ee2d4bf901675877bb94977c")
@@ -365,8 +366,45 @@ model service_categories {
   sortOrder   Int        @default(0)
   createdAt   DateTime   @default(now()) @db.Timestamp(6)
   updatedAt   DateTime   @default(now()) @db.Timestamp(6)
-  services    services[]
+  services           services[]
+  service_listings   service_listings[]
   provider_categories provider_categories[]
+}
+
+model service_listings {
+  id                       String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  providerId               String             @db.VarChar
+  categoryId               String?            @db.VarChar
+  title                    String             @db.VarChar
+  description              String
+  basePrice                Decimal            @db.Decimal(10, 2)
+  currency                 String             @default("SAR") @db.VarChar
+  estimatedDurationMinutes Int
+  isActive                 Boolean            @default(true)
+  createdAt                DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt                DateTime           @default(now()) @db.Timestamp(6)
+  provider_id              String?            @db.Uuid
+  category_id              String?            @db.Uuid
+  users                    User?              @relation(fields: [provider_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  service_categories       service_categories? @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  service_images           service_images[]
+
+  @@index([providerId])
+  @@index([categoryId])
+  @@map("service_listings")
+}
+
+model service_images {
+  id         String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  serviceId  String             @db.VarChar
+  imageUrl   String             @db.VarChar
+  isPrimary  Boolean            @default(false)
+  createdAt  DateTime           @default(now()) @db.Timestamp(6)
+  service_id String?            @db.Uuid
+  service_listings service_listings? @relation(fields: [service_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([serviceId])
+  @@map("service_images")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
