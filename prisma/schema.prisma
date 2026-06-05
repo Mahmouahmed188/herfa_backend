@@ -639,6 +639,7 @@ model Booking {
   updatedAt          DateTime              @default(now()) @db.Timestamp(6)
   statusHistory      BookingStatusHistory[]
   payments           payments[]
+  trackingSessions   TrackingSession[]
 
   @@index([customerId, status], map: "idx_booking_customer_status")
   @@index([providerId, status], map: "idx_booking_provider_status")
@@ -659,4 +660,65 @@ model BookingStatusHistory {
   @@index([bookingId], map: "idx_history_booking")
   @@index([createdAt], map: "idx_history_created")
   @@map("booking_status_history")
+}
+
+enum tracking_session_status_enum {
+  inactive
+  active
+  paused
+  completed
+}
+
+model TrackingSession {
+  id            String                          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  bookingId     String                          @unique @db.Uuid
+  providerId    String                          @db.Uuid
+  customerId    String                          @db.Uuid
+  status        tracking_session_status_enum    @default(inactive)
+  startedAt     DateTime?                       @db.Timestamp(6)
+  endedAt       DateTime?                       @db.Timestamp(6)
+  createdAt     DateTime                        @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime                        @default(now()) @db.Timestamp(6)
+  booking       Booking                         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  locations     TrackingLocation[]
+  auditEvents   TrackingAuditEvent[]
+
+  @@index([providerId], map: "idx_tracking_session_provider")
+  @@index([customerId], map: "idx_tracking_session_customer")
+  @@index([status], map: "idx_tracking_session_status")
+  @@index([providerId, status], map: "idx_tracking_session_provider_status")
+  @@index([customerId, status], map: "idx_tracking_session_customer_status")
+  @@index([createdAt], map: "idx_tracking_session_created")
+  @@map("tracking_sessions")
+}
+
+model TrackingLocation {
+  id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  trackingSessionId String   @db.Uuid
+  latitude          Decimal  @db.Decimal(10, 8)
+  longitude         Decimal  @db.Decimal(11, 8)
+  speed             Decimal? @db.Decimal(6, 2)
+  heading           Int?
+  recordedAt        DateTime @db.Timestamp(6)
+  trackingSession   TrackingSession @relation(fields: [trackingSessionId], references: [id], onDelete: Cascade)
+
+  @@index([trackingSessionId, recordedAt], map: "idx_tracking_location_session_time")
+  @@index([trackingSessionId], map: "idx_tracking_location_session")
+  @@index([recordedAt], map: "idx_tracking_location_recorded")
+  @@map("tracking_locations")
+}
+
+model TrackingAuditEvent {
+  id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  trackingSessionId String   @db.Uuid
+  eventType         String   @db.VarChar(30)
+  previousStatus    String?  @db.VarChar(20)
+  newStatus         String   @db.VarChar(20)
+  metadata          Json?    @db.Json
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+  trackingSession   TrackingSession @relation(fields: [trackingSessionId], references: [id], onDelete: Cascade)
+
+  @@index([trackingSessionId], map: "idx_audit_tracking_session")
+  @@index([createdAt], map: "idx_audit_tracking_created")
+  @@map("tracking_audit_events")
 }

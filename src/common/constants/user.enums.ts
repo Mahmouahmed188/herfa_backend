@@ -65,6 +65,12 @@ export enum NotificationType {
   VERIFICATION_REJECTED = 'verification_rejected',
   VERIFICATION_SUSPENDED = 'verification_suspended',
   VERIFICATION_REACTIVATED = 'verification_reactivated',
+  TRACKING_STARTED = 'tracking_started',
+  TRACKING_PAUSED = 'tracking_paused',
+  TRACKING_RESUMED = 'tracking_resumed',
+  TRACKING_COMPLETED = 'tracking_completed',
+  TRACKING_ARRIVED_NEARBY = 'tracking_arrived_nearby',
+  TRACKING_ARRIVED = 'tracking_arrived',
 }
 
 export enum ReviewType {
