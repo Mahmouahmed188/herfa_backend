@@ -71,6 +71,12 @@ export enum NotificationType {
   TRACKING_COMPLETED = 'tracking_completed',
   TRACKING_ARRIVED_NEARBY = 'tracking_arrived_nearby',
   TRACKING_ARRIVED = 'tracking_arrived',
+  TICKET_CREATED = 'ticket_created',
+  TICKET_UPDATED = 'ticket_updated',
+  TICKET_MESSAGE = 'ticket_message',
+  TICKET_CLOSED = 'ticket_closed',
+  DISPUTE_OPENED = 'dispute_opened',
+  DISPUTE_RESOLVED = 'dispute_resolved',
 }
 
 export enum ReviewType {

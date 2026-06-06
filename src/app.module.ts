@@ -27,6 +27,7 @@ import { BookingsModule } from './modules/bookings/bookings.module';
 import { AddressesModule } from './modules/addresses/addresses.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { SupportModule } from './modules/support/support.module';
 import { ProviderVerificationModule } from './modules/provider-verification/provider-verification.module';
 
 @Module({
@@ -111,6 +112,7 @@ import { ProviderVerificationModule } from './modules/provider-verification/prov
     CategoriesModule,
     AddressesModule,
     BookingsModule,
+    SupportModule,
     ProviderVerificationModule,
   ],
 })

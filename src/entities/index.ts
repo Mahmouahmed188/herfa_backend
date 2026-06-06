@@ -21,3 +21,7 @@ export * from './booking-status-history.entity';
 export * from './address.entity';
 export * from './refund.entity';
 export * from './audit-log.entity';
+export * from './support-ticket.entity';
+export * from './ticket-message.entity';
+export * from './dispute.entity';
+export * from './dispute-evidence.entity';

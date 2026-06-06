@@ -25,8 +25,8 @@
 
 **Purpose**: Project initialization and basic module structure
 
-- [ ] T001 Create `src/modules/support/` directory structure with subdirectories: `services/`, `guards/`, `dto/`, `enums/`
-- [ ] T002 [P] Create enums in `src/modules/support/enums/`: `ticket-category.enum.ts` (Technical, Booking, Payment, Account, Verification, General), `ticket-status.enum.ts` (open, in_progress, waiting_for_user, resolved, closed), `ticket-priority.enum.ts` (low, medium, high, urgent), `dispute-status.enum.ts` (open, under_review, awaiting_evidence, resolved_customer, resolved_provider, closed)
+- [X] T001 Create `src/modules/support/` directory structure with subdirectories: `services/`, `guards/`, `dto/`, `enums/`
+- [X] T002 [P] Create enums in `src/modules/support/enums/`: `ticket-category.enum.ts` (Technical, Booking, Payment, Account, Verification, General), `ticket-status.enum.ts` (open, in_progress, waiting_for_user, resolved, closed), `ticket-priority.enum.ts` (low, medium, high, urgent), `dispute-status.enum.ts` (open, under_review, awaiting_evidence, resolved_customer, resolved_provider, closed)
 
 ---
 
@@ -36,36 +36,28 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 [P] Create `SupportTicket` entity in `src/entities/support-ticket.entity.ts` with all columns, relationships to User (userId, assignedAdminId), and indexes from data-model.md
-- [ ] T004 [P] Create `TicketMessage` entity in `src/entities/ticket-message.entity.ts` with all columns, relationship to SupportTicket and User, and indexes from data-model.md
-- [ ] T005 [P] Create `Dispute` entity in `src/entities/dispute.entity.ts` with all columns, relationships to Booking and User (customerId, providerId, resolvedBy), and indexes from data-model.md
-- [ ] T006 [P] Create `DisputeEvidence` entity in `src/entities/dispute-evidence.entity.ts` with all columns, relationships to Dispute and User, and indexes from data-model.md
-- [ ] T007 Generate TypeORM migration for new tables: `support_tickets`, `ticket_messages`, `disputes`, `dispute_evidence` with all indexes and foreign keys
-- [ ] T008 [P] Create base DTOs: `create-ticket.dto.ts`, `ticket-response.dto.ts`, `create-ticket-message.dto.ts`, `ticket-message-response.dto.ts` in `src/modules/support/dto/` with class-validator rules
-- [ ] T009 [P] Create dispute DTOs: `create-dispute.dto.ts`, `dispute-response.dto.ts`, `create-dispute-evidence.dto.ts`, `dispute-evidence-response.dto.ts` in `src/modules/support/dto/` with class-validator rules
-- [ ] T010 [P] Create admin DTOs: `update-ticket-status.dto.ts`, `update-dispute-status.dto.ts`, `resolve-dispute.dto.ts` in `src/modules/support/dto/` with class-validator rules
-- [ ] T011 [P] Create filter DTOs: `ticket-filter.dto.ts`, `dispute-filter.dto.ts` in `src/modules/support/dto/` with optional fields and Swagger decorators
-- [ ] T012 [P] Create `ticket-ownership.guard.ts` in `src/modules/support/guards/` to ensure authenticated user owns the requested ticket
-- [ ] T013 [P] Create `dispute-participant.guard.ts` in `src/modules/support/guards/` to ensure authenticated user is a participant (customer or provider) of the requested dispute
-- [ ] T014 Create `SupportModule` in `src/modules/support/support.module.ts` registering TypeORM entities, importing AuthModule, BookingsModule, NotificationsModule, and UploadsModule
-- [ ] T015 Register `SupportModule` in `src/app.module.ts` imports array
-
-**Checkpoint**: Foundation ready — user story implementation can now begin in parallel
+- [X] T003 [P] Create `SupportTicket` entity in `src/entities/support-ticket.entity.ts` with all columns, relationships to User (userId, assignedAdminId), and indexes from data-model.md
+- [X] T004 [P] Create `TicketMessage` entity in `src/entities/ticket-message.entity.ts` with all columns, relationship to SupportTicket and User, and indexes from data-model.md
+- [X] T005 [P] Create `Dispute` entity in `src/entities/dispute.entity.ts` with all columns, relationships to Booking and User (customerId, providerId, resolvedBy), and indexes from data-model.md
+- [X] T006 [P] Create `DisputeEvidence` entity in `src/entities/dispute-evidence.entity.ts` with all columns, relationships to Dispute and User, and indexes from data-model.md
+- [X] T007 Generate TypeORM migration for new tables: `support_tickets`, `ticket_messages`, `disputes`, `dispute_evidence` with all indexes and foreign keys (run `npm run migration:generate -- src/migrations/CreateSupportTicketsDisputes`)
+- [X] T008 [P] Create base DTOs: `create-ticket.dto.ts`, `ticket-response.dto.ts`, `create-ticket-message.dto.ts`, `ticket-message-response.dto.ts` in `src/modules/support/dto/` with class-validator rules
+- [X] T009 [P] Create dispute DTOs: `create-dispute.dto.ts`, `dispute-response.dto.ts`, `create-dispute-evidence.dto.ts`, `dispute-evidence-response.dto.ts` in `src/modules/support/dto/` with class-validator rules
+- [X] T010 [P] Create admin DTOs: `update-ticket-status.dto.ts`, `update-dispute-status.dto.ts`, `resolve-dispute.dto.ts` in `src/modules/support/dto/` with class-validator rules
+- [X] T011 [P] Create filter DTOs: `ticket-filter.dto.ts`, `dispute-filter.dto.ts` in `src/modules/support/dto/` with optional fields and Swagger decorators
+- [X] T012 [P] Create `ticket-ownership.guard.ts` in `src/modules/support/guards/` to ensure authenticated user owns the requested ticket
+- [X] T013 [P] Create `dispute-participant.guard.ts` in `src/modules/support/guards/` to ensure authenticated user is a participant (customer or provider) of the requested dispute
+- [X] T014 Create `SupportModule` in `src/modules/support/support.module.ts` registering TypeORM entities, importing AuthModule, BookingsModule, NotificationsModule, and UploadsModule
+- [X] T015 Register `SupportModule` in `src/app.module.ts` imports array
 
 ---
 
-## Phase 3: User Story 1 — Customer Creates a Support Ticket (Priority: P1) 🎯 MVP
-
-**Goal**: A customer can create a support ticket with category, subject, and description, receive a unique ticket number, and view their ticket history.
-
-**Independent Test**: Create ticket via POST /support/tickets → receive 201 with ticketNumber → GET /support/tickets lists the new ticket → GET /support/tickets/:id returns full details.
-
-- [ ] T016 [P] [US1] Implement `ticketNumber` generator utility in `src/modules/support/services/ticket-number.service.ts` generating unique TKT-XXXXXXXX format
-- [ ] T017 [US1] Implement `TicketsService` in `src/modules/support/services/tickets.service.ts` with methods: `create(userId, dto)`, `findById(id)`, `findAll(userId, filter)`, `findAllAdmin(filter)` including CRUD, filtering, pagination, sorting, and search by ticket number
-- [ ] T018 [US1] Create entity enums for ticket status transition validation in `src/modules/support/enums/` — implement status transition validator as a reusable function or utility
-- [ ] T019 [US1] Implement `SupportController` in `src/modules/support/support.controller.ts` with endpoints: `POST /support/tickets`, `GET /support/tickets`, `GET /support/tickets/:id`
-- [ ] T020 [US1] Add Swagger decorators (`@ApiTags`, `@ApiOperation`, `@ApiResponse`, `@ApiBearerAuth`) to all US1 endpoints with request/response examples from contracts/README.md
-- [ ] T021 [US1] Wire audit logging in TicketsService — log ticket creation action to `AuditLog`
+- [X] T016 [P] [US1] Implement `ticketNumber` generator utility in `src/modules/support/services/ticket-number.service.ts` generating unique TKT-XXXXXXXX format
+- [X] T017 [US1] Implement `TicketsService` in `src/modules/support/services/tickets.service.ts` with methods: `create(userId, dto)`, `findById(id)`, `findAll(userId, filter)`, `findAllAdmin(filter)` including CRUD, filtering, pagination, sorting, and search by ticket number
+- [X] T018 [US1] Create entity enums for ticket status transition validation in `src/modules/support/enums/` — implement status transition validator as a reusable function or utility
+- [X] T019 [US1] Implement `SupportController` in `src/modules/support/support.controller.ts` with endpoints: `POST /support/tickets`, `GET /support/tickets`, `GET /support/tickets/:id`
+- [X] T020 [US1] Add Swagger decorators (`@ApiTags`, `@ApiOperation`, `@ApiResponse`, `@ApiBearerAuth`) to all US1 endpoints with request/response examples from contracts/README.md
+- [X] T021 [US1] Wire audit logging in TicketsService — log ticket creation action to `AuditLog`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -77,12 +69,12 @@
 
 **Independent Test**: Create dispute via POST /support/disputes with valid bookingId → receive 201 → GET /support/disputes lists the new dispute → GET /support/disputes/:id returns full details including linked booking.
 
-- [ ] T022 [P] [US2] Create dispute business rules service or add methods to `DisputesService` for: booking existence validation (via BookingsModule), participant check (user is customer or provider of booking), duplicate open dispute check
-- [ ] T023 [US2] Implement `DisputesService` in `src/modules/support/services/disputes.service.ts` with methods: `create(userId, dto)`, `findById(id)`, `findAll(userId, filter)`, `findAllAdmin(filter)`, `updateStatus(id, status)`, `resolve(id, dto, adminId)`
-- [ ] T024 [US2] Create dispute status transition validator utility in `src/modules/support/enums/dispute-status.enum.ts` enforcing the DAG from data-model.md
-- [ ] T025 [US2] Add the following endpoints to `SupportController`: `POST /support/disputes`, `GET /support/disputes`, `GET /support/disputes/:id`
-- [ ] T026 [US2] Add Swagger decorators to all US2 endpoints with request/response examples from contracts/README.md
-- [ ] T027 [US2] Wire audit logging in DisputesService — log dispute creation action to `AuditLog`
+- [X] T022 [P] [US2] Create dispute business rules service or add methods to `DisputesService` for: booking existence validation (via BookingsModule), participant check (user is customer or provider of booking), duplicate open dispute check
+- [X] T023 [US2] Implement `DisputesService` in `src/modules/support/services/disputes.service.ts` with methods: `create(userId, dto)`, `findById(id)`, `findAll(userId, filter)`, `findAllAdmin(filter)`, `updateStatus(id, status)`, `resolve(id, dto, adminId)`
+- [X] T024 [US2] Create dispute status transition validator utility in `src/modules/support/enums/dispute-status.enum.ts` enforcing the DAG from data-model.md
+- [X] T025 [US2] Add the following endpoints to `SupportController`: `POST /support/disputes`, `GET /support/disputes`, `GET /support/disputes/:id`
+- [X] T026 [US2] Add Swagger decorators to all US2 endpoints with request/response examples from contracts/README.md
+- [X] T027 [US2] Wire audit logging in DisputesService — log dispute creation action to `AuditLog`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -94,11 +86,11 @@
 
 **Independent Test**: Admin calls PATCH /admin/support/disputes/:id/resolve with resolution body → dispute status changes to resolved_customer or resolved_provider → GET /admin/support/disputes shows updated status.
 
-- [ ] T028 [P] [US3] Implement `resolve(id, resolveDto, adminId)` logic in `DisputesService` enforcing: dispute must be in resolvable state (under_review or awaiting_evidence), status changes to resolved_customer/resolved_provider, sets resolution/resolvedBy/resolvedAt, triggers notification event
-- [ ] T029 [US3] Implement `AdminSupportController` in `src/modules/support/admin-support.controller.ts` — create dedicated admin controller with admin role guard
-- [ ] T030 [US3] Add endpoint `PATCH /admin/support/disputes/:id/resolve` to `AdminSupportController`
-- [ ] T031 [US3] Add Swagger decorators to US3 endpoint with request/response examples
-- [ ] T032 [US3] Wire audit logging — log dispute resolution action (old status, new status, resolution outcome, favored party)
+- [X] T028 [P] [US3] Implement `resolve(id, resolveDto, adminId)` logic in `DisputesService` enforcing: dispute must be in resolvable state (under_review or awaiting_evidence), status changes to resolved_customer/resolved_provider, sets resolution/resolvedBy/resolvedAt, triggers notification event
+- [X] T029 [US3] Implement `AdminSupportController` in `src/modules/support/admin-support.controller.ts` — create dedicated admin controller with admin role guard
+- [X] T030 [US3] Add endpoint `PATCH /admin/support/disputes/:id/resolve` to `AdminSupportController`
+- [X] T031 [US3] Add Swagger decorators to US3 endpoint with request/response examples
+- [X] T032 [US3] Wire audit logging — log dispute resolution action (old status, new status, resolution outcome, favored party)
 
 **Checkpoint**: Core P1 stories complete — all primary workflows functional
 
@@ -110,11 +102,11 @@
 
 **Independent Test**: Create ticket → POST /support/tickets/:id/messages with message body → GET /support/tickets/:id returns ticket with messages[] array containing the new message.
 
-- [ ] T033 [US4] Implement `TicketMessagesService` in `src/modules/support/services/ticket-messages.service.ts` with methods: `create(ticketId, senderId, message)` with ticket status validation (message only allowed on open/in_progress/waiting_for_user tickets), `findByTicketId(ticketId)`
-- [ ] T034 [US4] Add endpoint `POST /support/tickets/:id/messages` to `SupportController` with ownership guard
-- [ ] T035 [US4] Modify `GET /support/tickets/:id` response in TicketsService to include nested `messages[]` array using TicketMessagesService
-- [ ] T036 [US4] Add Swagger decorators to US4 endpoint
-- [ ] T037 [US4] Wire audit logging for new messages (optional — log may be omitted for regular messages, but message content is stored permanently in ticket_messages table)
+- [X] T033 [US4] Implement `TicketMessagesService` in `src/modules/support/services/ticket-messages.service.ts` with methods: `create(ticketId, senderId, message)` with ticket status validation (message only allowed on open/in_progress/waiting_for_user tickets), `findByTicketId(ticketId)`
+- [X] T034 [US4] Add endpoint `POST /support/tickets/:id/messages` to `SupportController` with ownership guard
+- [X] T035 [US4] Modify `GET /support/tickets/:id` response in TicketsService to include nested `messages[]` array using TicketMessagesService
+- [X] T036 [US4] Add Swagger decorators to US4 endpoint
+- [X] T037 [US4] Wire audit logging for new messages (optional — log may be omitted for regular messages, but message content is stored permanently in ticket_messages table)
 
 **Checkpoint**: Ticket conversation workflow functional
 
@@ -126,26 +118,16 @@
 
 **Independent Test**: Admin calls GET /admin/support/tickets → sees all tickets → PATCH /admin/support/tickets/:id/status with new status → ticket status updates → invalid transition is rejected.
 
-- [ ] T038 [P] [US5] Add `updatePriority(ticketId, priority, adminId)` and `assignAdmin(ticketId, adminId)` methods to `TicketsService`
-- [ ] T039 [US5] Add endpoints to `AdminSupportController`: `GET /admin/support/tickets` (with full filtering), `PATCH /admin/support/tickets/:id/status`
-- [ ] T040 [US5] Add Swagger decorators to US5 endpoints with query parameter documentation for filtering
-- [ ] T041 [US5] Wire audit logging for ticket status/priority changes — log old and new values
+- [X] T038 [P] [US5] Add `updatePriority(ticketId, priority, adminId)` and `assignAdmin(ticketId, adminId)` methods to `TicketsService`
+- [X] T039 [US5] Add endpoints to `AdminSupportController`: `GET /admin/support/tickets` (with full filtering), `PATCH /admin/support/tickets/:id/status`
+- [X] T040 [US5] Add Swagger decorators to US5 endpoints with query parameter documentation for filtering
+- [X] T041 [US5] Wire audit logging for ticket status/priority changes — log old and new values
 
-**Checkpoint**: Admin ticket management functional
-
----
-
-## Phase 8: User Story 6 — Provider Uploads Dispute Evidence (Priority: P2)
-
-**Goal**: A provider can upload evidence files (images, PDFs, documents) to support their dispute, with file type and size validation.
-
-**Independent Test**: Create dispute → POST /support/disputes/:id/evidence with multipart file → receive 201 with file metadata → GET /support/disputes/:id returns dispute with evidence[] array.
-
-- [ ] T042 [P] [US6] Implement `DisputeEvidenceService` in `src/modules/support/services/dispute-evidence.service.ts` with methods: `upload(disputeId, uploadedBy, file)` with file type validation (jpg, jpeg, png, gif, webp, pdf, doc, docx) and size validation (images: 10MB, docs: 25MB), `findByDisputeId(disputeId)`, storage integration via existing `StorageProvider` interface
-- [ ] T043 [US6] Add endpoint `POST /support/disputes/:id/evidence` to `SupportController` with multipart file handling and dispute-participant guard (admins also allowed)
-- [ ] T044 [US6] Modify `GET /support/disputes/:id` response in DisputesService to include nested `evidence[]` array using DisputeEvidenceService
-- [ ] T045 [US6] Add Swagger decorators to US6 endpoint with `@ApiConsumes('multipart/form-data')`
-- [ ] T046 [US6] Wire audit logging for evidence uploads — log file type, file URL, and dispute ID
+- [X] T042 [P] [US6] Implement `DisputeEvidenceService` in `src/modules/support/services/dispute-evidence.service.ts` with methods: `upload(disputeId, uploadedBy, file)` with file type validation (jpg, jpeg, png, gif, webp, pdf, doc, docx) and size validation (images: 10MB, docs: 25MB), `findByDisputeId(disputeId)`, storage integration via existing `StorageProvider` interface
+- [X] T043 [US6] Add endpoint `POST /support/disputes/:id/evidence` to `SupportController` with multipart file handling and dispute-participant guard (admins also allowed)
+- [X] T044 [US6] Modify `GET /support/disputes/:id` response in DisputesService to include nested `evidence[]` array using DisputeEvidenceService
+- [X] T045 [US6] Add Swagger decorators to US6 endpoint with `@ApiConsumes('multipart/form-data')`
+- [X] T046 [US6] Wire audit logging for evidence uploads — log file type, file URL, and dispute ID
 
 **Checkpoint**: All user stories functional
 
@@ -155,10 +137,10 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T047 [P] Create `support-events.handler.ts` in `src/modules/notifications/handlers/support-events.handler.ts` following the existing handler pattern — handle events: TicketCreated, TicketUpdated, TicketMessageAdded, DisputeOpened, DisputeResolved, TicketClosed; emit events from TicketsService and DisputesService
-- [ ] T048 [P] Finalize Swagger documentation across all controllers — verify all endpoints have complete `@ApiOperation` summaries, `@ApiResponse` (200, 201, 400, 401, 403, 404) with examples, and `@ApiBearerAuth`
-- [ ] T049 Run quickstart.md validation steps — entity creation, migration, module wiring, guard configuration, notification handler integration
-- [ ] T050 Generate integration notes documenting: module dependencies (Auth, Bookings, Notifications, Uploads), guard requirements, event contracts for notification integration
+- [X] T047 [P] Create `support-events.handler.ts` in `src/modules/notifications/handlers/support-events.handler.ts` following the existing handler pattern — handle events: TicketCreated, TicketUpdated, TicketMessageAdded, DisputeOpened, DisputeResolved, TicketClosed; emit events from TicketsService and DisputesService
+- [X] T048 [P] Finalize Swagger documentation across all controllers — verify all endpoints have complete `@ApiOperation` summaries, `@ApiResponse` (200, 201, 400, 401, 403, 404) with examples, and `@ApiBearerAuth`
+- [X] T049 Run quickstart.md validation steps — entity creation, migration, module wiring, guard configuration, notification handler integration
+- [X] T050 Generate integration notes documenting: module dependencies (Auth, Bookings, Notifications, Uploads), guard requirements, event contracts for notification integration
 
 ---
 
