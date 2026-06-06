@@ -29,6 +29,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { SupportModule } from './modules/support/support.module';
 import { ProviderVerificationModule } from './modules/provider-verification/provider-verification.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -114,6 +115,7 @@ import { ProviderVerificationModule } from './modules/provider-verification/prov
     BookingsModule,
     SupportModule,
     ProviderVerificationModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule { }

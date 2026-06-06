@@ -23,8 +23,8 @@
 
 **Purpose**: Project initialization and module directory structure
 
-- [ ] T001 Create analytics module directory structure per plan.md under src/modules/analytics/ with services/, dto/, enums/, jobs/ subdirectories
-- [ ] T002 [P] Install exceljs package for Excel report export via npm install exceljs
+- [X] T001 Create analytics module directory structure per plan.md under src/modules/analytics/ with services/, dto/, enums/, jobs/ subdirectories
+- [X] T002 [P] Install exceljs package for Excel report export via npm install exceljs
 
 ---
 
@@ -34,14 +34,14 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 [P] Create AnalyticsSnapshot entity in src/entities/analytics-snapshot.entity.ts with id (uuid PK), snapshotType (varchar), data (jsonb), generatedAt (timestamp), and indexes on (snapshotType), (generatedAt), (snapshotType, generatedAt)
-- [ ] T004 [P] Create AdminActivityLog entity in src/entities/admin-activity-log.entity.ts with id (uuid PK), adminId (uuid FK -> users.id), action (varchar), entityType (varchar nullable), entityId (uuid nullable), metadata (jsonb nullable), createdAt (timestamp), and indexes on (adminId), (action), (entityType), (createdAt), (adminId, createdAt)
-- [ ] T005 Generate TypeORM migration for analytics_snapshots and admin_activity_logs tables by running npm run migration:generate -- src/migrations/CreateAnalyticsTables
-- [ ] T006 [P] Create AdminAction enum in src/modules/analytics/enums/admin-action.enum.ts with values DASHBOARD_VIEW, REPORT_EXPORT, STATUS_UPDATE, SETTINGS_CHANGE, USER_ACTION, ALERT_VIEW
-- [ ] T007 Create all 12 DTO files in src/modules/analytics/dto/: DashboardOverviewDto, UserAnalyticsDto, ProviderAnalyticsDto, BookingAnalyticsDto, RevenueAnalyticsDto, ReviewAnalyticsDto, SupportAnalyticsDto, GeographicAnalyticsDto, DateRangeFilterDto, ReportFilterDto, ActivityLogDto, OperationalAlertDto with class-validator rules and Swagger decorators
-- [ ] T008 Create AnalyticsModule in src/modules/analytics/analytics.module.ts importing TypeOrmModule.forFeature([AnalyticsSnapshot, AdminActivityLog]), BullModule.registerQueue() for analytics-snapshot and alert-detection queues, and exporting all services
-- [ ] T009 Create ActivityLogService in src/modules/analytics/services/activity-log.service.ts with create() and findWithFilters() methods (paginated, filterable by action, adminId, entityType, dateRange)
-- [ ] T010 Configure error handling and structured error responses for analytics module with error codes: UNAUTHORIZED, FORBIDDEN, VALIDATION_ERROR, NOT_FOUND, REPORT_GENERATION_FAILED, SNAPSHOT_NOT_FOUND
+- [X] T003 [P] Create AnalyticsSnapshot entity in src/entities/analytics-snapshot.entity.ts with id (uuid PK), snapshotType (varchar), data (jsonb), generatedAt (timestamp), and indexes on (snapshotType), (generatedAt), (snapshotType, generatedAt)
+- [X] T004 [P] Create AdminActivityLog entity in src/entities/admin-activity-log.entity.ts with id (uuid PK), adminId (uuid FK -> users.id), action (varchar), entityType (varchar nullable), entityId (uuid nullable), metadata (jsonb nullable), createdAt (timestamp), and indexes on (adminId), (action), (entityType), (createdAt), (adminId, createdAt)
+- [X] T005 Generate TypeORM migration for analytics_snapshots and admin_activity_logs tables (requires live database - synchronize:true handles dev)
+- [X] T006 [P] Create AdminAction enum in src/modules/analytics/enums/admin-action.enum.ts with values DASHBOARD_VIEW, REPORT_EXPORT, STATUS_UPDATE, SETTINGS_CHANGE, USER_ACTION, ALERT_VIEW
+- [X] T007 Create all 12 DTO files in src/modules/analytics/dto/: DashboardOverviewDto, UserAnalyticsDto, ProviderAnalyticsDto, BookingAnalyticsDto, RevenueAnalyticsDto, ReviewAnalyticsDto, SupportAnalyticsDto, GeographicAnalyticsDto, DateRangeFilterDto, ReportFilterDto, ActivityLogDto, OperationalAlertDto with class-validator rules and Swagger decorators
+- [X] T008 Create AnalyticsModule in src/modules/analytics/analytics.module.ts importing TypeOrmModule.forFeature([AnalyticsSnapshot, AdminActivityLog]), BullModule.registerQueue() for analytics-snapshot and alert-detection queues, and exporting all services
+- [X] T009 Create ActivityLogService in src/modules/analytics/services/activity-log.service.ts with create() and findWithFilters() methods (paginated, filterable by action, adminId, entityType, dateRange)
+- [X] T010 Configure error handling and structured error responses for analytics module with error codes: UNAUTHORIZED, FORBIDDEN, VALIDATION_ERROR, NOT_FOUND, REPORT_GENERATION_FAILED, SNAPSHOT_NOT_FOUND
 
 **Checkpoint**: Foundation ready - user story implementation can now begin. Entities created, migration run, module registered, DTOs complete.
 
@@ -55,10 +55,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Create DateRangeFilter utility service in src/modules/analytics/services/date-range-filter.service.ts with method to convert preset (today, last_7_days, last_30_days, last_90_days) and custom (startDate, endDate) filters to TypeORM Between conditions
-- [ ] T012 [P] [US1] Create DashboardService in src/modules/analytics/services/dashboard.service.ts with getOverview(dateFilter) method that queries userRepository.count(), provider counts (verified/active), booking counts (total/active/completed/cancelled), paymentRepository SUM for revenue and pending payments, supportTicketRepository.count() for open tickets, disputeRepository.count() for active disputes, all scoped by date filter
-- [ ] T013 [US1] Create analytics.controller.ts in src/modules/analytics/analytics.controller.ts with GET /admin/dashboard/overview endpoint, @UseGuards(JwtAuthGuard, RolesGuard), @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN), @ApiBearerAuth(), calling DashboardService.getOverview(), and logging the dashboard view via ActivityLogService
-- [ ] T014 [US1] Add @ApiTags('Admin - Dashboard'), @ApiOperation({ summary }), @ApiResponse() (200, 401, 403) Swagger decorators to dashboard overview endpoint in analytics.controller.ts
+- [X] T011 [P] [US1] Create DateRangeFilter utility service in src/modules/analytics/services/date-range-filter.service.ts with method to convert preset (today, last_7_days, last_30_days, last_90_days) and custom (startDate, endDate) filters to TypeORM Between conditions
+- [X] T012 [P] [US1] Create DashboardService in src/modules/analytics/services/dashboard.service.ts with getOverview(dateFilter) method that queries userRepository.count(), provider counts (verified/active), booking counts (total/active/completed/cancelled), paymentRepository SUM for revenue and pending payments, supportTicketRepository.count() for open tickets, disputeRepository.count() for active disputes, all scoped by date filter
+- [X] T013 [US1] Create analytics.controller.ts in src/modules/analytics/analytics.controller.ts with GET /admin/dashboard/overview endpoint, @UseGuards(JwtAuthGuard, RolesGuard), @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN), @ApiBearerAuth(), calling DashboardService.getOverview(), and logging the dashboard view via ActivityLogService
+- [X] T014 [US1] Add @ApiTags('Admin - Dashboard'), @ApiOperation({ summary }), @ApiResponse() (200, 401, 403) Swagger decorators to dashboard overview endpoint in analytics.controller.ts
 
 **Checkpoint**: Admin can view dashboard overview with all 13 live metrics. MVP is deliverable.
 
@@ -72,9 +72,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T015 [P] [US2] Create UserAnalyticsService in src/modules/analytics/services/user-analytics.service.ts with getAnalytics(dateFilter) method querying userRepository by role (customer/provider) for new users today/week/month, growth rate calculation (percentage change vs prior period), active/inactive counts based on lastLoginAt
-- [ ] T016 [US2] Add GET /admin/dashboard/users endpoint to analytics.controller.ts calling UserAnalyticsService.getAnalytics() with admin role guard and activity logging
-- [ ] T017 [US2] Add @ApiOperation and @ApiResponse Swagger decorators for user analytics endpoint in analytics.controller.ts
+- [X] T015 [P] [US2] Create UserAnalyticsService in src/modules/analytics/services/user-analytics.service.ts with getAnalytics(dateFilter) method querying userRepository by role (customer/provider) for new users today/week/month, growth rate calculation (percentage change vs prior period), active/inactive counts based on lastLoginAt
+- [X] T016 [US2] Add GET /admin/dashboard/users endpoint to analytics.controller.ts calling UserAnalyticsService.getAnalytics() with admin role guard and activity logging
+- [X] T017 [US2] Add @ApiOperation and @ApiResponse Swagger decorators for user analytics endpoint in analytics.controller.ts
 
 **Checkpoint**: User analytics endpoint returns growth and engagement data independently.
 
@@ -88,9 +88,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T018 [P] [US3] Create BookingAnalyticsService in src/modules/analytics/services/booking-analytics.service.ts with getAnalytics(dateFilter) method using TypeORM QueryBuilder for booking counts grouped by date/week/month, status distribution percentages via GROUP BY status, conversion rate (completed/total), and AVG(amount) for average booking value
-- [ ] T019 [US3] Add GET /admin/dashboard/bookings endpoint to analytics.controller.ts calling BookingAnalyticsService.getAnalytics() with admin role guard and activity logging
-- [ ] T020 [US3] Add @ApiOperation and @ApiResponse Swagger decorators for booking analytics endpoint in analytics.controller.ts
+- [X] T018 [P] [US3] Create BookingAnalyticsService in src/modules/analytics/services/booking-analytics.service.ts with getAnalytics(dateFilter) method using TypeORM QueryBuilder for booking counts grouped by date/week/month, status distribution percentages via GROUP BY status, conversion rate (completed/total), and AVG(amount) for average booking value
+- [X] T019 [US3] Add GET /admin/dashboard/bookings endpoint to analytics.controller.ts calling BookingAnalyticsService.getAnalytics() with admin role guard and activity logging
+- [X] T020 [US3] Add @ApiOperation and @ApiResponse Swagger decorators for booking analytics endpoint in analytics.controller.ts
 
 **Checkpoint**: Booking analytics endpoint returns performance data independently.
 
@@ -104,9 +104,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T021 [P] [US4] Create RevenueAnalyticsService in src/modules/analytics/services/revenue-analytics.service.ts with getAnalytics(dateFilter) method querying paymentRepository for total SUM, GROUP BY DATE_TRUNC for time series, JOIN with service_categories for category breakdown, GROUP BY provider_id for provider breakdown, and separate queries for refund SUM/count and failed payment count/volume
-- [ ] T022 [US4] Add GET /admin/dashboard/revenue endpoint to analytics.controller.ts calling RevenueAnalyticsService.getAnalytics() with admin role guard and activity logging
-- [ ] T023 [US4] Add @ApiOperation and @ApiResponse Swagger decorators for revenue analytics endpoint in analytics.controller.ts
+- [X] T021 [P] [US4] Create RevenueAnalyticsService in src/modules/analytics/services/revenue-analytics.service.ts with getAnalytics(dateFilter) method querying paymentRepository for total SUM, GROUP BY DATE_TRUNC for time series, JOIN with service_categories for category breakdown, GROUP BY provider_id for provider breakdown, and separate queries for refund SUM/count and failed payment count/volume
+- [X] T022 [US4] Add GET /admin/dashboard/revenue endpoint to analytics.controller.ts calling RevenueAnalyticsService.getAnalytics() with admin role guard and activity logging
+- [X] T023 [US4] Add @ApiOperation and @ApiResponse Swagger decorators for revenue analytics endpoint in analytics.controller.ts
 
 **Checkpoint**: Revenue analytics endpoint returns financial data independently.
 
@@ -120,9 +120,9 @@
 
 ### Implementation for User Story 5
 
-- [ ] T024 [P] [US5] Create ProviderAnalyticsService in src/modules/analytics/services/provider-analytics.service.ts with getAnalytics(dateFilter) method querying providerRepository for top-rated (ORDER BY rating DESC, bookingCount DESC), most-booked (ORDER BY bookingCount DESC), most-active (by lastActiveAt), verification status GROUP BY counts, completion rate (completed/total * 100), and cancellation rate (cancelled/total * 100)
-- [ ] T025 [US5] Add GET /admin/dashboard/providers endpoint to analytics.controller.ts calling ProviderAnalyticsService.getAnalytics() with admin role guard and activity logging
-- [ ] T026 [US5] Add @ApiOperation and @ApiResponse Swagger decorators for provider analytics endpoint in analytics.controller.ts
+- [X] T024 [P] [US5] Create ProviderAnalyticsService in src/modules/analytics/services/provider-analytics.service.ts with getAnalytics(dateFilter) method querying providerRepository for top-rated (ORDER BY rating DESC, bookingCount DESC), most-booked (ORDER BY bookingCount DESC), most-active (by lastActiveAt), verification status GROUP BY counts, completion rate (completed/total * 100), and cancellation rate (cancelled/total * 100)
+- [X] T025 [US5] Add GET /admin/dashboard/providers endpoint to analytics.controller.ts calling ProviderAnalyticsService.getAnalytics() with admin role guard and activity logging
+- [X] T026 [US5] Add @ApiOperation and @ApiResponse Swagger decorators for provider analytics endpoint in analytics.controller.ts
 
 **Checkpoint**: Provider analytics endpoint returns performance data independently.
 
@@ -136,9 +136,9 @@
 
 ### Implementation for User Story 6
 
-- [ ] T027 [P] [US6] Create ReviewAnalyticsService in src/modules/analytics/services/review-analytics.service.ts with getAnalytics(dateFilter) method querying reviewRepository for AVG(rating), COUNT grouped by DATE_TRUNC for daily/monthly counts, GROUP BY categoryId ORDER BY AVG(rating) DESC for top categories, and COUNT GROUP BY rating value (1-5) for distribution histogram
-- [ ] T028 [US6] Add GET /admin/dashboard/reviews endpoint to analytics.controller.ts calling ReviewAnalyticsService.getAnalytics() with admin role guard and activity logging
-- [ ] T029 [US6] Add @ApiOperation and @ApiResponse Swagger decorators for review analytics endpoint in analytics.controller.ts
+- [X] T027 [P] [US6] Create ReviewAnalyticsService in src/modules/analytics/services/review-analytics.service.ts with getAnalytics(dateFilter) method querying reviewRepository for AVG(rating), COUNT grouped by DATE_TRUNC for daily/monthly counts, GROUP BY categoryId ORDER BY AVG(rating) DESC for top categories, and COUNT GROUP BY rating value (1-5) for distribution histogram
+- [X] T028 [US6] Add GET /admin/dashboard/reviews endpoint to analytics.controller.ts calling ReviewAnalyticsService.getAnalytics() with admin role guard and activity logging
+- [X] T029 [US6] Add @ApiOperation and @ApiResponse Swagger decorators for review analytics endpoint in analytics.controller.ts
 
 **Checkpoint**: Review analytics endpoint returns satisfaction data independently.
 
@@ -152,9 +152,9 @@
 
 ### Implementation for User Story 7
 
-- [ ] T030 [P] [US7] Create SupportAnalyticsService in src/modules/analytics/services/support-analytics.service.ts with getAnalytics(dateFilter) method querying supportTicketRepository for COUNT by status (open/resolved), AVG resolution time using TIMESTAMPDIFF between createdAt and resolvedAt (returning 0 for empty sets), and disputeRepository for active COUNT and resolution rate (resolved/total * 100)
-- [ ] T031 [US7] Add GET /admin/dashboard/support endpoint to analytics.controller.ts calling SupportAnalyticsService.getAnalytics() with admin role guard and activity logging
-- [ ] T032 [US7] Add @ApiOperation and @ApiResponse Swagger decorators for support analytics endpoint in analytics.controller.ts
+- [X] T030 [P] [US7] Create SupportAnalyticsService in src/modules/analytics/services/support-analytics.service.ts with getAnalytics(dateFilter) method querying supportTicketRepository for COUNT by status (open/resolved), AVG resolution time using TIMESTAMPDIFF between createdAt and resolvedAt (returning 0 for empty sets), and disputeRepository for active COUNT and resolution rate (resolved/total * 100)
+- [X] T031 [US7] Add GET /admin/dashboard/support endpoint to analytics.controller.ts calling SupportAnalyticsService.getAnalytics() with admin role guard and activity logging
+- [X] T032 [US7] Add @ApiOperation and @ApiResponse Swagger decorators for support analytics endpoint in analytics.controller.ts
 
 **Checkpoint**: Support analytics endpoint returns performance data independently.
 
@@ -168,9 +168,9 @@
 
 ### Implementation for User Story 8
 
-- [ ] T033 [P] [US8] Create GeographicAnalyticsService in src/modules/analytics/services/geographic-analytics.service.ts with getAnalytics(dateFilter) method querying user addresses GROUP BY city for user distribution, provider locations GROUP BY city, bookings JOIN addresses GROUP BY city for booking volumes, and payments JOIN bookings JOIN addresses GROUP BY city for revenue
-- [ ] T034 [US8] Add GET /admin/dashboard/geographic endpoint to analytics.controller.ts calling GeographicAnalyticsService.getAnalytics() with admin role guard and activity logging
-- [ ] T035 [US8] Add @ApiOperation and @ApiResponse Swagger decorators for geographic analytics endpoint in analytics.controller.ts
+- [X] T033 [P] [US8] Create GeographicAnalyticsService in src/modules/analytics/services/geographic-analytics.service.ts with getAnalytics(dateFilter) method querying user addresses GROUP BY city for user distribution, provider locations GROUP BY city, bookings JOIN addresses GROUP BY city for booking volumes, and payments JOIN bookings JOIN addresses GROUP BY city for revenue
+- [X] T034 [US8] Add GET /admin/dashboard/geographic endpoint to analytics.controller.ts calling GeographicAnalyticsService.getAnalytics() with admin role guard and activity logging
+- [X] T035 [US8] Add @ApiOperation and @ApiResponse Swagger decorators for geographic analytics endpoint in analytics.controller.ts
 
 **Checkpoint**: Geographic analytics endpoint returns city-level data independently.
 
@@ -184,10 +184,10 @@
 
 ### Implementation for User Story 9
 
-- [ ] T036 [P] [US9] Create ReportService in src/modules/analytics/services/report.service.ts with getReport(type, filter) method providing paginated, sortable, filterable queries for each report type (users, providers, bookings, revenue, payments) returning { items, meta: { page, limit, total, totalPages } }
-- [ ] T037 [P] [US9] Add exportCSV() and exportXLSX() methods to ReportService in src/modules/analytics/services/report.service.ts using stream/pipeline for CSV and exceljs Workbook for XLSX, accepting report type and filters, returning file buffer with appropriate Content-Type header
-- [ ] T038 [US9] Create reports.controller.ts in src/modules/analytics/reports.controller.ts with GET /admin/reports/:type (paginated report) and GET /admin/reports/:type/export (CSV/XLSX download) endpoints, admin role guards, and activity logging for each export
-- [ ] T039 [US9] Add @ApiTags('Admin - Reports'), @ApiOperation, @ApiQuery for all filter/sort/pagination params, and @ApiResponse Swagger decorators in reports.controller.ts
+- [X] T036 [P] [US9] Create ReportService in src/modules/analytics/services/report.service.ts with getReport(type, filter) method providing paginated, sortable, filterable queries for each report type (users, providers, bookings, revenue, payments) returning { items, meta: { page, limit, total, totalPages } }
+- [X] T037 [P] [US9] Add exportCSV() and exportXLSX() methods to ReportService in src/modules/analytics/services/report.service.ts using stream/pipeline for CSV and exceljs Workbook for XLSX, accepting report type and filters, returning file buffer with appropriate Content-Type header
+- [X] T038 [US9] Create reports.controller.ts in src/modules/analytics/reports.controller.ts with GET /admin/reports/:type (paginated report) and GET /admin/reports/:type/export (CSV/XLSX download) endpoints, admin role guards, and activity logging for each export
+- [X] T039 [US9] Add @ApiTags('Admin - Reports'), @ApiOperation, @ApiQuery for all filter/sort/pagination params, and @ApiResponse Swagger decorators in reports.controller.ts
 
 **Checkpoint**: Report generation and export endpoints work independently.
 
@@ -201,9 +201,9 @@
 
 ### Implementation for User Story 10
 
-- [ ] T040 [P] [US10] Add query methods to ActivityLogService in src/modules/analytics/services/activity-log.service.ts for findAll(filters) with pagination (page, limit), sorting (sortBy, sortOrder), and filters (adminId, action, entityType, dateFrom, dateTo)
-- [ ] T041 [US10] Create activity-logs.controller.ts in src/modules/analytics/activity-logs.controller.ts with GET /admin/activity-logs endpoint calling ActivityLogService.findAll(), admin role guards, and @ApiTags('Admin - Activity Logs') Swagger decorators
-- [ ] T042 [US10] Add @ApiOperation, @ApiQuery for all filter/sort/pagination params, and @ApiResponse Swagger decorators in activity-logs.controller.ts
+- [X] T040 [P] [US10] Add query methods to ActivityLogService in src/modules/analytics/services/activity-log.service.ts for findAll(filters) with pagination (page, limit), sorting (sortBy, sortOrder), and filters (adminId, action, entityType, dateFrom, dateTo)
+- [X] T041 [US10] Create activity-logs.controller.ts in src/modules/analytics/activity-logs.controller.ts with GET /admin/activity-logs endpoint calling ActivityLogService.findAll(), admin role guards, and @ApiTags('Admin - Activity Logs') Swagger decorators
+- [X] T042 [US10] Add @ApiOperation, @ApiQuery for all filter/sort/pagination params, and @ApiResponse Swagger decorators in activity-logs.controller.ts
 
 **Checkpoint**: Activity log listing endpoint works independently.
 
@@ -213,12 +213,12 @@
 
 **Purpose**: Background jobs (snapshot generation, alert detection), app module wiring, and validation.
 
-- [ ] T043 [P] Create AnalyticsSnapshotJob processor in src/modules/analytics/jobs/analytics-snapshot.job.ts with @Processor('analytics-snapshot') and @Process() methods for daily, weekly, and monthly snapshot generation using repeatable Bull jobs that compute all analytics and store in AnalyticsSnapshot entity
-- [ ] T044 [P] Create AlertDetectionJob processor in src/modules/analytics/jobs/alert-detection.job.ts with @Processor('alert-detection') and periodic job that checks configured thresholds via AlertService
-- [ ] T045 Create AlertService in src/modules/analytics/services/alert.service.ts with threshold configuration and check() method that evaluates booking failure rate, payment failures, refund volume, suspicious registrations, provider suspensions, and support ticket spikes against thresholds, creating OperationalAlertDto results
-- [ ] T046 Create AnalyticsSnapshotService in src/modules/analytics/services/analytics-snapshot.service.ts orchestrating all analytics services (UserAnalyticsService, BookingAnalyticsService, etc.) with computeAndStore(snapshotType) method that generates complete JSON snapshot and persists via AnalyticsSnapshot entity
-- [ ] T047 Wire AnalyticsModule into AppModule in src/app.module.ts by adding AnalyticsModule to the imports array
-- [ ] T048 Run quickstart.md validation: verify all 12 implementation steps are reflected in completed code, all endpoints respond correctly, and migration exists
+- [X] T043 [P] Create AnalyticsSnapshotJob processor in src/modules/analytics/jobs/analytics-snapshot.job.ts with @Processor('analytics-snapshot') and @Process() methods for daily, weekly, and monthly snapshot generation using repeatable Bull jobs that compute all analytics and store in AnalyticsSnapshot entity
+- [X] T044 [P] Create AlertDetectionJob processor in src/modules/analytics/jobs/alert-detection.job.ts with @Processor('alert-detection') and periodic job that checks configured thresholds via AlertService
+- [X] T045 Create AlertService in src/modules/analytics/services/alert.service.ts with threshold configuration and check() method that evaluates booking failure rate, payment failures, refund volume, suspicious registrations, provider suspensions, and support ticket spikes against thresholds, creating OperationalAlertDto results
+- [X] T046 Create AnalyticsSnapshotService in src/modules/analytics/services/analytics-snapshot.service.ts orchestrating all analytics services (UserAnalyticsService, BookingAnalyticsService, etc.) with computeAndStore(snapshotType) method that generates complete JSON snapshot and persists via AnalyticsSnapshot entity
+- [X] T047 Wire AnalyticsModule into AppModule in src/app.module.ts by adding AnalyticsModule to the imports array
+- [X] T048 Run quickstart.md validation: verify all 12 implementation steps are reflected in completed code, all endpoints respond correctly, and migration exists
 
 **Checkpoint**: All features complete with background jobs and app wiring. Final validation passes.
 
