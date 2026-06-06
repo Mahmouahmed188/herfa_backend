@@ -38,7 +38,7 @@ export class AiRequestLog {
   @Column({ name: 'error_message', type: 'text', nullable: true })
   errorMessage: string | null;
 
-  @Column({ name: 'ip_address', length: 45, nullable: true })
+  @Column({ name: 'ip_address', type: 'varchar', length: 45, nullable: true })
   ipAddress: string | null;
 
   @CreateDateColumn()

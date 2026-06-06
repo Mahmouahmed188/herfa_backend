@@ -79,11 +79,13 @@ export class DisputesService {
     userId: string,
     filter: DisputeFilterDto,
   ): Promise<{ data: Dispute[]; meta: any }> {
-    const where: FindOptionsWhere<Dispute> = [
+    const where: FindOptionsWhere<Dispute>[] = [
       { customerId: userId },
       { providerId: userId },
     ];
-    this.applyFilter(where, filter);
+    for (const w of where) {
+      this.applyFilter(w, filter);
+    }
 
     const page = filter.page || 1;
     const limit = filter.limit || 20;

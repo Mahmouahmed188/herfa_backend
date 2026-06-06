@@ -23,13 +23,13 @@ export class AiHealthMonitor {
   @Column({ name: 'consecutive_failures', default: 0 })
   consecutiveFailures: number;
 
-  @Column({ name: 'last_failure_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'last_failure_at', type: 'datetime', nullable: true })
   lastFailureAt: Date | null;
 
-  @Column({ name: 'last_success_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'last_success_at', type: 'datetime', nullable: true })
   lastSuccessAt: Date | null;
 
-  @Column({ name: 'cooldown_until', type: 'timestamp', nullable: true })
+  @Column({ name: 'cooldown_until', type: 'datetime', nullable: true })
   cooldownUntil: Date | null;
 
   @Column({ name: 'total_requests', default: 0 })

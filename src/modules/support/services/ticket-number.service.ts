@@ -12,7 +12,7 @@ export class TicketNumberService {
   ) {}
 
   async generateUniqueTicketNumber(): Promise<string> {
-    let ticketNumber: string;
+    let ticketNumber = '';
     let exists = true;
 
     while (exists) {
