@@ -26,7 +26,7 @@
 
 **Performance Goals**: [e.g., <200ms p95 response time]
 
-**Constraints**: REST conventions, UUIDs only, Bcrypt hashing
+**Constraints**: REST conventions, UUIDs only, Bcrypt hashing, AI request logging
 
 **Scale/Scope**: Herfa Platform (Customer/Provider Marketplace)
 
@@ -42,6 +42,12 @@
 - [ ] P9: PostgreSQL UUIDs & Timestamps included?
 - [ ] P10/P11: Structured Errors & Logging planned?
 - [ ] P15: All 12 workflow steps accounted for?
+- [ ] P16: AI Service Separation respected (no AI inference in Backend)?
+- [ ] P19: AI Gateway Module planned for AI requests?
+- [ ] P20: AI Provider abstraction pattern used?
+- [ ] P21/P22: AI logging and cost control requirements defined?
+- [ ] P23: Timeouts/retries/circuit breakers for AI calls?
+- [ ] P24: AI endpoint authentication and input validation in place?
 
 ## Project Structure
 

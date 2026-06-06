@@ -119,6 +119,22 @@
   These must be technology-agnostic and measurable.
 -->
 
+### AI Gateway Integration *(include if feature involves AI)*
+
+<!--
+  If this feature involves AI capabilities, ALL AI requests MUST pass through
+  the Backend AI Gateway Module (Constitution P19). Define integration points:
+  - Which AI Service endpoints will be called
+  - Data transformation required between NestJS and Python AI Service
+  - Provider abstraction layer usage
+  - Logging, rate limiting, and authentication requirements
+  - Fallback behavior when AI Service is unavailable (P23)
+-->
+
+- **AI-001**: AI Gateway routes [feature] requests to [AI Service endpoint]
+- **AI-002**: [Feature] communicates with AI via provider abstraction interfaces
+- **AI-003**: [Feature] implements fallback logic when AI Service is unavailable
+
 ### Measurable Outcomes
 
 - **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]

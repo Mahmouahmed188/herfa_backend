@@ -52,6 +52,9 @@ description: "Task list template for feature implementation"
 - [ ] T001 Create project structure per implementation plan
 - [ ] T002 Initialize [language] project with [framework] dependencies
 - [ ] T003 [P] Configure linting and formatting tools
+- [ ] T00A [P] [IF AI FEATURE] Create AI Gateway Module structure (P19)
+- [ ] T00B [P] [IF AI FEATURE] Implement AI provider abstraction interfaces (P20)
+- [ ] T00C [P] [IF AI FEATURE] Set up AI request logging middleware (P21)
 
 ---
 
@@ -67,6 +70,8 @@ description: "Task list template for feature implementation"
 - [ ] T007 [P] Initialize NestJS Module and basic structure (P3)
 - [ ] T008 [P] Configure Module-specific Guards (P7/P8)
 - [ ] T009 Setup error handling and logging for this module (P10/P11)
+- [ ] T00D [P] [IF AI FEATURE] Configure AI client timeouts, retries, and circuit breakers (P23)
+- [ ] T00E [P] [IF AI FEATURE] Implement AI cost control middleware (usage tracking, quotas) (P22)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
