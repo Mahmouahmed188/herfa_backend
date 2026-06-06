@@ -2,46 +2,48 @@
 
 **Branch**: `012-analytics-dashboard` | **Date**: 2026-06-06 | **Spec**: [spec.md](spec.md)
 
-**Input**: Feature specification from `/specs/012-analytics-dashboard/spec.md`
+**Input**: Feature specification from `specs/012-analytics-dashboard/spec.md`
+
+**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
 ## Summary
 
-Implement an Admin Dashboard & Analytics module for the Herfa Backend providing administrators with a centralized dashboard for monitoring platform operations, business performance, user activity, bookings, payments, provider performance, disputes, and growth metrics. The module will use pre-computed aggregation snapshots for performance, scheduled background jobs for periodic updates, and the existing NestJS/TypeORM patterns for entity management, DTOs, controllers, services, guards, and Swagger documentation.
+Build a dedicated NestJS `AnalyticsModule` providing admin dashboard overview, user/provider/booking/revenue/review/support/geographic analytics, pre-computed snapshots via Bull queues, report generation with CSV/Excel export, admin activity logging, and operational alert detection. All endpoints secured with JWT + admin role guards, reusing existing Auth infrastructure.
 
 ## Technical Context
 
-**Language/Version**: NestJS / Node.js / TypeScript
+**Language/Version**: NestJS 10.3 / Node.js (TypeScript)
 
-**Primary Dependencies**: TypeORM, class-validator, class-transformer, @nestjs/swagger, @nestjs/bull, exceljs (or similar)
+**Primary Dependencies**: TypeORM 0.3, class-validator, class-transformer, @nestjs/swagger 7.3, @nestjs/bull 10.1, bull 4.12, exceljs
 
-**Storage**: PostgreSQL (UUID primary keys) via TypeORM entities
+**Storage**: PostgreSQL (UUID primary keys, JSONB for snapshot data)
 
 **Testing**: Jest (Unit & Integration)
 
-**Target Platform**: Backend API
+**Target Platform**: Backend API (`/api/v1/admin/dashboard/*`, `/api/v1/admin/reports/*`, `/api/v1/admin/activity-logs`)
 
-**Project Type**: Web-service (NestJS Modules)
+**Project Type**: Web-service (NestJS Modules) — both TypeORM and Prisma in use
 
-**Performance Goals**: Dashboard overview <2s p95; analytics endpoints <3s p95 with 100K+ records; scheduled snapshot generation <5m
+**Performance Goals**: Dashboard overview <2s p95; analytics endpoints <3s p95 with 100k+ source records; snapshot generation <5min for 500k users; CSV export of 10k rows <10s
 
-**Constraints**: REST conventions, UUIDs only, JWT auth, admin role guards, structured error responses
+**Constraints**: REST conventions, UUIDs only, JWT auth, admin role enforcement, snapshot-first with real-time fallback, immutable activity log
 
-**Scale/Scope**: Herfa Platform (Customer/Provider Marketplace)
+**Scale/Scope**: Herfa Platform (Customer/Provider Marketplace) — target up to 500k users
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [x] P1: Database schema defined? — YES, 2 entities specified (analytics_snapshots, admin_activity_logs)
-- [x] P2: Clean Architecture followed? — YES, Controller → Service → Repository pattern
-- [x] P3: Dedicated NestJS module planned? — YES, dedicated `analytics` module
-- [x] P4/P6: DTOs & Swagger decorators included? — YES, 12 DTOs defined with validation rules + Swagger requirement
-- [x] P7/P8: JWT/Roles/Guards identified? — YES, Admin-only with JWT + role guards
-- [x] P9: PostgreSQL UUIDs & Timestamps included? — YES, UUID PKs + createdAt on all entities
-- [x] P10/P11: Structured Errors & Logging planned? — YES, structured error responses + audit logging
-- [x] P15: All 12 workflow steps accounted for? — YES, Analyze → Design → Migrate → DTOs → Module → Service → Controller → Guards → Swagger → Tests → Verify → Notes
+- [x] P1: Database schema defined (AnalyticsSnapshot, AdminActivityLog entities in data-model.md)
+- [x] P2: Clean Architecture followed (Controller -> Service -> Repository pattern)
+- [x] P3: Dedicated AnalyticsModule planned (not extending existing admin module)
+- [x] P4/P6: DTOs & Swagger decorators included (12 DTOs defined in quickstart.md)
+- [x] P7/P8: JWT/Roles/Guards identified (reuse JwtAuthGuard + RolesGuard with ADMIN/SUPER_ADMIN)
+- [x] P9: PostgreSQL UUIDs & Timestamps included (both entities use UUID PK + timestamps)
+- [x] P10/P11: Structured Errors & Error codes defined; logging via NestJS Logger + ActivityLog
+- [x] P15: All 12 workflow steps accounted for (entities → migration → DTOs → module → services → controllers → guards → queues → Swagger → tests → wiring)
 
-**GATE Status**: ✅ PASS — All constitution principles satisfied. Proceeding to Phase 0.
+**No violations — all gates pass.**
 
 ## Project Structure
 
@@ -50,10 +52,13 @@ Implement an Admin Dashboard & Analytics module for the Herfa Backend providing 
 ```text
 specs/012-analytics-dashboard/
 ├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output
-├── data-model.md        # Phase 1 output
-├── quickstart.md        # Phase 1 output
-├── contracts/           # Phase 1 output
+├── research.md          # Phase 0 output — codebase research and decisions
+├── data-model.md        # Phase 1 output — entities, relationships, constraints
+├── quickstart.md        # Phase 1 output — 12-step implementation order
+├── contracts/           # Phase 1 output — API contracts (README.md)
+│   └── README.md
+├── checklists/          # Phase 2 output
+│   └── requirements.md
 └── tasks.md             # Phase 2 output (/speckit.tasks command)
 ```
 
@@ -62,29 +67,17 @@ specs/012-analytics-dashboard/
 ```text
 src/
 ├── entities/
-│   ├── analytics-snapshot.entity.ts       # NEW
-│   └── admin-activity-log.entity.ts       # NEW
+│   ├── analytics-snapshot.entity.ts    # NEW — pre-computed aggregation results
+│   └── admin-activity-log.entity.ts    # NEW — immutable admin audit trail
+│
 ├── modules/
-│   └── analytics/
-│       ├── analytics.module.ts            # Module definition
-│       ├── analytics.controller.ts        # Dashboard & analytics endpoints
-│       ├── analytics.controller.spec.ts
-│       ├── reports.controller.ts          # Report generation endpoints
-│       ├── reports.controller.spec.ts
-│       ├── activity-logs.controller.ts    # Activity log endpoints
-│       ├── services/
-│       │   ├── dashboard.service.ts       # Overview aggregation
-│       │   ├── user-analytics.service.ts  # User metrics
-│       │   ├── provider-analytics.service.ts # Provider metrics
-│       │   ├── booking-analytics.service.ts  # Booking metrics
-│       │   ├── revenue-analytics.service.ts  # Revenue metrics
-│       │   ├── review-analytics.service.ts   # Review metrics
-│       │   ├── support-analytics.service.ts  # Support metrics
-│       │   ├── geographic-analytics.service.ts # Geographic metrics
-│       │   ├── analytics-snapshot.service.ts  # Snapshot generation
-│       │   ├── report.service.ts              # Report generation & export
-│       │   ├── activity-log.service.ts        # Activity log management
-│       │   └── alert.service.ts               # Operational alert detection
+│   └── analytics/                      # NEW — dedicated NestJS module
+│       ├── analytics.module.ts
+│       ├── analytics.controller.ts     # Dashboard + analytics endpoints
+│       ├── reports.controller.ts       # Report generation + export endpoints
+│       ├── activity-logs.controller.ts # Activity log listing endpoint
+│       ├── enums/
+│       │   └── admin-action.enum.ts
 │       ├── dto/
 │       │   ├── dashboard-overview.dto.ts
 │       │   ├── user-analytics.dto.ts
@@ -98,56 +91,32 @@ src/
 │       │   ├── report-filter.dto.ts
 │       │   ├── activity-log.dto.ts
 │       │   └── operational-alert.dto.ts
+│       ├── services/
+│       │   ├── activity-log.service.ts
+│       │   ├── user-analytics.service.ts
+│       │   ├── provider-analytics.service.ts
+│       │   ├── booking-analytics.service.ts
+│       │   ├── revenue-analytics.service.ts
+│       │   ├── review-analytics.service.ts
+│       │   ├── support-analytics.service.ts
+│       │   ├── geographic-analytics.service.ts
+│       │   ├── alert.service.ts
+│       │   ├── analytics-snapshot.service.ts
+│       │   ├── report.service.ts
+│       │   └── dashboard.service.ts
 │       └── jobs/
-│           ├── analytics-snapshot.job.ts     # Daily/weekly/monthly snapshots
-│           └── alert-detection.job.ts        # Periodic alert checks
-├── common/
-│   └── guards/
-│       └── admin-role.guard.ts               # EXISTING — reuse
-└── migrations/
-    └── [timestamp]-CreateAnalyticsTables.ts   # NEW (generated)
+│           ├── analytics-snapshot.job.ts    # Repeatable Bull processor
+│           └── alert-detection.job.ts       # Periodic Bull processor
+│
+└── app.module.ts                           # MODIFIED — add AnalyticsModule
 ```
 
-**Structure Decision**: Single NestJS backend project with dedicated `analytics` module under `src/modules/`. Analytics entities stored in `src/entities/` following the existing pattern. Reuses existing `JwtAuthGuard`, `RolesGuard`, `@Roles` decorator, `EventEmitter2`, and `BullModule` for scheduled jobs.
-
-## Phase 0 — Research
-
-*No [NEEDS CLARIFICATION] markers found in spec. Research focuses on confirming existing patterns and identifying best approaches for aggregation and export.*
-
-### Research Tasks
-
-1. **Existing admin dashboard pattern**: Located at `src/modules/admin/admin.service.ts` — already has a `getDashboardStats()` method with raw user counts, booking counts, and revenue aggregation via QueryBuilder. **Decision**: Extend with dedicated analytics module rather than modifying existing admin module.
-
-2. **Existing Excel/CSV export libraries**: No existing export utility found in the codebase. **Decision**: Use `exceljs` or built-in Node.js CSV streaming for report exports.
-
-3. **Background job infrastructure**: `BullModule` is configured in `app.module.ts` with Redis connection. Several modules use Bull queues. **Decision**: Use Bull queue processors for scheduled analytics snapshot generation and alert detection.
-
-4. **Analytics aggregation approach**: Existing patterns use raw TypeORM QueryBuilder with `SELECT COUNT()`, `SUM()`, `GROUP BY` for aggregations. **Decision**: Create dedicated aggregation services that use QueryBuilder for real-time calculations and pre-computed snapshots for historical data.
-
-5. **Geographic data availability**: User entity does not have a city field directly. `Booking` has `city` field. `CustomerProfile` and `ProviderProfile` have address/lat/lng fields. **Decision**: Extract city from booking addresses and profile addresses; store city-level aggregations in snapshots.
-
-6. **Operational alert thresholds**: No existing alert system in the codebase. **Decision**: Define configurable threshold-based alert detection that runs on a schedule and creates notifications via the existing NotificationsService.
-
-### Findings Summary
-
-See [research.md](research.md) for detailed findings.
-
-## Phase 1 — Design & Contracts
-
-### Data Model
-
-See [data-model.md](data-model.md) for complete entity definitions, relationships, indexes, and constraints.
-
-### Contracts
-
-See [contracts/](contracts/) for:
-- `contracts/README.md` — API contract overview
-- API endpoint definitions with request/response shapes
-
-### Quickstart
-
-See [quickstart.md](quickstart.md) for implementation setup instructions, including entity creation, migration generation, module wiring, service implementation order, and job configuration.
+**Structure Decision**: Dedicated `analytics` module under `src/modules/` following the established NestJS module pattern. New entities in `src/entities/` alongside existing entities. New controllers mirroring the existing admin controller pattern (`@UseGuards(JwtAuthGuard, RolesGuard)` with `@Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)`).
 
 ## Complexity Tracking
 
-*No constitution violations — Complexity Tracking section not required.*
+> No violations — all Constitution gates pass. No complexity justification needed.
+
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| — | — | — |
