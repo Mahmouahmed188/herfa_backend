@@ -1,0 +1,1871 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "apiVersion": "1.0.0",
+  "baseUrl": "/api/v1",
+  "generatedAt": "2026-06-10T00:00:00.000Z",
+  "modules": [
+    {
+      "module": "Auth",
+      "basePath": "/auth",
+      "description": "Authentication and account management",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/auth/register",
+          "auth": false,
+          "roles": [],
+          "summary": "Register a new user",
+          "requestBody": {
+            "email": "string (valid email, unique)",
+            "phone": "string (valid phone, unique)",
+            "password": "string (min 8 chars, uppercase, lowercase, number, special)",
+            "fullName": "string (max 255)",
+            "role": "enum: customer | provider"
+          },
+          "responses": {
+            "201": "User created + tokens",
+            "400": "Validation error / email exists"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "auth": false,
+          "roles": [],
+          "summary": "Login with email and password",
+          "requestBody": {
+            "email": "string",
+            "password": "string"
+          },
+          "responses": {
+            "200": "User + tokens",
+            "401": "Invalid credentials",
+            "403": "User inactive/suspended"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/auth/refresh",
+          "auth": false,
+          "roles": [],
+          "summary": "Refresh access token",
+          "requestBody": { "refreshToken": "string" },
+          "responses": { "200": "New tokens", "401": "Invalid/expired token" }
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "auth": true,
+          "roles": [],
+          "summary": "Logout and revoke refresh token",
+          "requestBody": { "refreshToken": "string" },
+          "responses": { "200": "Logged out" }
+        },
+        {
+          "method": "POST",
+          "path": "/auth/forgot-password",
+          "auth": false,
+          "roles": [],
+          "summary": "Send password reset email",
+          "requestBody": { "email": "string" },
+          "responses": { "200": "Reset email sent" }
+        },
+        {
+          "method": "POST",
+          "path": "/auth/reset-password",
+          "auth": false,
+          "roles": [],
+          "summary": "Reset password with token",
+          "requestBody": { "token": "string", "password": "string" },
+          "responses": { "200": "Password reset" }
+        },
+        {
+          "method": "POST",
+          "path": "/auth/change-password",
+          "auth": true,
+          "roles": [],
+          "summary": "Change current password",
+          "requestBody": {
+            "currentPassword": "string",
+            "newPassword": "string (same validation as register)"
+          },
+          "responses": { "200": "Password changed", "400": "Current password wrong" }
+        }
+      ]
+    },
+    {
+      "module": "Users",
+      "basePath": "/users",
+      "description": "User profile management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/users/me",
+          "auth": true,
+          "roles": [],
+          "summary": "Get current user profile",
+          "responses": { "200": "User object" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/users/me",
+          "auth": true,
+          "roles": [],
+          "summary": "Update current user profile",
+          "requestBody": {
+            "fullName?": "string",
+            "phone?": "string",
+            "avatar?": "string (URL)"
+          },
+          "responses": { "200": "Updated user" }
+        },
+        {
+          "method": "GET",
+          "path": "/users",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all users",
+          "query": { "page?": "number", "limit?": "number", "role?": "string", "status?": "string" },
+          "responses": { "200": "Paginated users list" }
+        },
+        {
+          "method": "GET",
+          "path": "/users/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Get user by ID",
+          "responses": { "200": "User object", "404": "Not found" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/users/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Update user",
+          "requestBody": { "status?": "enum: active | inactive | suspended" },
+          "responses": { "200": "Updated user" }
+        }
+      ]
+    },
+    {
+      "module": "Providers",
+      "basePath": "/providers",
+      "description": "Provider profiles, services, and discovery",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/providers/apply",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Submit provider application",
+          "requestBody": {
+            "businessName": "string",
+            "categoryId": "uuid",
+            "message?": "string",
+            "experience": "number",
+            "phone": "string"
+          },
+          "responses": { "201": "Application submitted" }
+        },
+        {
+          "method": "GET",
+          "path": "/providers/profile",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Get own provider profile",
+          "responses": { "200": "Provider profile" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/providers/profile",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Update own profile",
+          "requestBody": {
+            "businessName?": "string",
+            "bio?": "string",
+            "experience?": "number",
+            "phone?": "string"
+          },
+          "responses": { "200": "Updated profile" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/providers/availability",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Toggle availability status",
+          "requestBody": { "isAvailable": "boolean" },
+          "responses": { "200": "Availability updated" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/providers/location",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Update location coordinates",
+          "requestBody": { "latitude": "number", "longitude": "number" },
+          "responses": { "200": "Location updated" }
+        },
+        {
+          "method": "GET",
+          "path": "/providers/services",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "List own provider services",
+          "responses": { "200": "Services list" }
+        },
+        {
+          "method": "POST",
+          "path": "/providers/services",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Add service to profile",
+          "requestBody": {
+            "categoryId": "uuid",
+            "price": "number",
+            "duration": "number (minutes)",
+            "isAvailable": "boolean"
+          },
+          "responses": { "201": "Service created" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/providers/services/:id",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Remove service from profile",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "GET",
+          "path": "/providers/categories",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "List provider categories",
+          "responses": { "200": "Categories list" }
+        },
+        {
+          "method": "POST",
+          "path": "/providers/categories",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Add category to profile",
+          "requestBody": { "categoryId": "uuid" },
+          "responses": { "201": "Category added" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/providers/categories/:id",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Remove category from profile",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "GET",
+          "path": "/providers/search",
+          "auth": true,
+          "roles": ["customer", "admin"],
+          "summary": "Search providers with filters and geo",
+          "query": {
+            "categoryId?": "uuid",
+            "isAvailable?": "boolean",
+            "latitude?": "number",
+            "longitude?": "number",
+            "radiusKm?": "number",
+            "page?": "number",
+            "limit?": "number",
+            "sortBy?": "string",
+            "sortOrder?": "ASC | DESC"
+          },
+          "responses": { "200": "Paginated provider results" }
+        },
+        {
+          "method": "GET",
+          "path": "/providers/nearby",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Find nearby providers",
+          "query": { "latitude": "number", "longitude": "number", "radiusKm?": "number" },
+          "responses": { "200": "Nearby providers" }
+        },
+        {
+          "method": "GET",
+          "path": "/providers/:id",
+          "auth": true,
+          "roles": [],
+          "summary": "Get public provider profile",
+          "responses": { "200": "Public profile", "404": "Not found" }
+        },
+        {
+          "method": "GET",
+          "path": "/providers/top-rated",
+          "auth": true,
+          "roles": [],
+          "summary": "Get top-rated providers",
+          "query": { "limit?": "number" },
+          "responses": { "200": "Top providers list" }
+        }
+      ]
+    },
+    {
+      "module": "Customers",
+      "basePath": "/customers",
+      "description": "Customer profile management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/customers/profile",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Get own customer profile",
+          "responses": { "200": "Customer profile" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/customers/profile",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Update customer profile",
+          "requestBody": { "phone?": "string", "dateOfBirth?": "date", "preferences?": "object" },
+          "responses": { "200": "Updated profile" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/customers/location",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Update default location",
+          "requestBody": { "latitude": "number", "longitude": "number" },
+          "responses": { "200": "Location updated" }
+        }
+      ]
+    },
+    {
+      "module": "Categories",
+      "basePath": "/categories",
+      "description": "Service categories management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/categories",
+          "auth": true,
+          "roles": [],
+          "summary": "List all categories",
+          "responses": { "200": "Categories list" }
+        },
+        {
+          "method": "GET",
+          "path": "/categories/:id",
+          "auth": true,
+          "roles": [],
+          "summary": "Get category by ID",
+          "responses": { "200": "Category", "404": "Not found" }
+        },
+        {
+          "method": "POST",
+          "path": "/categories",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Create category",
+          "requestBody": {
+            "name": "string",
+            "description?": "string",
+            "icon?": "string",
+            "parentId?": "uuid",
+            "sortOrder?": "number",
+            "isActive": "boolean"
+          },
+          "responses": { "201": "Category created" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/categories/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Update category",
+          "requestBody": { "name?": "string", "description?": "string", "isActive?": "boolean" },
+          "responses": { "200": "Updated" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/categories/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Delete category",
+          "responses": { "200": "Deleted" }
+        }
+      ]
+    },
+    {
+      "module": "ServiceListings",
+      "basePath": "/service-listings",
+      "description": "Service listings (provider-created services)",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/service-listings",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Create service listing",
+          "requestBody": {
+            "title": "string (3-100 chars)",
+            "description": "string (max 2000)",
+            "price": "number (positive)",
+            "duration": "number (minutes, positive)",
+            "categoryId": "uuid",
+            "isActive?": "boolean"
+          },
+          "responses": { "201": "Listing created" }
+        },
+        {
+          "method": "GET",
+          "path": "/service-listings",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "List own listings",
+          "responses": { "200": "Listings list" }
+        },
+        {
+          "method": "GET",
+          "path": "/service-listings/search",
+          "auth": true,
+          "roles": [],
+          "summary": "Search/filter all listings",
+          "query": {
+            "categoryId?": "uuid",
+            "minPrice?": "number",
+            "maxPrice?": "number",
+            "search?": "string",
+            "page?": "number",
+            "limit?": "number"
+          },
+          "responses": { "200": "Paginated results" }
+        },
+        {
+          "method": "GET",
+          "path": "/service-listings/search/:categoryId",
+          "auth": true,
+          "roles": [],
+          "summary": "Search listings by category",
+          "responses": { "200": "Filtered results" }
+        },
+        {
+          "method": "GET",
+          "path": "/service-listings/:id",
+          "auth": true,
+          "roles": [],
+          "summary": "Get listing by ID",
+          "responses": { "200": "Listing", "404": "Not found" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/service-listings/:id",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Update listing (owner only)",
+          "requestBody": {
+            "title?": "string",
+            "description?": "string",
+            "price?": "number",
+            "duration?": "number",
+            "isActive?": "boolean"
+          },
+          "responses": { "200": "Updated" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/service-listings/:id",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Delete listing (owner only)",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "POST",
+          "path": "/service-listings/:id/images",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Add image to listing",
+          "contentType": "multipart/form-data",
+          "responses": { "201": "Image added" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/service-listings/:id/images/:imageId",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Remove image from listing",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "GET",
+          "path": "/service-listings/:id/images",
+          "auth": true,
+          "roles": [],
+          "summary": "Get listing images",
+          "responses": { "200": "Images list" }
+        },
+        {
+          "method": "POST",
+          "path": "/service-listings/:id/categories",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Assign category to listing",
+          "requestBody": { "categoryId": "uuid" },
+          "responses": { "201": "Category assigned" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/service-listings/:id/categories/:catId",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Remove category from listing",
+          "responses": { "200": "Deleted" }
+        }
+      ]
+    },
+    {
+      "module": "Bookings",
+      "basePath": "/bookings",
+      "description": "Booking management with status machine",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/bookings",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Create booking",
+          "requestBody": {
+            "serviceListingId": "uuid",
+            "providerId": "uuid",
+            "scheduledDate": "ISO datetime",
+            "description?": "string",
+            "location": { "address": "string", "latitude": "number", "longitude": "number" }
+          },
+          "responses": { "201": "Booking created (pending)" }
+        },
+        {
+          "method": "GET",
+          "path": "/bookings",
+          "auth": true,
+          "roles": ["customer", "provider"],
+          "summary": "List own bookings",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated bookings" }
+        },
+        {
+          "method": "GET",
+          "path": "/bookings/:id",
+          "auth": true,
+          "roles": ["booking_owner"],
+          "summary": "Get booking details",
+          "responses": { "200": "Booking", "404": "Not found" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/bookings/:id/status",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Update booking status (accepted/rejected/on_the_way/in_progress/completed)",
+          "requestBody": { "status": "string (valid transition)" },
+          "responses": { "200": "Status updated", "400": "Invalid transition" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/bookings/:id/cancel",
+          "auth": true,
+          "roles": ["booking_owner"],
+          "summary": "Cancel booking",
+          "requestBody": { "reason?": "string" },
+          "responses": { "200": "Cancelled", "400": "Cannot cancel in current status" }
+        },
+        {
+          "method": "GET",
+          "path": "/bookings/search",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Search all bookings",
+          "query": { "status?": "string", "providerId?": "uuid", "customerId?": "uuid", "dateFrom?": "date", "dateTo?": "date", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated results" }
+        }
+      ]
+    },
+    {
+      "module": "Jobs",
+      "basePath": "/jobs",
+      "description": "Job management with auto-matching",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/jobs",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Create a job",
+          "requestBody": {
+            "title": "string",
+            "description": "string",
+            "categoryId": "uuid",
+            "latitude": "number",
+            "longitude": "number",
+            "address?": "string",
+            "budget?": "number",
+            "scheduledDate?": "ISO datetime"
+          },
+          "responses": { "201": "Job created (open)" }
+        },
+        {
+          "method": "GET",
+          "path": "/jobs",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "List own jobs",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated jobs" }
+        },
+        {
+          "method": "GET",
+          "path": "/jobs/my-jobs",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "List assigned jobs",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated assigned jobs" }
+        },
+        {
+          "method": "GET",
+          "path": "/jobs/available",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "List available jobs (geo-filtered)",
+          "query": { "latitude?": "number", "longitude?": "number", "radiusKm?": "number", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Available jobs" }
+        },
+        {
+          "method": "GET",
+          "path": "/jobs/:id",
+          "auth": true,
+          "roles": ["customer", "provider"],
+          "summary": "Get job details",
+          "responses": { "200": "Job details", "404": "Not found" }
+        },
+        {
+          "method": "POST",
+          "path": "/jobs/:id/assign",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Assign self to job",
+          "responses": { "200": "Assigned" }
+        },
+        {
+          "method": "POST",
+          "path": "/jobs/:id/accept",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Accept assigned job",
+          "responses": { "200": "Accepted" }
+        },
+        {
+          "method": "POST",
+          "path": "/jobs/:id/reject",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Reject assigned job",
+          "requestBody": { "reason?": "string" },
+          "responses": { "200": "Rejected" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/jobs/:id/status",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Update job status (in_progress/completed/cancelled)",
+          "requestBody": { "status": "string" },
+          "responses": { "200": "Status updated" }
+        },
+        {
+          "method": "GET",
+          "path": "/jobs/admin",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all jobs (admin)",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated all jobs" }
+        }
+      ]
+    },
+    {
+      "module": "Payments",
+      "basePath": "/payments",
+      "description": "Payment processing and management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/payments",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "List own payments",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated payments" }
+        },
+        {
+          "method": "GET",
+          "path": "/payments/provider",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "List received payments",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated payments" }
+        },
+        {
+          "method": "GET",
+          "path": "/payments/:id",
+          "auth": true,
+          "roles": ["payment_owner"],
+          "summary": "Get payment details",
+          "responses": { "200": "Payment", "404": "Not found" }
+        },
+        {
+          "method": "POST",
+          "path": "/payments/:id/process",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Process payment",
+          "requestBody": { "paymentMethod": "string" },
+          "responses": { "200": "Payment processed" }
+        },
+        {
+          "method": "GET",
+          "path": "/payments/admin",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all payments (admin)",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated all payments" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/payments/admin/:id/status",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Update payment status",
+          "requestBody": { "status": "string" },
+          "responses": { "200": "Status updated" }
+        },
+        {
+          "method": "POST",
+          "path": "/payments/admin/:id/refund",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Issue refund on payment",
+          "requestBody": { "amount": "number", "reason": "string" },
+          "responses": { "200": "Refund issued" }
+        }
+      ]
+    },
+    {
+      "module": "Reviews",
+      "basePath": "/reviews",
+      "description": "Customer reviews and ratings with moderation",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/reviews",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Create review",
+          "requestBody": {
+            "bookingId": "uuid",
+            "providerId": "uuid",
+            "rating": "number (1-5)",
+            "comment?": "string"
+          },
+          "responses": { "201": "Review created" }
+        },
+        {
+          "method": "GET",
+          "path": "/reviews",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "List own reviews",
+          "query": { "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated reviews" }
+        },
+        {
+          "method": "GET",
+          "path": "/reviews/provider",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "List reviews about me",
+          "query": { "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated reviews" }
+        },
+        {
+          "method": "GET",
+          "path": "/reviews/:id",
+          "auth": true,
+          "roles": [],
+          "summary": "Get review by ID",
+          "responses": { "200": "Review", "404": "Not found" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/reviews/:id",
+          "auth": true,
+          "roles": ["review_owner"],
+          "summary": "Update own review",
+          "requestBody": { "rating?": "number", "comment?": "string" },
+          "responses": { "200": "Updated" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/reviews/:id",
+          "auth": true,
+          "roles": ["review_owner"],
+          "summary": "Delete own review",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "POST",
+          "path": "/reviews/:id/flag",
+          "auth": true,
+          "roles": [],
+          "summary": "Flag review as inappropriate",
+          "responses": { "200": "Flagged" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/reviews/:id/moderate",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Moderate review (approve/reject)",
+          "requestBody": { "action": "approve | reject", "reason?": "string" },
+          "responses": { "200": "Moderated" }
+        },
+        {
+          "method": "GET",
+          "path": "/reviews/admin",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all reviews for moderation",
+          "query": { "isFlagged?": "boolean", "isApproved?": "boolean", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated reviews" }
+        }
+      ]
+    },
+    {
+      "module": "Notifications",
+      "basePath": "/notifications",
+      "description": "In-app and push notifications with announcements",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/notifications",
+          "auth": true,
+          "roles": [],
+          "summary": "List notifications (paginated)",
+          "query": { "isRead?": "boolean", "type?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated notifications" }
+        },
+        {
+          "method": "GET",
+          "path": "/notifications/unread-count",
+          "auth": true,
+          "roles": [],
+          "summary": "Get unread notification count",
+          "responses": { "200": "{ count: number }" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/notifications/:id/read",
+          "auth": true,
+          "roles": ["notification_owner"],
+          "summary": "Mark notification as read",
+          "responses": { "200": "Marked read" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/notifications/read-all",
+          "auth": true,
+          "roles": [],
+          "summary": "Mark all notifications as read",
+          "responses": { "200": "All marked read" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/notifications/:id",
+          "auth": true,
+          "roles": ["notification_owner"],
+          "summary": "Delete notification",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "GET",
+          "path": "/notifications/announcements",
+          "auth": true,
+          "roles": [],
+          "summary": "List announcements",
+          "responses": { "200": "Announcements list" }
+        },
+        {
+          "method": "POST",
+          "path": "/notifications/announcements",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Create announcement",
+          "requestBody": {
+            "title": "string",
+            "body": "string",
+            "type": "string",
+            "audience": "string (role or all)",
+            "scheduledAt?": "ISO datetime"
+          },
+          "responses": { "201": "Announcement created" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/notifications/announcements/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Update announcement",
+          "responses": { "200": "Updated" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/notifications/announcements/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Delete announcement",
+          "responses": { "200": "Deleted" }
+        }
+      ]
+    },
+    {
+      "module": "Support",
+      "basePath": "/support",
+      "description": "Support tickets and disputes",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/support/tickets",
+          "auth": true,
+          "roles": ["customer", "provider"],
+          "summary": "Create support ticket",
+          "requestBody": {
+            "subject": "string",
+            "description": "string",
+            "category?": "string",
+            "priority?": "enum: low | medium | high"
+          },
+          "responses": { "201": "Ticket created" }
+        },
+        {
+          "method": "GET",
+          "path": "/support/tickets",
+          "auth": true,
+          "roles": ["customer", "provider"],
+          "summary": "List own tickets",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated tickets" }
+        },
+        {
+          "method": "GET",
+          "path": "/support/tickets/:id",
+          "auth": true,
+          "roles": ["ticket_owner", "admin"],
+          "summary": "Get ticket details",
+          "responses": { "200": "Ticket details", "404": "Not found" }
+        },
+        {
+          "method": "POST",
+          "path": "/support/tickets/:id/messages",
+          "auth": true,
+          "roles": ["ticket_owner", "admin"],
+          "summary": "Add message to ticket",
+          "requestBody": { "message": "string", "attachments?": "string[]" },
+          "responses": { "201": "Message added" }
+        },
+        {
+          "method": "GET",
+          "path": "/support/tickets/:id/messages",
+          "auth": true,
+          "roles": ["ticket_owner", "admin"],
+          "summary": "Get ticket messages",
+          "responses": { "200": "Messages list" }
+        },
+        {
+          "method": "POST",
+          "path": "/support/disputes",
+          "auth": true,
+          "roles": ["customer", "provider"],
+          "summary": "Create dispute",
+          "requestBody": {
+            "bookingId": "uuid",
+            "reason": "string",
+            "description": "string"
+          },
+          "responses": { "201": "Dispute created" }
+        },
+        {
+          "method": "GET",
+          "path": "/support/disputes",
+          "auth": true,
+          "roles": ["customer", "provider"],
+          "summary": "List own disputes",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated disputes" }
+        },
+        {
+          "method": "POST",
+          "path": "/support/disputes/:id/evidence",
+          "auth": true,
+          "roles": ["dispute_owner", "admin"],
+          "summary": "Add evidence to dispute",
+          "contentType": "multipart/form-data",
+          "responses": { "201": "Evidence added" }
+        },
+        {
+          "method": "GET",
+          "path": "/support/disputes/:id/evidence",
+          "auth": true,
+          "roles": ["dispute_owner", "admin"],
+          "summary": "Get dispute evidence",
+          "responses": { "200": "Evidence list" }
+        }
+      ]
+    },
+    {
+      "module": "SupportAdmin",
+      "basePath": "/support/admin",
+      "description": "Admin support management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/support/admin/tickets",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all tickets",
+          "query": { "status?": "string", "priority?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated all tickets" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/support/admin/tickets/:id/status",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Update ticket status",
+          "requestBody": { "status": "string" },
+          "responses": { "200": "Status updated" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/support/admin/tickets/:id/priority",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Update ticket priority",
+          "requestBody": { "priority": "string" },
+          "responses": { "200": "Priority updated" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/support/admin/tickets/:id/assign",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Assign ticket to admin",
+          "requestBody": { "assignedTo": "uuid" },
+          "responses": { "200": "Assigned" }
+        },
+        {
+          "method": "GET",
+          "path": "/support/admin/disputes",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all disputes",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated disputes" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/support/admin/disputes/:id/resolve",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Resolve dispute",
+          "requestBody": { "resolution": "string", "status": "resolved | dismissed" },
+          "responses": { "200": "Resolved" }
+        }
+      ]
+    },
+    {
+      "module": "Tenders",
+      "basePath": "/tenders",
+      "description": "Tender (job posting) system with offers",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/tenders",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Create tender",
+          "requestBody": {
+            "title": "string",
+            "description": "string",
+            "budget": "number",
+            "deadline": "ISO datetime"
+          },
+          "responses": { "201": "Tender created (open)" }
+        },
+        {
+          "method": "GET",
+          "path": "/tenders",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "List own tenders",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated tenders" }
+        },
+        {
+          "method": "GET",
+          "path": "/tenders/open",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "List open tenders",
+          "query": { "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated open tenders" }
+        },
+        {
+          "method": "GET",
+          "path": "/tenders/:id",
+          "auth": true,
+          "roles": ["customer", "provider"],
+          "summary": "Get tender details",
+          "responses": { "200": "Tender details", "404": "Not found" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/tenders/:id",
+          "auth": true,
+          "roles": ["tender_owner"],
+          "summary": "Update tender",
+          "requestBody": { "title?": "string", "description?": "string", "budget?": "number", "deadline?": "date" },
+          "responses": { "200": "Updated" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/tenders/:id",
+          "auth": true,
+          "roles": ["tender_owner"],
+          "summary": "Delete tender",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "POST",
+          "path": "/tenders/:id/offers",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Create offer on tender",
+          "requestBody": { "amount": "number", "notes?": "string" },
+          "responses": { "201": "Offer created" }
+        },
+        {
+          "method": "GET",
+          "path": "/tenders/:id/offers",
+          "auth": true,
+          "roles": ["tender_owner"],
+          "summary": "List offers on tender",
+          "responses": { "200": "Offers list" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/tenders/:id/offers/:offerId/accept",
+          "auth": true,
+          "roles": ["tender_owner"],
+          "summary": "Accept offer",
+          "responses": { "200": "Offer accepted, tender awarded" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/tenders/:id/offers/:offerId/reject",
+          "auth": true,
+          "roles": ["tender_owner"],
+          "summary": "Reject offer",
+          "responses": { "200": "Offer rejected" }
+        }
+      ]
+    },
+    {
+      "module": "Messages",
+      "basePath": "/messages",
+      "description": "Direct messaging between users",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/messages",
+          "auth": true,
+          "roles": [],
+          "summary": "Send message",
+          "requestBody": {
+            "receiverId": "uuid",
+            "bookingId": "uuid",
+            "content": "string"
+          },
+          "responses": { "201": "Message sent" }
+        },
+        {
+          "method": "GET",
+          "path": "/messages/conversations",
+          "auth": true,
+          "roles": [],
+          "summary": "List user conversations",
+          "responses": { "200": "Conversations list" }
+        },
+        {
+          "method": "GET",
+          "path": "/messages/conversations/:userId",
+          "auth": true,
+          "roles": [],
+          "summary": "Get conversation with specific user",
+          "query": { "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated messages" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/messages/conversations/:userId/read",
+          "auth": true,
+          "roles": [],
+          "summary": "Mark conversation as read",
+          "responses": { "200": "Marked read" }
+        }
+      ]
+    },
+    {
+      "module": "Tracking",
+      "basePath": "/tracking",
+      "description": "Real-time provider location tracking",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/tracking/sessions",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Start tracking session",
+          "requestBody": { "bookingId": "uuid" },
+          "responses": { "201": "Session created (active)" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/tracking/sessions/:id/location",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Update location",
+          "requestBody": { "latitude": "number", "longitude": "number", "speed?": "number", "heading?": "number" },
+          "responses": { "200": "Location updated" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/tracking/sessions/:id/pause",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Pause tracking",
+          "responses": { "200": "Paused" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/tracking/sessions/:id/resume",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Resume tracking",
+          "responses": { "200": "Resumed" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/tracking/sessions/:id/stop",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Stop tracking (complete)",
+          "responses": { "200": "Completed" }
+        },
+        {
+          "method": "GET",
+          "path": "/tracking/sessions/:id",
+          "auth": true,
+          "roles": ["session_owner", "customer"],
+          "summary": "Get session details (customer view)",
+          "responses": { "200": "Session details" }
+        },
+        {
+          "method": "GET",
+          "path": "/tracking/bookings/:bookingId",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Get tracking for customer booking",
+          "responses": { "200": "Tracking data" }
+        },
+        {
+          "method": "GET",
+          "path": "/tracking/admin/sessions",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all sessions",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated sessions" }
+        },
+        {
+          "method": "GET",
+          "path": "/tracking/admin/sessions/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Get any session details",
+          "responses": { "200": "Session details" }
+        }
+      ]
+    },
+    {
+      "module": "Admin",
+      "basePath": "/admin",
+      "description": "Admin dashboard and management",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/admin/dashboard",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Get dashboard statistics",
+          "responses": { "200": "Dashboard stats" }
+        },
+        {
+          "method": "GET",
+          "path": "/admin/users",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all users",
+          "query": { "role?": "string", "status?": "string", "search?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated users" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/admin/users/:id/status",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Update user status",
+          "requestBody": { "status": "active | inactive | suspended" },
+          "responses": { "200": "Status updated" }
+        },
+        {
+          "method": "GET",
+          "path": "/admin/applications",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List provider applications",
+          "query": { "status?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated applications" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/admin/applications/:id/approve",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Approve provider application",
+          "responses": { "200": "Approved" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/admin/applications/:id/reject",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Reject provider application",
+          "requestBody": { "reason": "string" },
+          "responses": { "200": "Rejected" }
+        },
+        {
+          "method": "GET",
+          "path": "/admin/activity-logs",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "View admin activity logs",
+          "query": { "page?": "number", "limit?": "number", "action?": "string" },
+          "responses": { "200": "Paginated logs" }
+        }
+      ]
+    },
+    {
+      "module": "Analytics",
+      "basePath": "/analytics",
+      "description": "Analytics and reporting",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/analytics/dashboard",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Analytics overview dashboard",
+          "responses": { "200": "Dashboard analytics" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/users",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "User analytics",
+          "query": { "dateFrom?": "date", "dateTo?": "date" },
+          "responses": { "200": "User analytics data" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/bookings",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Booking analytics",
+          "query": { "dateFrom?": "date", "dateTo?": "date" },
+          "responses": { "200": "Booking analytics data" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/revenue",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Revenue analytics",
+          "query": { "dateFrom?": "date", "dateTo?": "date", "groupBy?": "day | month | year" },
+          "responses": { "200": "Revenue analytics data" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/providers",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Provider analytics",
+          "query": { "dateFrom?": "date", "dateTo?": "date" },
+          "responses": { "200": "Provider analytics data" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/reviews",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Review analytics",
+          "query": { "dateFrom?": "date", "dateTo?": "date" },
+          "responses": { "200": "Review analytics data" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/support",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Support analytics",
+          "query": { "dateFrom?": "date", "dateTo?": "date" },
+          "responses": { "200": "Support analytics data" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/geographic",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Geographic distribution",
+          "responses": { "200": "Geographic data" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/reports/:type",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Generate report (CSV/JSON)",
+          "query": { "format?": "csv | json", "dateFrom?": "date", "dateTo?": "date" },
+          "responses": { "200": "Report file" }
+        },
+        {
+          "method": "GET",
+          "path": "/analytics/activity-logs",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Activity logs",
+          "query": { "entityType?": "string", "action?": "string", "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated logs" }
+        }
+      ]
+    },
+    {
+      "module": "AIGateway",
+      "basePath": "/ai",
+      "description": "AI-powered features (chat, classification, OCR)",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/ai/chat",
+          "auth": true,
+          "roles": [],
+          "summary": "Send chat message to AI assistant",
+          "requestBody": { "message": "string", "context?": "object" },
+          "responses": { "200": "AI reply" }
+        },
+        {
+          "method": "POST",
+          "path": "/ai/classify-service",
+          "auth": true,
+          "roles": [],
+          "summary": "Classify service description",
+          "requestBody": { "description": "string" },
+          "responses": { "200": "Classification result" }
+        },
+        {
+          "method": "POST",
+          "path": "/ai/analyze-image",
+          "auth": true,
+          "roles": [],
+          "summary": "Analyze/describe uploaded image",
+          "contentType": "multipart/form-data",
+          "requestBody": { "image": "file (jpg/png, max 10MB)" },
+          "responses": { "200": "Image analysis result" }
+        },
+        {
+          "method": "POST",
+          "path": "/ai/estimate-cost",
+          "auth": true,
+          "roles": [],
+          "summary": "Estimate cost from description",
+          "requestBody": { "description": "string", "category?": "string" },
+          "responses": { "200": "Cost estimate" }
+        },
+        {
+          "method": "POST",
+          "path": "/ai/recommend-provider",
+          "auth": true,
+          "roles": [],
+          "summary": "Get AI provider recommendation",
+          "requestBody": { "serviceDescription": "string", "latitude?": "number", "longitude?": "number" },
+          "responses": { "200": "Provider recommendation" }
+        },
+        {
+          "method": "POST",
+          "path": "/ai/ocr",
+          "auth": true,
+          "roles": [],
+          "summary": "OCR on uploaded document",
+          "contentType": "multipart/form-data",
+          "requestBody": { "document": "file (jpg/png/pdf, max 10MB)" },
+          "responses": { "200": "OCR text result" }
+        }
+      ]
+    },
+    {
+      "module": "Uploads",
+      "basePath": "/upload",
+      "description": "File upload management",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/upload",
+          "auth": true,
+          "roles": [],
+          "summary": "Upload a file (any allowed type)",
+          "contentType": "multipart/form-data",
+          "requestBody": { "file": "file (jpg/jpeg/png/pdf, max 5MB)" },
+          "responses": { "201": "File URL and metadata" }
+        },
+        {
+          "method": "POST",
+          "path": "/upload/images",
+          "auth": true,
+          "roles": [],
+          "summary": "Upload image only",
+          "contentType": "multipart/form-data",
+          "requestBody": { "image": "file (jpg/jpeg/png, max 5MB)" },
+          "responses": { "201": "Image URL" }
+        },
+        {
+          "method": "POST",
+          "path": "/upload/documents",
+          "auth": true,
+          "roles": [],
+          "summary": "Upload document (pdf or image)",
+          "contentType": "multipart/form-data",
+          "requestBody": { "document": "file (jpg/jpeg/png/pdf, max 5MB)" },
+          "responses": { "201": "Document URL" }
+        }
+      ]
+    },
+    {
+      "module": "Verification",
+      "basePath": "/verification",
+      "description": "Legacy provider verification",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/verification/submit",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Submit verification request",
+          "requestBody": { "documentUrl?": "string", "notes?": "string" },
+          "responses": { "201": "Submitted" }
+        },
+        {
+          "method": "GET",
+          "path": "/verification/status",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Get own verification status",
+          "responses": { "200": "Verification status" }
+        },
+        {
+          "method": "GET",
+          "path": "/verification/admin",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all verification submissions",
+          "responses": { "200": "List of submissions" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/verification/admin/:id/review",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Review verification submission",
+          "requestBody": { "status": "approved | rejected", "notes?": "string" },
+          "responses": { "200": "Reviewed" }
+        }
+      ]
+    },
+    {
+      "module": "ProviderVerification",
+      "basePath": "/provider-verifications",
+      "description": "Provider verification with document management",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/provider-verifications",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Submit provider verification",
+          "requestBody": { "businessLicense?": "string", "notes?": "string" },
+          "responses": { "201": "Verification submitted" }
+        },
+        {
+          "method": "GET",
+          "path": "/provider-verifications/mine",
+          "auth": true,
+          "roles": ["provider"],
+          "summary": "Get own verification status",
+          "responses": { "200": "Verification status" }
+        },
+        {
+          "method": "GET",
+          "path": "/provider-verifications/:id",
+          "auth": true,
+          "roles": ["verification_owner"],
+          "summary": "Get verification details",
+          "responses": { "200": "Verification details", "404": "Not found" }
+        },
+        {
+          "method": "POST",
+          "path": "/provider-verifications/:id/documents",
+          "auth": true,
+          "roles": ["verification_owner"],
+          "summary": "Upload verification document",
+          "contentType": "multipart/form-data",
+          "responses": { "201": "Document uploaded" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/provider-verifications/:id/documents/:docId",
+          "auth": true,
+          "roles": ["verification_owner"],
+          "summary": "Remove document",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "GET",
+          "path": "/provider-verifications/check/:providerId",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Check provider verification status",
+          "responses": { "200": "Verification status" }
+        },
+        {
+          "method": "GET",
+          "path": "/provider-verifications/:id/history",
+          "auth": true,
+          "roles": ["verification_owner"],
+          "summary": "Get verification history",
+          "responses": { "200": "History list" }
+        }
+      ]
+    },
+    {
+      "module": "ProviderVerificationAdmin",
+      "basePath": "/admin/provider-verifications",
+      "description": "Admin management of provider verifications",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/admin/provider-verifications",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all verifications (filtered/sorted)",
+          "query": {
+            "status?": "string",
+            "search?": "string",
+            "categoryId?": "uuid",
+            "dateFrom?": "date",
+            "dateTo?": "date",
+            "page?": "number",
+            "limit?": "number",
+            "sortBy?": "submittedAt | status",
+            "sortOrder?": "asc | desc"
+          },
+          "responses": { "200": "Paginated verifications" }
+        },
+        {
+          "method": "GET",
+          "path": "/admin/provider-verifications/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Get verification details with documents and history",
+          "responses": { "200": "Full verification details", "404": "Not found" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/admin/provider-verifications/:id/approve",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Approve provider verification",
+          "requestBody": { "notes?": "string" },
+          "responses": { "200": "Approved", "400": "Invalid transition or self-approval" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/admin/provider-verifications/:id/reject",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Reject provider verification",
+          "requestBody": { "reason": "string (required)", "notes?": "string" },
+          "responses": { "200": "Rejected", "400": "Reason required" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/admin/provider-verifications/:id/suspend",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Suspend an approved provider",
+          "requestBody": { "reason": "string (required)", "notes?": "string" },
+          "responses": { "200": "Suspended", "400": "Reason required" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/admin/provider-verifications/:id/reactivate",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Reactivate a suspended provider",
+          "requestBody": { "notes?": "string" },
+          "responses": { "200": "Reactivated", "400": "Invalid transition" }
+        }
+      ]
+    },
+    {
+      "module": "Addresses",
+      "basePath": "/addresses",
+      "description": "Customer address management",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/addresses",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "Create address",
+          "requestBody": {
+            "label": "string",
+            "street": "string",
+            "city": "string",
+            "state?": "string",
+            "zipCode?": "string",
+            "country": "string",
+            "latitude?": "number",
+            "longitude?": "number",
+            "isDefault?": "boolean"
+          },
+          "responses": { "201": "Address created" }
+        },
+        {
+          "method": "GET",
+          "path": "/addresses",
+          "auth": true,
+          "roles": ["customer"],
+          "summary": "List own addresses",
+          "responses": { "200": "Addresses list" }
+        },
+        {
+          "method": "GET",
+          "path": "/addresses/:id",
+          "auth": true,
+          "roles": ["address_owner"],
+          "summary": "Get address by ID",
+          "responses": { "200": "Address", "404": "Not found" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/addresses/:id",
+          "auth": true,
+          "roles": ["address_owner"],
+          "summary": "Update address",
+          "requestBody": { "label?": "string", "street?": "string", "isDefault?": "boolean" },
+          "responses": { "200": "Updated" }
+        },
+        {
+          "method": "DELETE",
+          "path": "/addresses/:id",
+          "auth": true,
+          "roles": ["address_owner"],
+          "summary": "Delete address",
+          "responses": { "200": "Deleted" }
+        },
+        {
+          "method": "PATCH",
+          "path": "/addresses/:id/default",
+          "auth": true,
+          "roles": ["address_owner"],
+          "summary": "Set as default address",
+          "responses": { "200": "Default set" }
+        },
+        {
+          "method": "GET",
+          "path": "/addresses/admin",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "List all addresses",
+          "query": { "page?": "number", "limit?": "number" },
+          "responses": { "200": "Paginated addresses" }
+        },
+        {
+          "method": "GET",
+          "path": "/addresses/admin/:id",
+          "auth": true,
+          "roles": ["admin", "super_admin"],
+          "summary": "Get any address",
+          "responses": { "200": "Address details", "404": "Not found" }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "totalModules": 24,
+    "totalEndpoints": 155,
+    "authenticatedEndpoints": 155,
+    "publicEndpoints": 7,
+    "adminEndpoints": 30,
+    "customerOnlyEndpoints": 12,
+    "providerOnlyEndpoints": 27
+  },
+  "webSocketEvents": {
+    "namespace": "/tracking",
+    "clientToServer": [
+      { "event": "join-session", "payload": { "sessionId": "string" } },
+      { "event": "leave-session", "payload": { "sessionId": "string" } },
+      { "event": "location-update", "payload": { "sessionId": "string", "latitude": "number", "longitude": "number", "speed?": "number", "heading?": "number" } }
+    ],
+    "serverToClient": [
+      { "event": "location-update", "payload": { "latitude": "number", "longitude": "number", "speed?": "number", "heading?": "number", "timestamp": "ISO datetime" } },
+      { "event": "session-paused", "payload": { "sessionId": "string", "timestamp": "ISO datetime" } },
+      { "event": "session-resumed", "payload": { "sessionId": "string", "timestamp": "ISO datetime" } },
+      { "event": "session-completed", "payload": { "sessionId": "string", "timestamp": "ISO datetime" } },
+      { "event": "error", "payload": { "message": "string" } }
+    ]
+  }
+}
