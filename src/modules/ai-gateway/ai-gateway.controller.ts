@@ -18,7 +18,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { memoryStorage, diskStorage } from 'multer';
 import { extname } from 'path';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AiGatewayService } from './services/ai-gateway.service';
@@ -113,16 +113,8 @@ export class AiGatewayController {
   @Post('analyze-image')
   @UseInterceptors(
     FileInterceptor('image', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-          cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
+      storage: memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 },
     }),
   )
   @ApiConsumes('multipart/form-data')
@@ -166,9 +158,15 @@ export class AiGatewayController {
       throw new BadRequestException('Image file is required');
     }
     this.fileValidatorService.validateImageFile(image);
-    return this.aiGatewayService.processRequest(
+
+    const imageBase64 = image.buffer.toString('base64');
+    const mimeType = image.mimetype;
+
+    return this.aiGatewayService.processImageRequest(
       AiFeatureType.IMAGE_ANALYSIS,
-      { imagePath: image.path, originalName: image.originalname },
+      imageBase64,
+      mimeType,
+      image.originalname,
       req.user.id,
       req.ip,
     );

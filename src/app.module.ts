@@ -31,6 +31,7 @@ import { SupportModule } from './modules/support/support.module';
 import { ProviderVerificationModule } from './modules/provider-verification/provider-verification.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AiGatewayModule } from './modules/ai-gateway/ai-gateway.module';
+import { HealthModule } from './modules/health/health.module';
 
 @Module({
   imports: [
@@ -118,6 +119,7 @@ import { AiGatewayModule } from './modules/ai-gateway/ai-gateway.module';
     ProviderVerificationModule,
     AnalyticsModule,
     AiGatewayModule,
+    HealthModule,
   ],
 })
 export class AppModule { }

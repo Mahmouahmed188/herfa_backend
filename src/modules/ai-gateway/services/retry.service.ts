@@ -46,6 +46,39 @@ export class RetryService {
     throw lastError;
   }
 
+  async executeWithRetryImage(
+    featureType: AiFeatureType,
+    imageBase64: string,
+    mimeType: string,
+    originalName: string,
+  ): Promise<any> {
+    let lastError: any;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const result = await this.aiClientService.callAiServiceWithImage(
+          featureType,
+          imageBase64,
+          mimeType,
+          originalName,
+        );
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        if (attempt < this.maxRetries && this.isRetryable(error)) {
+          const delay = this.baseDelay * Math.pow(2, attempt);
+          this.logger.warn(
+            `Retry attempt ${attempt + 1}/${this.maxRetries} for ${featureType} image after ${delay}ms`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      }
+    }
+
+    throw lastError;
+  }
+
   private isRetryable(error: any): boolean {
     if (error.response) {
       const status = error.response.status;
