@@ -7,7 +7,7 @@ datasource db {
 }
 
 model User {
-  id                                   String                     @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                                   String                     @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(uuid()) @db.Uuid
   email                                String                     @unique(map: "IDX_97672ac88f789774dd47f7c8be") @db.VarChar
   phone                                String                     @unique(map: "IDX_a000cca60bcf04454e72769949") @db.VarChar
   passwordHash                         String                     @map("password") @db.VarChar
@@ -46,7 +46,7 @@ model User {
 }
 
 model RefreshToken {
-  id         String    @id(map: "PK_7d8bee0204106019488c4c50ffa") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id         String    @id(map: "PK_7d8bee0204106019488c4c50ffa") @default(uuid()) @db.Uuid
   token      String    @unique(map: "UQ_4542dd2f38a61354a040ba9fd57") @db.VarChar
   expiresAt  DateTime  @db.Timestamp(6)
   isRevoked  Boolean   @default(false)
@@ -54,8 +54,8 @@ model RefreshToken {
   deviceInfo String?   @db.VarChar
   ipAddress  String?   @db.VarChar
   createdAt  DateTime  @default(now()) @db.Timestamp(6)
-  userId     String?   @map("user_id") @db.Uuid
-  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_3ddc983c5f7bcf132fd8732c3f4")
+  userId     String    @map("user_id") @db.Uuid
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_3ddc983c5f7bcf132fd8732c3f4")
 
   @@index([token], map: "IDX_4542dd2f38a61354a040ba9fd5")
   @@index([userId], map: "IDX_610102b60fea1455310ccd299d")
@@ -64,7 +64,7 @@ model RefreshToken {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model customer_profiles {
-  id                String   @id(map: "PK_ece08ee55cbe707d9f870907727") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                String   @id(map: "PK_ece08ee55cbe707d9f870907727") @default(uuid()) @db.Uuid
   userId            String?  @db.VarChar
   defaultAddress    String?  @db.VarChar
   defaultLatitude   Decimal? @db.Decimal(10, 8)
@@ -79,7 +79,7 @@ model customer_profiles {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model job_assignments {
-  id                String             @id(map: "PK_353e90dd5926795cc44eca343a9") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                String             @id(map: "PK_353e90dd5926795cc44eca343a9") @default(uuid()) @db.Uuid
   jobId             String             @db.VarChar
   providerId        String             @db.VarChar
   status            String             @default("pending") @db.VarChar
@@ -102,7 +102,7 @@ model job_assignments {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model job_status_history {
-  id        String   @id(map: "PK_971859ffd3de1d3118837cb4d9d") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id        String   @id(map: "PK_971859ffd3de1d3118837cb4d9d") @default(uuid()) @db.Uuid
   jobId     String   @db.VarChar
   status    String   @db.VarChar
   notes     String?  @db.VarChar
@@ -114,7 +114,7 @@ model job_status_history {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model jobs {
-  id                 String               @id(map: "PK_cf0a6c42b72fcc7f7c237def345") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                 String               @id(map: "PK_cf0a6c42b72fcc7f7c237def345") @default(uuid()) @db.Uuid
   customerId         String               @db.VarChar
   serviceId          String               @db.VarChar
   providerId         String?              @db.VarChar
@@ -148,7 +148,7 @@ model jobs {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model messages {
-  id                                String   @id(map: "PK_18325f38ae6de43878487eff986") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                                String   @id(map: "PK_18325f38ae6de43878487eff986") @default(uuid()) @db.Uuid
   senderId                          String   @db.VarChar
   receiverId                        String   @db.VarChar
   content                           String
@@ -164,7 +164,7 @@ model messages {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model notifications {
-  id        String                  @id(map: "PK_6a72c3c0f683f6462415e653c3a") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id        String                  @id(map: "PK_6a72c3c0f683f6462415e653c3a") @default(uuid()) @db.Uuid
   userId    String                  @db.VarChar
   type      notifications_type_enum
   title     String                  @db.VarChar
@@ -184,7 +184,7 @@ model notifications {
 }
 
 model notification_announcements {
-  id             String   @id(map: "PK_notification_announcements") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id             String   @id(map: "PK_notification_announcements") @default(uuid()) @db.Uuid
   title          String   @db.VarChar
   message        String
   targetAudience String   @db.VarChar
@@ -195,7 +195,7 @@ model notification_announcements {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model payments {
-  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                  String    @id @default(uuid()) @db.Uuid
   paymentNumber       String    @unique @db.VarChar(30)
   bookingId           String    @db.Uuid
   customerId          String    @db.Uuid
@@ -224,7 +224,7 @@ model payments {
 }
 
 model refunds {
-  id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id           String   @id @default(uuid()) @db.Uuid
   paymentId    String   @db.Uuid
   refundAmount Decimal  @db.Decimal(10, 2)
   refundReason String   @db.VarChar(255)
@@ -240,7 +240,7 @@ model refunds {
 }
 
 model audit_logs {
-  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id         String   @id @default(uuid()) @db.Uuid
   action     String   @db.VarChar(50)
   entityType String   @db.VarChar(30)
   entityId   String   @db.Uuid
@@ -258,7 +258,7 @@ model audit_logs {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model provider_applications {
-  id                  String             @id(map: "PK_4262a1be4435ab71d0795cb8d19") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                  String             @id(map: "PK_4262a1be4435ab71d0795cb8d19") @default(uuid()) @db.Uuid
   userId              String             @db.VarChar
   providerProfileId   String?            @db.VarChar
   status              String             @default("pending") @db.VarChar
@@ -282,7 +282,7 @@ model provider_applications {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model provider_locations {
-  id                String             @id(map: "PK_1261f1380acfb33f74b8f9eb4a1") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                String             @id(map: "PK_1261f1380acfb33f74b8f9eb4a1") @default(uuid()) @db.Uuid
   providerId        String             @db.VarChar
   location          String?
   latitude          Decimal            @db.Decimal(10, 8)
@@ -305,7 +305,7 @@ model provider_locations {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model provider_profiles {
-  id                    String                  @id(map: "PK_0197ced76e32133df96a97168df") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                    String                  @id(map: "PK_0197ced76e32133df96a97168df") @default(uuid()) @db.Uuid
   userId                String?                 @db.VarChar
   businessName          String?                 @db.VarChar
   businessDescription   String?                 @db.VarChar
@@ -340,7 +340,7 @@ model provider_profiles {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model provider_categories {
-  id          String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id          String             @id @default(uuid()) @db.Uuid
   providerId  String             @db.VarChar
   categoryId  String             @db.VarChar
   createdAt   DateTime           @default(now()) @db.Timestamp(6)
@@ -356,7 +356,7 @@ model provider_categories {
 }
 
 model provider_services {
-  id                String             @id(map: "PK_c907262c804f6e6a2888ed5e630") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                String             @id(map: "PK_c907262c804f6e6a2888ed5e630") @default(uuid()) @db.Uuid
   providerId        String             @db.VarChar
   serviceId         String             @db.VarChar
   price             Decimal            @db.Decimal(10, 2)
@@ -374,7 +374,7 @@ model provider_services {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model reviews {
-  id                               String            @id(map: "PK_231ae565c273ee700b283f15c1d") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                               String            @id(map: "PK_231ae565c273ee700b283f15c1d") @default(uuid()) @db.Uuid
   jobId                            String            @db.VarChar
   reviewerId                       String            @db.VarChar
   revieweeId                       String            @db.VarChar
@@ -398,7 +398,7 @@ model reviews {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model service_categories {
-  id          String     @id(map: "PK_fe4da5476c4ffe5aa2d3524ae68") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id          String     @id(map: "PK_fe4da5476c4ffe5aa2d3524ae68") @default(uuid()) @db.Uuid
   name        String     @unique(map: "UQ_7ef2e28b495d09a4eb28997c653") @db.VarChar
   description String?    @db.VarChar
   icon        String?    @db.VarChar
@@ -413,7 +413,7 @@ model service_categories {
 }
 
 model service_listings {
-  id                       String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                       String             @id @default(uuid()) @db.Uuid
   providerId               String             @db.VarChar
   categoryId               String?            @db.VarChar
   title                    String             @db.VarChar
@@ -436,7 +436,7 @@ model service_listings {
 }
 
 model service_images {
-  id         String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id         String             @id @default(uuid()) @db.Uuid
   serviceId  String             @db.VarChar
   imageUrl   String             @db.VarChar
   isPrimary  Boolean            @default(false)
@@ -450,7 +450,7 @@ model service_images {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model services {
-  id                 String              @id(map: "PK_ba2d347a3168a296416c6c5ccb2") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                 String              @id(map: "PK_ba2d347a3168a296416c6c5ccb2") @default(uuid()) @db.Uuid
   name               String              @db.VarChar
   description        String?             @db.VarChar
   image              String?             @db.VarChar
@@ -471,7 +471,7 @@ model services {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model technician_verifications {
-  id            String   @id(map: "PK_3b3adc1b3529e031b8ddf088692") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id            String   @id(map: "PK_3b3adc1b3529e031b8ddf088692") @default(uuid()) @db.Uuid
   userId        String   @db.Uuid
   frontIdImage  String?  @db.VarChar
   backIdImage   String?  @db.VarChar
@@ -487,7 +487,7 @@ model technician_verifications {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model tender_offers {
-  id            String   @id(map: "PK_1aca67fc12c45bb5319f87ed2a7") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id            String   @id(map: "PK_1aca67fc12c45bb5319f87ed2a7") @default(uuid()) @db.Uuid
   tenderId      String   @db.VarChar
   providerId    String   @db.VarChar
   price         Decimal  @db.Decimal(10, 2)
@@ -504,7 +504,7 @@ model tender_offers {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model tenders {
-  id              String          @id(map: "PK_13fdd4229818a97b5102199463b") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String          @id(map: "PK_13fdd4229818a97b5102199463b") @default(uuid()) @db.Uuid
   userId          String          @db.VarChar
   serviceId       String          @db.VarChar
   title           String          @db.VarChar
@@ -526,7 +526,7 @@ model tenders {
 }
 
 model provider_verifications {
-  id               String                    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id               String                    @id @default(uuid()) @db.Uuid
   providerId       String                    @unique @db.Uuid
   status           String                    @default("pending") @db.VarChar
   rejectionReason  String?                   @db.Text
@@ -547,7 +547,7 @@ model provider_verifications {
 }
 
 model verification_documents {
-  id              String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String                  @id @default(uuid()) @db.Uuid
   verificationId  String                  @db.Uuid
   documentType    String                  @db.VarChar
   documentUrl     String                  @db.VarChar
@@ -564,7 +564,7 @@ model verification_documents {
 }
 
 model verification_history {
-  id              String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id              String                  @id @default(uuid()) @db.Uuid
   verificationId  String                  @db.Uuid
   oldStatus       String?                 @db.VarChar
   newStatus       String                  @db.VarChar
@@ -619,7 +619,7 @@ enum booking_status_enum {
 }
 
 model Booking {
-  id                 String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                 String                @id @default(uuid()) @db.Uuid
   bookingNumber      String                @unique @db.VarChar(20)
   customerId         String                @db.Uuid
   providerId         String                @db.Uuid
@@ -649,7 +649,7 @@ model Booking {
 }
 
 model BookingStatusHistory {
-  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id        String   @id @default(uuid()) @db.Uuid
   bookingId String   @db.Uuid
   oldStatus String   @db.VarChar
   newStatus String   @db.VarChar
@@ -670,7 +670,7 @@ enum tracking_session_status_enum {
 }
 
 model TrackingSession {
-  id            String                          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id            String                          @id @default(uuid()) @db.Uuid
   bookingId     String                          @unique @db.Uuid
   providerId    String                          @db.Uuid
   customerId    String                          @db.Uuid
@@ -693,7 +693,7 @@ model TrackingSession {
 }
 
 model TrackingLocation {
-  id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                String   @id @default(uuid()) @db.Uuid
   trackingSessionId String   @db.Uuid
   latitude          Decimal  @db.Decimal(10, 8)
   longitude         Decimal  @db.Decimal(11, 8)
@@ -709,7 +709,7 @@ model TrackingLocation {
 }
 
 model TrackingAuditEvent {
-  id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id                String   @id @default(uuid()) @db.Uuid
   trackingSessionId String   @db.Uuid
   eventType         String   @db.VarChar(30)
   previousStatus    String?  @db.VarChar(20)
