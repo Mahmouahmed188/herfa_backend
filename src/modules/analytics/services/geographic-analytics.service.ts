@@ -32,7 +32,11 @@ export class GeographicAnalyticsService {
     startDate?: string,
     endDate?: string,
   ): Promise<GeographicAnalyticsDto> {
-    const range = this.dateRangeFilterService.resolve(preset, startDate, endDate);
+    const range = this.dateRangeFilterService.resolve(
+      preset,
+      startDate,
+      endDate,
+    );
 
     const usersByCity = await this.addressRepository
       .createQueryBuilder('address')
@@ -89,10 +93,22 @@ export class GeographicAnalyticsService {
       .getRawMany<{ city: string; revenue: string }>();
 
     return {
-      usersByCity: usersByCity.map((c) => ({ city: c.city, count: parseInt(c.count) })),
-      providersByCity: providersByCity.map((c) => ({ city: c.city, count: parseInt(c.count) })),
-      bookingsByCity: bookingsByCity.map((c) => ({ city: c.city, count: parseInt(c.count) })),
-      revenueByCity: revenueByCity.map((c) => ({ city: c.city, revenue: Number(c.revenue) })),
+      usersByCity: usersByCity.map((c) => ({
+        city: c.city,
+        count: parseInt(c.count),
+      })),
+      providersByCity: providersByCity.map((c) => ({
+        city: c.city,
+        count: parseInt(c.count),
+      })),
+      bookingsByCity: bookingsByCity.map((c) => ({
+        city: c.city,
+        count: parseInt(c.count),
+      })),
+      revenueByCity: revenueByCity.map((c) => ({
+        city: c.city,
+        revenue: Number(c.revenue),
+      })),
     };
   }
 }

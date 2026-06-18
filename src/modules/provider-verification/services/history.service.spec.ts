@@ -38,8 +38,14 @@ describe('HistoryService', () => {
         notes: 'Provider submitted verification',
       };
 
-      historyRepo.create.mockReturnValue({ id: 'history-uuid', ...params } as any);
-      historyRepo.save.mockResolvedValue({ id: 'history-uuid', ...params } as VerificationHistory);
+      historyRepo.create.mockReturnValue({
+        id: 'history-uuid',
+        ...params,
+      } as any);
+      historyRepo.save.mockResolvedValue({
+        id: 'history-uuid',
+        ...params,
+      } as VerificationHistory);
 
       const result = await service.recordChange(params);
 

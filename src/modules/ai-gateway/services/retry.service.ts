@@ -14,7 +14,8 @@ export class RetryService {
     private readonly configService: ConfigService,
   ) {
     this.maxRetries = this.configService.get<number>('AI_RETRY_MAX') || 3;
-    this.baseDelay = this.configService.get<number>('AI_RETRY_BASE_DELAY') || 100;
+    this.baseDelay =
+      this.configService.get<number>('AI_RETRY_BASE_DELAY') || 100;
   }
 
   async executeWithRetry(

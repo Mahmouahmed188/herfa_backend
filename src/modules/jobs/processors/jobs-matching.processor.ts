@@ -5,7 +5,10 @@ import { Repository } from 'typeorm';
 import { ProviderLocation } from '../../../entities/provider-location.entity';
 import { Job as JobEntity } from '../../../entities/job.entity';
 import { JobAssignment } from '../../../entities/job-assignment.entity';
-import { JobAssignmentStatus, NotificationType } from '../../../common/constants/user.enums';
+import {
+  JobAssignmentStatus,
+  NotificationType,
+} from '../../../common/constants/user.enums';
 import { NotificationsService } from '../../notifications/notifications.service';
 import { TrackingGateway } from '../../tracking/tracking.gateway';
 import { Logger } from '@nestjs/common';
@@ -45,17 +48,21 @@ export class JobsMatchingProcessor {
           ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
           :radius * 1000
         )`,
-        { longitude, latitude, radius }
+        { longitude, latitude, radius },
       )
       .getMany();
 
     if (providers.length === 0) {
-      this.logger.warn(`No providers found for job ${jobId} in ${radius}km radius`);
+      this.logger.warn(
+        `No providers found for job ${jobId} in ${radius}km radius`,
+      );
       // Optional: Logic to re-queue with larger radius after some delay
       return;
     }
 
-    this.logger.log(`Found ${providers.length} matching providers for job ${jobId}`);
+    this.logger.log(
+      `Found ${providers.length} matching providers for job ${jobId}`,
+    );
 
     for (const pl of providers) {
       // 2. Create Job Assignment for each candidate

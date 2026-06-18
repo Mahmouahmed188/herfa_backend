@@ -21,7 +21,9 @@ export class AccountEventsHandler {
       relatedEntityId: data.userId,
     });
 
-    this.logger.log(`Account verified notification sent to user ${data.userId}`);
+    this.logger.log(
+      `Account verified notification sent to user ${data.userId}`,
+    );
   }
 
   @OnEvent('account.suspended')
@@ -39,6 +41,8 @@ export class AccountEventsHandler {
       relatedEntityId: data.userId,
     });
 
-    this.logger.log(`Account suspended notification sent to user ${data.userId}`);
+    this.logger.log(
+      `Account suspended notification sent to user ${data.userId}`,
+    );
   }
 }

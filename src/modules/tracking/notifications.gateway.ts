@@ -15,7 +15,9 @@ import { Logger } from '@nestjs/common';
   cors: { origin: '*', credentials: true },
   namespace: '/notifications',
 })
-export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NotificationsGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -25,7 +27,9 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
 
   async handleConnection(client: Socket) {
     try {
-      const token = client.handshake.auth.token || client.handshake.headers.authorization?.replace('Bearer ', '');
+      const token =
+        client.handshake.auth.token ||
+        client.handshake.headers.authorization?.replace('Bearer ', '');
       if (!token) {
         client.disconnect();
         return;
@@ -34,7 +38,9 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
       const payload = this.jwtService.verify(token);
       client.data.userId = payload.sub;
       client.join(`user:${payload.sub}`);
-      this.logger.log(`Notification client connected: ${client.id} (user: ${payload.sub})`);
+      this.logger.log(
+        `Notification client connected: ${client.id} (user: ${payload.sub})`,
+      );
     } catch (error) {
       this.logger.error('Notification connection auth failed', error);
       client.disconnect();
@@ -46,13 +52,19 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   }
 
   @SubscribeMessage('subscribe')
-  handleSubscribe(@ConnectedSocket() client: Socket, @MessageBody() data: { channel: string }) {
+  handleSubscribe(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { channel: string },
+  ) {
     client.join(data.channel);
     return { success: true };
   }
 
   @SubscribeMessage('unsubscribe')
-  handleUnsubscribe(@ConnectedSocket() client: Socket, @MessageBody() data: { channel: string }) {
+  handleUnsubscribe(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { channel: string },
+  ) {
     client.leave(data.channel);
     return { success: true };
   }
@@ -62,6 +74,6 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   }
 
   sendBulkNotifications(userIds: string[], notification: any) {
-    userIds.forEach(userId => this.sendNotification(userId, notification));
+    userIds.forEach((userId) => this.sendNotification(userId, notification));
   }
 }

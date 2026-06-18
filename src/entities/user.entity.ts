@@ -64,10 +64,14 @@ export class User {
   @Column({ nullable: true })
   resetTokenExpiry: Date;
 
-  @OneToOne(() => CustomerProfile, (profile) => profile.user, { nullable: true })
+  @OneToOne(() => CustomerProfile, (profile) => profile.user, {
+    nullable: true,
+  })
   customerProfile: CustomerProfile;
 
-  @OneToOne(() => ProviderProfile, (profile) => profile.user, { nullable: true })
+  @OneToOne(() => ProviderProfile, (profile) => profile.user, {
+    nullable: true,
+  })
   providerProfile: ProviderProfile;
 
   @OneToMany(() => RefreshToken, (token) => token.user)

@@ -1,9 +1,18 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tender, TenderStatus } from '../../entities/tender.entity';
 import { TenderOffer, OfferStatus } from '../../entities/tender-offer.entity';
-import { CreateTenderDto, UpdateTenderDto, CreateOfferDto } from './dto/tenders.dto';
+import {
+  CreateTenderDto,
+  UpdateTenderDto,
+  CreateOfferDto,
+} from './dto/tenders.dto';
 
 @Injectable()
 export class TendersService {
@@ -61,10 +70,15 @@ export class TendersService {
     return tender;
   }
 
-  async updateTender(id: string, userId: string, dto: UpdateTenderDto): Promise<Tender> {
+  async updateTender(
+    id: string,
+    userId: string,
+    dto: UpdateTenderDto,
+  ): Promise<Tender> {
     const tender = await this.tenderRepository.findOne({ where: { id } });
     if (!tender) throw new NotFoundException('Tender not found');
-    if (tender.userId !== userId) throw new ForbiddenException('You can only update your own tenders');
+    if (tender.userId !== userId)
+      throw new ForbiddenException('You can only update your own tenders');
 
     Object.assign(tender, dto);
     return this.tenderRepository.save(tender);
@@ -73,8 +87,10 @@ export class TendersService {
   async cancelTender(id: string, userId: string): Promise<Tender> {
     const tender = await this.tenderRepository.findOne({ where: { id } });
     if (!tender) throw new NotFoundException('Tender not found');
-    if (tender.userId !== userId) throw new ForbiddenException('Not your tender');
-    if (tender.status !== TenderStatus.OPEN) throw new BadRequestException('Can only cancel open tenders');
+    if (tender.userId !== userId)
+      throw new ForbiddenException('Not your tender');
+    if (tender.status !== TenderStatus.OPEN)
+      throw new BadRequestException('Can only cancel open tenders');
 
     tender.status = TenderStatus.CANCELLED;
     return this.tenderRepository.save(tender);
@@ -82,14 +98,26 @@ export class TendersService {
 
   // --- OFFERS ---
 
-  async createOffer(tenderId: string, providerId: string, dto: CreateOfferDto): Promise<TenderOffer> {
-    const tender = await this.tenderRepository.findOne({ where: { id: tenderId } });
+  async createOffer(
+    tenderId: string,
+    providerId: string,
+    dto: CreateOfferDto,
+  ): Promise<TenderOffer> {
+    const tender = await this.tenderRepository.findOne({
+      where: { id: tenderId },
+    });
     if (!tender) throw new NotFoundException('Tender not found');
-    if (tender.status !== TenderStatus.OPEN) throw new BadRequestException('This tender is not accepting offers');
+    if (tender.status !== TenderStatus.OPEN)
+      throw new BadRequestException('This tender is not accepting offers');
 
     // Check if provider already submitted an offer
-    const existing = await this.offerRepository.findOne({ where: { tenderId, providerId } });
-    if (existing) throw new BadRequestException('You have already submitted an offer for this tender');
+    const existing = await this.offerRepository.findOne({
+      where: { tenderId, providerId },
+    });
+    if (existing)
+      throw new BadRequestException(
+        'You have already submitted an offer for this tender',
+      );
 
     const offer = this.offerRepository.create({
       tenderId,
@@ -116,8 +144,10 @@ export class TendersService {
       relations: ['tender'],
     });
     if (!offer) throw new NotFoundException('Offer not found');
-    if (offer.tender.userId !== userId) throw new ForbiddenException('Not authorized');
-    if (offer.tender.status !== TenderStatus.OPEN) throw new BadRequestException('Tender is no longer open');
+    if (offer.tender.userId !== userId)
+      throw new ForbiddenException('Not authorized');
+    if (offer.tender.status !== TenderStatus.OPEN)
+      throw new BadRequestException('Tender is no longer open');
 
     // Accept this offer
     offer.status = OfferStatus.ACCEPTED;
@@ -128,7 +158,10 @@ export class TendersService {
       .createQueryBuilder()
       .update(TenderOffer)
       .set({ status: OfferStatus.REJECTED })
-      .where('tenderId = :tenderId AND id != :offerId', { tenderId: offer.tenderId, offerId })
+      .where('tenderId = :tenderId AND id != :offerId', {
+        tenderId: offer.tenderId,
+        offerId,
+      })
       .execute();
 
     await this.tenderRepository.update(offer.tenderId, {
@@ -145,7 +178,8 @@ export class TendersService {
       relations: ['tender'],
     });
     if (!offer) throw new NotFoundException('Offer not found');
-    if (offer.tender.userId !== userId) throw new ForbiddenException('Not authorized');
+    if (offer.tender.userId !== userId)
+      throw new ForbiddenException('Not authorized');
 
     offer.status = OfferStatus.REJECTED;
     return this.offerRepository.save(offer);

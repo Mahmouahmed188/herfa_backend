@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiFeatureType } from '../enums/ai-feature-type.enum';
 import { AiRequestStatus } from '../enums/ai-request-status.enum';
@@ -25,7 +20,8 @@ export class AiGatewayService {
     private readonly fileValidatorService: FileValidatorService,
     private readonly configService: ConfigService,
   ) {
-    this.timeout = this.configService.get<number>('AI_REQUEST_TIMEOUT') || 30000;
+    this.timeout =
+      this.configService.get<number>('AI_REQUEST_TIMEOUT') || 30000;
   }
 
   async processRequest(
@@ -51,7 +47,8 @@ export class AiGatewayService {
       if (isCircuitOpen) {
         await this.aiRequestLogService.updateLog(logEntry.id, {
           status: AiRequestStatus.CIRCUIT_OPEN,
-          errorMessage: 'Circuit breaker is open. AI service temporarily blocked.',
+          errorMessage:
+            'Circuit breaker is open. AI service temporarily blocked.',
         });
 
         throw new HttpException(
@@ -71,10 +68,7 @@ export class AiGatewayService {
 
       const startTime = Date.now();
 
-      const result = await this.executeWithTimeout(
-        featureType,
-        payload,
-      );
+      const result = await this.executeWithTimeout(featureType, payload);
 
       const processingTime = Date.now() - startTime;
 
@@ -88,9 +82,11 @@ export class AiGatewayService {
 
       return result;
     } catch (error) {
-      const processingTime = Date.now() - (logEntry.createdAt
-        ? logEntry.createdAt.getTime()
-        : Date.now() - this.timeout);
+      const processingTime =
+        Date.now() -
+        (logEntry.createdAt
+          ? logEntry.createdAt.getTime()
+          : Date.now() - this.timeout);
 
       const isTimeout =
         error instanceof HttpException &&
@@ -104,9 +100,7 @@ export class AiGatewayService {
       }
 
       await this.aiRequestLogService.updateLog(logEntry.id, {
-        status: isTimeout
-          ? AiRequestStatus.TIMEOUT
-          : AiRequestStatus.FAILED,
+        status: isTimeout ? AiRequestStatus.TIMEOUT : AiRequestStatus.FAILED,
         errorMessage: error.message || 'AI service request failed',
         processingTime,
       });
@@ -145,7 +139,8 @@ export class AiGatewayService {
       if (isCircuitOpen) {
         await this.aiRequestLogService.updateLog(logEntry.id, {
           status: AiRequestStatus.CIRCUIT_OPEN,
-          errorMessage: 'Circuit breaker is open. AI service temporarily blocked.',
+          errorMessage:
+            'Circuit breaker is open. AI service temporarily blocked.',
         });
 
         throw new HttpException(
@@ -180,9 +175,11 @@ export class AiGatewayService {
 
       return result;
     } catch (error) {
-      const processingTime = Date.now() - (logEntry.createdAt
-        ? logEntry.createdAt.getTime()
-        : Date.now() - this.timeout);
+      const processingTime =
+        Date.now() -
+        (logEntry.createdAt
+          ? logEntry.createdAt.getTime()
+          : Date.now() - this.timeout);
 
       const isTimeout =
         error instanceof HttpException &&
@@ -196,9 +193,7 @@ export class AiGatewayService {
       }
 
       await this.aiRequestLogService.updateLog(logEntry.id, {
-        status: isTimeout
-          ? AiRequestStatus.TIMEOUT
-          : AiRequestStatus.FAILED,
+        status: isTimeout ? AiRequestStatus.TIMEOUT : AiRequestStatus.FAILED,
         errorMessage: error.message || 'AI service request failed',
         processingTime,
       });
@@ -218,8 +213,7 @@ export class AiGatewayService {
             {
               success: false,
               errorCode: 'AI_REQUEST_TIMEOUT',
-              message:
-                'AI service did not respond in time. Please try again.',
+              message: 'AI service did not respond in time. Please try again.',
             },
             HttpStatus.REQUEST_TIMEOUT,
           ),
@@ -248,8 +242,7 @@ export class AiGatewayService {
             {
               success: false,
               errorCode: 'AI_REQUEST_TIMEOUT',
-              message:
-                'AI service did not respond in time. Please try again.',
+              message: 'AI service did not respond in time. Please try again.',
             },
             HttpStatus.REQUEST_TIMEOUT,
           ),

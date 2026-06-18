@@ -8,7 +8,11 @@ import { TrackingLocation } from '../../entities/tracking-location.entity';
 import { TrackingAuditEvent } from '../../entities/tracking-audit-event.entity';
 import { Booking, BookingStatus } from '../../entities/booking.entity';
 import { TrackingSessionStatus } from './enums/tracking-session-status.enum';
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 
 describe('TrackingService', () => {
   let service: TrackingService;
@@ -93,51 +97,71 @@ describe('TrackingService', () => {
 
   describe('startSession', () => {
     it('should start a session for an accepted booking', async () => {
-      jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(mockBooking as any);
+      jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(mockBooking);
       jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(null);
-      jest.spyOn(sessionRepo, 'create').mockReturnValue(mockSession as any);
-      jest.spyOn(sessionRepo, 'save').mockResolvedValue(mockSession as any);
+      jest.spyOn(sessionRepo, 'create').mockReturnValue(mockSession);
+      jest.spyOn(sessionRepo, 'save').mockResolvedValue(mockSession);
 
       const result = await service.startSession('booking-1', 'provider-1');
 
       expect(result).toBeDefined();
       expect(result.status).toBe(TrackingSessionStatus.ACTIVE);
-      expect(eventEmitter.emit).toHaveBeenCalledWith('tracking.started', expect.any(Object));
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        'tracking.started',
+        expect.any(Object),
+      );
     });
 
     it('should throw when booking not found', async () => {
       jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(null);
 
-      await expect(service.startSession('invalid', 'provider-1')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.startSession('invalid', 'provider-1'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw when booking belongs to another provider', async () => {
-      jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(mockBooking as any);
+      jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(mockBooking);
 
-      await expect(service.startSession('booking-1', 'wrong-provider')).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.startSession('booking-1', 'wrong-provider'),
+      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw when booking status does not allow tracking', async () => {
       const pendingBooking = { ...mockBooking, status: BookingStatus.PENDING };
-      jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(pendingBooking as any);
+      jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(pendingBooking);
 
-      await expect(service.startSession('booking-1', 'provider-1')).rejects.toThrow(BadRequestException);
+      await expect(
+        service.startSession('booking-1', 'provider-1'),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw when active session already exists', async () => {
-      jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(mockBooking as any);
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession as any);
+      jest.spyOn(bookingRepo, 'findOne').mockResolvedValue(mockBooking);
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession);
 
-      await expect(service.startSession('booking-1', 'provider-1')).rejects.toThrow(BadRequestException);
+      await expect(
+        service.startSession('booking-1', 'provider-1'),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('updateLocation', () => {
     it('should update location for active session', async () => {
-      const dto = { latitude: 30.0444, longitude: 31.2357, speed: 12.5, heading: 45 };
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession as any);
-      jest.spyOn(locationRepo, 'create').mockReturnValue({ id: 'loc-1', ...dto } as any);
-      jest.spyOn(locationRepo, 'save').mockResolvedValue({ id: 'loc-1', ...dto } as any);
+      const dto = {
+        latitude: 30.0444,
+        longitude: 31.2357,
+        speed: 12.5,
+        heading: 45,
+      };
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession);
+      jest
+        .spyOn(locationRepo, 'create')
+        .mockReturnValue({ id: 'loc-1', ...dto } as any);
+      jest
+        .spyOn(locationRepo, 'save')
+        .mockResolvedValue({ id: 'loc-1', ...dto } as any);
 
       const result = await service.updateLocation('session-1', dto);
 
@@ -148,65 +172,96 @@ describe('TrackingService', () => {
     it('should throw when session not found', async () => {
       jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(null);
 
-      await expect(service.updateLocation('invalid', {} as any)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.updateLocation('invalid', {} as any),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw when session is not active', async () => {
-      const pausedSession = { ...mockSession, status: TrackingSessionStatus.PAUSED };
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(pausedSession as any);
+      const pausedSession = {
+        ...mockSession,
+        status: TrackingSessionStatus.PAUSED,
+      };
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(pausedSession);
 
-      await expect(service.updateLocation('session-1', {} as any)).rejects.toThrow(BadRequestException);
+      await expect(
+        service.updateLocation('session-1', {} as any),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('pauseSession', () => {
     it('should pause an active session', async () => {
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession as any);
-      jest.spyOn(sessionRepo, 'save').mockResolvedValue({ ...mockSession, status: TrackingSessionStatus.PAUSED } as any);
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession);
+      jest.spyOn(sessionRepo, 'save').mockResolvedValue({
+        ...mockSession,
+        status: TrackingSessionStatus.PAUSED,
+      });
 
       const result = await service.pauseSession('session-1');
 
       expect(result.status).toBe(TrackingSessionStatus.PAUSED);
-      expect(eventEmitter.emit).toHaveBeenCalledWith('tracking.paused', expect.any(Object));
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        'tracking.paused',
+        expect.any(Object),
+      );
     });
 
     it('should throw when session not active', async () => {
-      const pausedSession = { ...mockSession, status: TrackingSessionStatus.PAUSED };
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(pausedSession as any);
+      const pausedSession = {
+        ...mockSession,
+        status: TrackingSessionStatus.PAUSED,
+      };
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(pausedSession);
 
-      await expect(service.pauseSession('session-1')).rejects.toThrow(BadRequestException);
+      await expect(service.pauseSession('session-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
   describe('resumeSession', () => {
     it('should resume a paused session', async () => {
-      const pausedSession = { ...mockSession, status: TrackingSessionStatus.PAUSED };
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(pausedSession as any);
-      jest.spyOn(sessionRepo, 'save').mockResolvedValue(mockSession as any);
+      const pausedSession = {
+        ...mockSession,
+        status: TrackingSessionStatus.PAUSED,
+      };
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(pausedSession);
+      jest.spyOn(sessionRepo, 'save').mockResolvedValue(mockSession);
 
       const result = await service.resumeSession('session-1');
 
       expect(result.status).toBe(TrackingSessionStatus.ACTIVE);
-      expect(eventEmitter.emit).toHaveBeenCalledWith('tracking.resumed', expect.any(Object));
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        'tracking.resumed',
+        expect.any(Object),
+      );
     });
   });
 
   describe('completeSession', () => {
     it('should complete a session', async () => {
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession as any);
-      jest.spyOn(sessionRepo, 'save').mockResolvedValue({ ...mockSession, status: TrackingSessionStatus.COMPLETED, endedAt: new Date() } as any);
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession);
+      jest.spyOn(sessionRepo, 'save').mockResolvedValue({
+        ...mockSession,
+        status: TrackingSessionStatus.COMPLETED,
+        endedAt: new Date(),
+      });
 
       const result = await service.completeSession('session-1');
 
       expect(result.status).toBe(TrackingSessionStatus.COMPLETED);
       expect(result.endedAt).toBeDefined();
-      expect(eventEmitter.emit).toHaveBeenCalledWith('tracking.completed', expect.any(Object));
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        'tracking.completed',
+        expect.any(Object),
+      );
     });
   });
 
   describe('getSession', () => {
     it('should return session for owning customer', async () => {
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession as any);
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession);
       jest.spyOn(locationRepo, 'findOne').mockResolvedValue(null);
 
       const result = await service.getSession('booking-1', 'customer-1');
@@ -216,15 +271,17 @@ describe('TrackingService', () => {
     });
 
     it('should throw for non-owning customer', async () => {
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession as any);
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession);
 
-      await expect(service.getSession('booking-1', 'wrong-customer')).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.getSession('booking-1', 'wrong-customer'),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
   describe('getActiveSessionByProvider', () => {
     it('should return active session for provider', async () => {
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession as any);
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(mockSession);
 
       const result = await service.getActiveSessionByProvider('provider-1');
 
@@ -234,8 +291,11 @@ describe('TrackingService', () => {
 
   describe('getPausedSessionByProvider', () => {
     it('should return paused session for provider', async () => {
-      const pausedSession = { ...mockSession, status: TrackingSessionStatus.PAUSED };
-      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(pausedSession as any);
+      const pausedSession = {
+        ...mockSession,
+        status: TrackingSessionStatus.PAUSED,
+      };
+      jest.spyOn(sessionRepo, 'findOne').mockResolvedValue(pausedSession);
 
       const result = await service.getPausedSessionByProvider('provider-1');
 

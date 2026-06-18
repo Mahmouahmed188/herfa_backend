@@ -63,7 +63,9 @@ describe('AdminTrackingController', () => {
 
       expect(response.success).toBe(true);
       expect(response.data.session.sessionId).toBe('session-1');
-      expect(mockTrackingService.getAdminSessionDetail).toHaveBeenCalledWith('session-1');
+      expect(mockTrackingService.getAdminSessionDetail).toHaveBeenCalledWith(
+        'session-1',
+      );
     });
   });
 });

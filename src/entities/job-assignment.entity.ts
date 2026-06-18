@@ -25,7 +25,9 @@ export class JobAssignment {
   @Column()
   jobId: string;
 
-  @ManyToOne(() => ProviderProfile, (profile) => profile.jobAssignments, { onDelete: 'CASCADE' })
+  @ManyToOne(() => ProviderProfile, (profile) => profile.jobAssignments, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'provider_id' })
   provider: ProviderProfile;
 

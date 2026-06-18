@@ -32,7 +32,10 @@ export class UploadsController {
       }),
       fileFilter: (req, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/)) {
-          return cb(new BadRequestException('Only image and pdf files are allowed!'), false);
+          return cb(
+            new BadRequestException('Only image and pdf files are allowed!'),
+            false,
+          );
         }
         cb(null, true);
       },
@@ -45,7 +48,7 @@ export class UploadsController {
     if (!file) {
       throw new BadRequestException('File is required');
     }
-    
+
     // Return the URL to access the file
     // In production, this would be a full URL (e.g. from S3)
     // Here we return the relative path from the serveRoot

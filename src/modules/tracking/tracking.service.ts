@@ -51,7 +51,11 @@ export class TrackingService {
       throw new ForbiddenException('This booking does not belong to you');
     }
 
-    if (!VALID_BOOKING_STATUSES_FOR_TRACKING.includes(booking.status as BookingStatus)) {
+    if (
+      !VALID_BOOKING_STATUSES_FOR_TRACKING.includes(
+        booking.status as BookingStatus,
+      )
+    ) {
       throw new BadRequestException(
         `Cannot start tracking for booking in status "${booking.status}". Booking must be accepted, on_the_way, or in_progress.`,
       );
@@ -62,7 +66,9 @@ export class TrackingService {
     });
 
     if (existingActive) {
-      throw new BadRequestException('An active tracking session already exists for this booking');
+      throw new BadRequestException(
+        'An active tracking session already exists for this booking',
+      );
     }
 
     const existingPaused = await this.trackingSessionRepository.findOne({
@@ -360,7 +366,7 @@ export class TrackingService {
       where.createdAt = Between(
         filter.dateFrom ? new Date(filter.dateFrom) : new Date(0),
         filter.dateTo ? new Date(filter.dateTo) : new Date(),
-      ) as any;
+      );
     }
 
     const sortField = filter.sortBy || 'createdAt';

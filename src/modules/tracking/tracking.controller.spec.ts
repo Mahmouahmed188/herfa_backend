@@ -47,7 +47,10 @@ describe('TrackingController', () => {
 
       expect(response.success).toBe(true);
       expect(response.data.sessionId).toBe('session-1');
-      expect(mockTrackingService.getSession).toHaveBeenCalledWith('booking-1', 'customer-1');
+      expect(mockTrackingService.getSession).toHaveBeenCalledWith(
+        'booking-1',
+        'customer-1',
+      );
     });
   });
 
@@ -62,11 +65,20 @@ describe('TrackingController', () => {
       };
       mockTrackingService.getHistory.mockResolvedValue(result);
 
-      const response = await controller.getHistory('booking-1', 'customer-1', 1, 50);
+      const response = await controller.getHistory(
+        'booking-1',
+        'customer-1',
+        1,
+        50,
+      );
 
       expect(response.success).toBe(true);
       expect(response.data.total).toBe(0);
-      expect(mockTrackingService.getHistory).toHaveBeenCalledWith('booking-1', 'customer-1', { page: 1, limit: 50 });
+      expect(mockTrackingService.getHistory).toHaveBeenCalledWith(
+        'booking-1',
+        'customer-1',
+        { page: 1, limit: 50 },
+      );
     });
   });
 });

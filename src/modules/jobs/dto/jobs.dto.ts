@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsNumber, IsEnum, IsArray, IsUUID, IsDateString, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsArray,
+  IsUUID,
+  IsDateString,
+  IsBoolean,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { JobStatus } from '../../../common/constants/user.enums';
 

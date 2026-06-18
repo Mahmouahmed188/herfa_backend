@@ -69,7 +69,9 @@ describe('AuthService', () => {
 
     it('should throw ConflictException if user already exists', async () => {
       mockPrismaService.user.findFirst.mockResolvedValue({ id: '1' });
-      await expect(service.register(registerDto)).rejects.toThrow(ConflictException);
+      await expect(service.register(registerDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should create a new user and return tokens', async () => {
@@ -90,17 +92,29 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should throw UnauthorizedException if user not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
-      await expect(service.login('test@test.com', 'pass')).rejects.toThrow(UnauthorizedException);
+      await expect(service.login('test@test.com', 'pass')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException if password incorrect', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue({ email: 'test@test.com', passwordHash: 'hash' });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        email: 'test@test.com',
+        passwordHash: 'hash',
+      });
       mockBcryptService.compare.mockResolvedValue(false);
-      await expect(service.login('test@test.com', 'pass')).rejects.toThrow(UnauthorizedException);
+      await expect(service.login('test@test.com', 'pass')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should return tokens if login successful', async () => {
-      const user = { id: '1', email: 'test@test.com', passwordHash: 'hash', status: 'active' };
+      const user = {
+        id: '1',
+        email: 'test@test.com',
+        passwordHash: 'hash',
+        status: 'active',
+      };
       mockPrismaService.user.findUnique.mockResolvedValue(user);
       mockBcryptService.compare.mockResolvedValue(true);
       mockPrismaService.user.update.mockResolvedValue(user);
@@ -114,7 +128,9 @@ describe('AuthService', () => {
   describe('refreshToken', () => {
     it('should throw UnauthorizedException if token invalid', async () => {
       mockPrismaService.refreshToken.findUnique.mockResolvedValue(null);
-      await expect(service.refreshToken('invalid')).rejects.toThrow(UnauthorizedException);
+      await expect(service.refreshToken('invalid')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should return new tokens if refresh successful', async () => {
@@ -126,7 +142,10 @@ describe('AuthService', () => {
         user: { id: '1', status: 'active' },
       };
       mockPrismaService.refreshToken.findUnique.mockResolvedValue(refreshToken);
-      mockPrismaService.refreshToken.update.mockResolvedValue({ ...refreshToken, isRevoked: true });
+      mockPrismaService.refreshToken.update.mockResolvedValue({
+        ...refreshToken,
+        isRevoked: true,
+      });
 
       const result = await service.refreshToken('valid');
       expect(result).toHaveProperty('accessToken');

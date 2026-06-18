@@ -28,7 +28,10 @@ export class LocalStorageProvider implements StorageProvider {
       }),
       fileFilter: (_req, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/i)) {
-          return cb(new BadRequestException('Only image and pdf files are allowed!'), false);
+          return cb(
+            new BadRequestException('Only image and pdf files are allowed!'),
+            false,
+          );
         }
         cb(null, true);
       },

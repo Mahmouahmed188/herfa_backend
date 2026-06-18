@@ -10,7 +10,10 @@ export enum AddressSortBy {
 export class AddressFilterDto extends PaginationDto {
   @IsOptional()
   @IsEnum(AddressSortBy)
-  @ApiPropertyOptional({ enum: AddressSortBy, default: AddressSortBy.CREATED_AT })
+  @ApiPropertyOptional({
+    enum: AddressSortBy,
+    default: AddressSortBy.CREATED_AT,
+  })
   sortBy?: AddressSortBy = AddressSortBy.CREATED_AT;
 
   @IsOptional()

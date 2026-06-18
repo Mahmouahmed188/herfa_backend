@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -49,7 +54,8 @@ export class ReviewsService {
     const existing = await this.reviewRepository.findOne({
       where: { bookingId: dto.bookingId },
     });
-    if (existing) throw new BadRequestException('You have already reviewed this booking');
+    if (existing)
+      throw new BadRequestException('You have already reviewed this booking');
 
     const now = new Date();
     const editableUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -74,7 +80,8 @@ export class ReviewsService {
   async findAllByCustomer(customerId: string, filter: ReviewFilterDto) {
     const page = filter.page ?? 1;
     const limit = filter.limit ?? 20;
-    const query = this.reviewRepository.createQueryBuilder('review')
+    const query = this.reviewRepository
+      .createQueryBuilder('review')
       .where('review.customerId = :customerId', { customerId })
       .andWhere('review.isVisible = :isVisible', { isVisible: true })
       .skip((page - 1) * limit)
@@ -107,7 +114,8 @@ export class ReviewsService {
   async getProviderReviews(providerId: string, filter: ReviewFilterDto) {
     const page = filter.page ?? 1;
     const limit = filter.limit ?? 20;
-    const query = this.reviewRepository.createQueryBuilder('review')
+    const query = this.reviewRepository
+      .createQueryBuilder('review')
       .where('review.providerId = :providerId', { providerId })
       .andWhere('review.isVisible = :isVisible', { isVisible: true })
       .skip((page - 1) * limit)
@@ -131,8 +139,10 @@ export class ReviewsService {
     };
   }
 
-  async getProviderStats(providerId: string): Promise<ProviderRatingStatsResponseDto> {
-    let stats = await this.statsRepository.findOne({ where: { providerId } });
+  async getProviderStats(
+    providerId: string,
+  ): Promise<ProviderRatingStatsResponseDto> {
+    const stats = await this.statsRepository.findOne({ where: { providerId } });
     if (!stats) {
       return {
         providerId,
@@ -161,14 +171,17 @@ export class ReviewsService {
     return this.getProviderReviews(providerId, filter);
   }
 
-  async getPublicProviderStats(providerId: string): Promise<ProviderRatingStatsResponseDto> {
+  async getPublicProviderStats(
+    providerId: string,
+  ): Promise<ProviderRatingStatsResponseDto> {
     return this.getProviderStats(providerId);
   }
 
   async adminFindAll(filter: ReviewFilterDto) {
     const page = filter.page ?? 1;
     const limit = filter.limit ?? 20;
-    const query = this.reviewRepository.createQueryBuilder('review')
+    const query = this.reviewRepository
+      .createQueryBuilder('review')
       .skip((page - 1) * limit)
       .take(limit);
 
@@ -182,7 +195,11 @@ export class ReviewsService {
     };
   }
 
-  async adminRemoveReview(reviewId: string, adminId: string, reason?: string): Promise<void> {
+  async adminRemoveReview(
+    reviewId: string,
+    adminId: string,
+    reason?: string,
+  ): Promise<void> {
     const review = await this.findOne(reviewId);
 
     review.isVisible = false;
@@ -200,14 +217,17 @@ export class ReviewsService {
     await this.moderationLogRepository.save(log);
 
     await this.updateProviderRatingStats(review.providerId);
-    this.emitReviewEvent('removed', review, { reason: reason || 'admin_removed' });
+    this.emitReviewEvent('removed', review, {
+      reason: reason || 'admin_removed',
+    });
     this.logger.log(`Admin ${adminId} removed review ${reviewId}: ${reason}`);
   }
 
   async getModerationLog(filter: ReviewFilterDto) {
     const page = filter.page ?? 1;
     const limit = filter.limit ?? 20;
-    const query = this.moderationLogRepository.createQueryBuilder('log')
+    const query = this.moderationLogRepository
+      .createQueryBuilder('log')
       .leftJoinAndSelect('log.admin', 'admin')
       .skip((page - 1) * limit)
       .take(limit)
@@ -218,7 +238,9 @@ export class ReviewsService {
       id: log.id,
       reviewId: log.reviewId,
       adminId: log.adminId,
-      adminName: log.admin ? `${log.admin.firstName || ''} ${log.admin.lastName || ''}`.trim() : 'Unknown',
+      adminName: log.admin
+        ? `${log.admin.firstName || ''} ${log.admin.lastName || ''}`.trim()
+        : 'Unknown',
       action: log.action,
       reason: log.reason,
       createdAt: log.createdAt,
@@ -229,7 +251,11 @@ export class ReviewsService {
     };
   }
 
-  async update(reviewId: string, userId: string, dto: UpdateReviewDto): Promise<Review> {
+  async update(
+    reviewId: string,
+    userId: string,
+    dto: UpdateReviewDto,
+  ): Promise<Review> {
     const review = await this.findOne(reviewId);
 
     if (review.customerId !== userId) {
@@ -238,7 +264,9 @@ export class ReviewsService {
 
     const now = new Date();
     if (review.editableUntil && now > review.editableUntil) {
-      throw new BadRequestException('Review can only be edited within 24 hours of submission');
+      throw new BadRequestException(
+        'Review can only be edited within 24 hours of submission',
+      );
     }
 
     if (dto.rating !== undefined) review.rating = dto.rating;
@@ -260,13 +288,19 @@ export class ReviewsService {
 
     const now = new Date();
     if (review.editableUntil && now > review.editableUntil) {
-      throw new BadRequestException('Review can only be deleted within 24 hours of submission');
+      throw new BadRequestException(
+        'Review can only be deleted within 24 hours of submission',
+      );
     }
 
     const providerId = review.providerId;
     await this.reviewRepository.remove(review);
     await this.updateProviderRatingStats(providerId);
-    this.emitReviewEvent('removed', { ...review, providerId }, { reason: 'customer_deleted' });
+    this.emitReviewEvent(
+      'removed',
+      { ...review, providerId },
+      { reason: 'customer_deleted' },
+    );
     this.logger.log(`Review ${reviewId} deleted by customer ${userId}`);
   }
 
@@ -317,7 +351,11 @@ export class ReviewsService {
     );
   }
 
-  private emitReviewEvent(eventName: string, review: Partial<Review>, extra?: Record<string, unknown>): void {
+  private emitReviewEvent(
+    eventName: string,
+    review: Partial<Review>,
+    extra?: Record<string, unknown>,
+  ): void {
     this.eventEmitter.emit(`review.${eventName}`, {
       event: `review.${eventName}`,
       timestamp: new Date().toISOString(),

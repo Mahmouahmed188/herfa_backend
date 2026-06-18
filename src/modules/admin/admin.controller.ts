@@ -1,4 +1,13 @@
-import { Controller, Get, Patch, Post, Body, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -33,13 +42,19 @@ export class AdminController {
 
   @Patch('users/:id/status')
   @ApiOperation({ summary: 'Update user status' })
-  async updateUserStatus(@Param('id') id: string, @Body('status') status: UserStatus) {
+  async updateUserStatus(
+    @Param('id') id: string,
+    @Body('status') status: UserStatus,
+  ) {
     return this.adminService.updateUserStatus(id, status);
   }
 
   @Get('applications')
   @ApiOperation({ summary: 'Get pending applications' })
-  async getPendingApplications(@Query('page') page?: number, @Query('limit') limit?: number) {
+  async getPendingApplications(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
     return this.adminService.getPendingApplications(page, limit);
   }
 
@@ -51,13 +66,20 @@ export class AdminController {
 
   @Post('applications/:id/reject')
   @ApiOperation({ summary: 'Reject provider application' })
-  async rejectApplication(@Param('id') id: string, @Body('reason') reason: string) {
+  async rejectApplication(
+    @Param('id') id: string,
+    @Body('reason') reason: string,
+  ) {
     return this.adminService.rejectApplication(id, reason);
   }
 
   @Get('jobs')
   @ApiOperation({ summary: 'Get all jobs' })
-  async getAllJobs(@Query('page') page?: number, @Query('limit') limit?: number, @Query('status') status?: string) {
+  async getAllJobs(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('status') status?: string,
+  ) {
     return this.adminService.getAllJobs(page, limit, status);
   }
 }

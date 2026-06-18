@@ -17,7 +17,9 @@ export class ProviderService {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => ProviderProfile, (profile) => profile.services, { onDelete: 'CASCADE' })
+  @ManyToOne(() => ProviderProfile, (profile) => profile.services, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'provider_id' })
   provider: ProviderProfile;
 

@@ -1,9 +1,21 @@
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Query
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TendersService } from './tenders.service';
-import { CreateTenderDto, UpdateTenderDto, CreateOfferDto } from './dto/tenders.dto';
+import {
+  CreateTenderDto,
+  UpdateTenderDto,
+  CreateOfferDto,
+} from './dto/tenders.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { VerificationGuard } from '../../common/guards/verification.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -77,13 +89,19 @@ export class TendersController {
 
   @Patch('offers/:offerId/accept')
   @ApiOperation({ summary: 'Accept an offer' })
-  async acceptOffer(@Param('offerId') offerId: string, @CurrentUser() user: any) {
+  async acceptOffer(
+    @Param('offerId') offerId: string,
+    @CurrentUser() user: any,
+  ) {
     return this.tendersService.acceptOffer(offerId, user.id);
   }
 
   @Patch('offers/:offerId/reject')
   @ApiOperation({ summary: 'Reject an offer' })
-  async rejectOffer(@Param('offerId') offerId: string, @CurrentUser() user: any) {
+  async rejectOffer(
+    @Param('offerId') offerId: string,
+    @CurrentUser() user: any,
+  ) {
     return this.tendersService.rejectOffer(offerId, user.id);
   }
 

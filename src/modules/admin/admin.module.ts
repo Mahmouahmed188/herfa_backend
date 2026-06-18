@@ -8,7 +8,9 @@ import { Job } from '../../entities/job.entity';
 import { Payment } from '../../entities/payment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, ProviderApplication, Job, Payment])],
+  imports: [
+    TypeOrmModule.forFeature([User, ProviderApplication, Job, Payment]),
+  ],
   controllers: [AdminController],
   providers: [AdminService],
   exports: [AdminService],

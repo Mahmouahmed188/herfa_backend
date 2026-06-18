@@ -26,21 +26,29 @@ export class ProviderAnalyticsService {
     startDate?: string,
     endDate?: string,
   ): Promise<ProviderAnalyticsDto> {
-    const range = this.dateRangeFilterService.resolve(preset, startDate, endDate);
+    const range = this.dateRangeFilterService.resolve(
+      preset,
+      startDate,
+      endDate,
+    );
 
     const topRatedProviders = await this.providerProfileRepository.find({
       where: { rating: { $not: null } as any },
-      order: { rating: 'DESC' as any, totalJobsCompleted: 'DESC' as any },
+      order: { rating: 'DESC', totalJobsCompleted: 'DESC' },
       take: 10,
     });
 
     const mostBookedProviders = await this.bookingRepository
       .createQueryBuilder('booking')
       .select('booking.providerId', 'providerId')
-      .addSelect('COALESCE(profile.businessName, \'Unknown\')', 'businessName')
+      .addSelect("COALESCE(profile.businessName, 'Unknown')", 'businessName')
       .addSelect('COALESCE(profile.rating, 0)', 'rating')
       .addSelect('COUNT(*)', 'totalJobs')
-      .leftJoin(ProviderProfile, 'profile', 'profile.userId = booking.providerId')
+      .leftJoin(
+        ProviderProfile,
+        'profile',
+        'profile.userId = booking.providerId',
+      )
       .where('booking.createdAt BETWEEN :start AND :end', {
         start: range.startDate,
         end: range.endDate,
@@ -50,9 +58,14 @@ export class ProviderAnalyticsService {
       .addGroupBy('profile.rating')
       .orderBy('totalJobs', 'DESC')
       .limit(10)
-      .getRawMany<{ providerId: string; businessName: string; rating: string; totalJobs: string }>();
+      .getRawMany<{
+        providerId: string;
+        businessName: string;
+        rating: string;
+        totalJobs: string;
+      }>();
 
-    const activeProviderIds = (await this.providerProfileRepository
+    const activeProviderIds = await this.providerProfileRepository
       .createQueryBuilder('profile')
       .innerJoin(User, 'user', 'user.id = profile.userId')
       .where('user.lastLoginAt BETWEEN :start AND :end', {
@@ -66,7 +79,12 @@ export class ProviderAnalyticsService {
       .addSelect('profile.totalJobsCompleted', 'totalJobs')
       .orderBy('user.lastLoginAt', 'DESC')
       .limit(10)
-      .getRawMany<{ providerId: string; businessName: string; rating: string; totalJobs: string }>());
+      .getRawMany<{
+        providerId: string;
+        businessName: string;
+        rating: string;
+        totalJobs: string;
+      }>();
 
     const verificationCounts = await this.providerProfileRepository
       .createQueryBuilder('profile')
@@ -83,8 +101,14 @@ export class ProviderAnalyticsService {
     const completionResult = await this.bookingRepository
       .createQueryBuilder('booking')
       .select('COUNT(*)', 'total')
-      .addSelect("COUNT(CASE WHEN booking.status = 'completed' THEN 1 END)", 'completed')
-      .addSelect("COUNT(CASE WHEN booking.status = 'cancelled' THEN 1 END)", 'cancelled')
+      .addSelect(
+        "COUNT(CASE WHEN booking.status = 'completed' THEN 1 END)",
+        'completed',
+      )
+      .addSelect(
+        "COUNT(CASE WHEN booking.status = 'cancelled' THEN 1 END)",
+        'cancelled',
+      )
       .where('booking.createdAt BETWEEN :start AND :end', {
         start: range.startDate,
         end: range.endDate,
@@ -117,12 +141,24 @@ export class ProviderAnalyticsService {
         verified: verificationMap['verified'] || 0,
         rejected: verificationMap['rejected'] || 0,
       },
-      completionRate: totalJobs > 0
-        ? Number(((parseInt(completionResult!.completed) / totalJobs) * 100).toFixed(1))
-        : 0,
-      cancellationRate: totalJobs > 0
-        ? Number(((parseInt(completionResult!.cancelled) / totalJobs) * 100).toFixed(1))
-        : 0,
+      completionRate:
+        totalJobs > 0
+          ? Number(
+              (
+                (parseInt(completionResult!.completed) / totalJobs) *
+                100
+              ).toFixed(1),
+            )
+          : 0,
+      cancellationRate:
+        totalJobs > 0
+          ? Number(
+              (
+                (parseInt(completionResult!.cancelled) / totalJobs) *
+                100
+              ).toFixed(1),
+            )
+          : 0,
     };
   }
 }

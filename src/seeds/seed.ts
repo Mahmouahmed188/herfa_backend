@@ -86,12 +86,42 @@ async function seed() {
   console.log('Provider user created');
 
   const categories = [
-    { name: 'Plumbing', description: 'Water and drainage services', icon: 'water', sortOrder: 1 },
-    { name: 'Electrical', description: 'Electrical wiring and repairs', icon: 'flash', sortOrder: 2 },
-    { name: 'Carpentry', description: 'Wood work and furniture', icon: 'hammer', sortOrder: 3 },
-    { name: 'Cleaning', description: 'Home and office cleaning', icon: 'broom', sortOrder: 4 },
-    { name: 'Painting', description: 'Interior and exterior painting', icon: 'paint', sortOrder: 5 },
-    { name: 'AC Repair', description: 'Air conditioning services', icon: 'snowflake', sortOrder: 6 },
+    {
+      name: 'Plumbing',
+      description: 'Water and drainage services',
+      icon: 'water',
+      sortOrder: 1,
+    },
+    {
+      name: 'Electrical',
+      description: 'Electrical wiring and repairs',
+      icon: 'flash',
+      sortOrder: 2,
+    },
+    {
+      name: 'Carpentry',
+      description: 'Wood work and furniture',
+      icon: 'hammer',
+      sortOrder: 3,
+    },
+    {
+      name: 'Cleaning',
+      description: 'Home and office cleaning',
+      icon: 'broom',
+      sortOrder: 4,
+    },
+    {
+      name: 'Painting',
+      description: 'Interior and exterior painting',
+      icon: 'paint',
+      sortOrder: 5,
+    },
+    {
+      name: 'AC Repair',
+      description: 'Air conditioning services',
+      icon: 'snowflake',
+      sortOrder: 6,
+    },
   ];
 
   for (const cat of categories) {
@@ -99,9 +129,24 @@ async function seed() {
     await categoryRepo.save(category);
 
     const services = [
-      { name: `${cat.name} Installation`, description: `Professional ${cat.name.toLowerCase()} installation`, basePrice: 100, categoryId: category.id },
-      { name: `${cat.name} Repair`, description: `${cat.name} repair services`, basePrice: 80, categoryId: category.id },
-      { name: `${cat.name} Maintenance`, description: `Regular ${cat.name.toLowerCase()} maintenance`, basePrice: 60, categoryId: category.id },
+      {
+        name: `${cat.name} Installation`,
+        description: `Professional ${cat.name.toLowerCase()} installation`,
+        basePrice: 100,
+        categoryId: category.id,
+      },
+      {
+        name: `${cat.name} Repair`,
+        description: `${cat.name} repair services`,
+        basePrice: 80,
+        categoryId: category.id,
+      },
+      {
+        name: `${cat.name} Maintenance`,
+        description: `Regular ${cat.name.toLowerCase()} maintenance`,
+        basePrice: 60,
+        categoryId: category.id,
+      },
     ];
 
     for (const svc of services) {

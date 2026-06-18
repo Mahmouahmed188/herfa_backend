@@ -1,9 +1,19 @@
-import { IsUUID, IsInt, Min, Max, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsUUID,
+  IsInt,
+  Min,
+  Max,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateReviewDto {
   @IsUUID()
-  @ApiProperty({ description: 'Booking ID (must be completed and owned by customer)' })
+  @ApiProperty({
+    description: 'Booking ID (must be completed and owned by customer)',
+  })
   bookingId: string;
 
   @IsInt()
@@ -15,6 +25,9 @@ export class CreateReviewDto {
   @IsOptional()
   @IsString()
   @MaxLength(1000)
-  @ApiPropertyOptional({ description: 'Optional comment', example: 'Great service!' })
+  @ApiPropertyOptional({
+    description: 'Optional comment',
+    example: 'Great service!',
+  })
   comment?: string;
 }

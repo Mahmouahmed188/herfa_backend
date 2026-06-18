@@ -33,7 +33,10 @@ describe('CategoriesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CategoriesService,
-        { provide: getRepositoryToken(ServiceCategory), useValue: mockRepository },
+        {
+          provide: getRepositoryToken(ServiceCategory),
+          useValue: mockRepository,
+        },
       ],
     }).compile();
 
@@ -75,7 +78,9 @@ describe('CategoriesService', () => {
 
     it('should throw NotFoundException if not found', async () => {
       mockRepository.findOne.mockResolvedValue(null);
-      await expect(service.findOne('invalid-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('invalid-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -85,13 +90,18 @@ describe('CategoriesService', () => {
       mockRepository.create.mockReturnValue(mockCategory);
       mockRepository.save.mockResolvedValue(mockCategory);
 
-      const result = await service.create({ name: 'Plumbing', description: 'Plumbing services' });
+      const result = await service.create({
+        name: 'Plumbing',
+        description: 'Plumbing services',
+      });
       expect(result).toEqual(mockCategory);
     });
 
     it('should throw ConflictException if name exists', async () => {
       mockRepository.findOne.mockResolvedValue(mockCategory);
-      await expect(service.create({ name: 'Plumbing' })).rejects.toThrow(ConflictException);
+      await expect(service.create({ name: 'Plumbing' })).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -100,7 +110,10 @@ describe('CategoriesService', () => {
       mockRepository.findOne
         .mockResolvedValueOnce(mockCategory)
         .mockResolvedValueOnce(null);
-      mockRepository.save.mockResolvedValue({ ...mockCategory, name: 'Updated' });
+      mockRepository.save.mockResolvedValue({
+        ...mockCategory,
+        name: 'Updated',
+      });
 
       const result = await service.update('uuid-1', { name: 'Updated' });
       expect(result.name).toBe('Updated');
@@ -110,19 +123,26 @@ describe('CategoriesService', () => {
       mockRepository.findOne
         .mockResolvedValueOnce(mockCategory)
         .mockResolvedValueOnce({ ...mockCategory, id: 'other-id' });
-      await expect(service.update('uuid-1', { name: 'Existing' })).rejects.toThrow(ConflictException);
+      await expect(
+        service.update('uuid-1', { name: 'Existing' }),
+      ).rejects.toThrow(ConflictException);
     });
 
     it('should throw NotFoundException if category not found', async () => {
       mockRepository.findOne.mockResolvedValue(null);
-      await expect(service.update('invalid-id', { name: 'New' })).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update('invalid-id', { name: 'New' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('deactivate', () => {
     it('should set isActive to false', async () => {
       mockRepository.findOne.mockResolvedValue(mockCategory);
-      mockRepository.save.mockResolvedValue({ ...mockCategory, isActive: false });
+      mockRepository.save.mockResolvedValue({
+        ...mockCategory,
+        isActive: false,
+      });
       const result = await service.deactivate('uuid-1');
       expect(result.isActive).toBe(false);
     });

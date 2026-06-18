@@ -9,7 +9,10 @@ export enum DateRangePreset {
 }
 
 export class DateRangeFilterDto {
-  @ApiPropertyOptional({ enum: DateRangePreset, description: 'Preset date range filter' })
+  @ApiPropertyOptional({
+    enum: DateRangePreset,
+    description: 'Preset date range filter',
+  })
   @IsOptional()
   @IsEnum(DateRangePreset)
   dateRange?: DateRangePreset;

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../entities/user.entity';
@@ -8,7 +13,12 @@ import { ProviderService } from '../../entities/provider-service.entity';
 import { Service } from '../../entities/service.entity';
 import { ProviderCategory } from '../../entities/provider-category.entity';
 import { ServiceCategory } from '../../entities/service-category.entity';
-import { UserRole, UserStatus, ProviderApplicationStatus, ProviderVerificationStatus } from '../../common/constants/user.enums';
+import {
+  UserRole,
+  UserStatus,
+  ProviderApplicationStatus,
+  ProviderVerificationStatus,
+} from '../../common/constants/user.enums';
 import {
   CreateProviderApplicationDto,
   UpdateProviderProfileDto,
@@ -86,7 +96,14 @@ export class ProvidersService {
   async getProfile(userId: string) {
     const profile = await this.providerProfileRepository.findOne({
       where: { userId },
-      relations: ['user', 'services', 'services.service', 'applications', 'categories', 'categories.category'],
+      relations: [
+        'user',
+        'services',
+        'services.service',
+        'applications',
+        'categories',
+        'categories.category',
+      ],
     });
     if (!profile) {
       throw new NotFoundException('Provider profile not found');
@@ -97,12 +114,24 @@ export class ProvidersService {
   async getProfileByIdOrUserId(id: string) {
     let profile = await this.providerProfileRepository.findOne({
       where: { id },
-      relations: ['user', 'services', 'services.service', 'categories', 'categories.category'],
+      relations: [
+        'user',
+        'services',
+        'services.service',
+        'categories',
+        'categories.category',
+      ],
     });
     if (!profile) {
       profile = await this.providerProfileRepository.findOne({
         where: { userId: id },
-        relations: ['user', 'services', 'services.service', 'categories', 'categories.category'],
+        relations: [
+          'user',
+          'services',
+          'services.service',
+          'categories',
+          'categories.category',
+        ],
       });
     }
     if (!profile) {
@@ -163,9 +192,10 @@ export class ProvidersService {
       throw new NotFoundException('Service not found');
     }
 
-    const existingProviderService = await this.providerServiceRepository.findOne({
-      where: { providerId: profile.id, serviceId: dto.serviceId },
-    });
+    const existingProviderService =
+      await this.providerServiceRepository.findOne({
+        where: { providerId: profile.id, serviceId: dto.serviceId },
+      });
     if (existingProviderService) {
       existingProviderService.price = dto.price;
       existingProviderService.priceUnit = dto.priceUnit || '';
@@ -230,7 +260,10 @@ export class ProvidersService {
     await this.providerCategoryRepository.delete({ providerId: profile.id });
 
     const providerCategories = dto.categoryIds.map((categoryId) =>
-      this.providerCategoryRepository.create({ providerId: profile.id, categoryId }),
+      this.providerCategoryRepository.create({
+        providerId: profile.id,
+        categoryId,
+      }),
     );
     await this.providerCategoryRepository.save(providerCategories);
 
@@ -269,7 +302,9 @@ export class ProvidersService {
     }
 
     if (dto.categoryId) {
-      query.andWhere('pc.categoryId = :categoryId', { categoryId: dto.categoryId });
+      query.andWhere('pc.categoryId = :categoryId', {
+        categoryId: dto.categoryId,
+      });
     }
 
     if (dto.latitude && dto.longitude && dto.radiusKm) {
@@ -279,13 +314,18 @@ export class ProvidersService {
           ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
           :radius * 1000
         )`,
-        { latitude: dto.latitude, longitude: dto.longitude, radius: dto.radiusKm },
+        {
+          latitude: dto.latitude,
+          longitude: dto.longitude,
+          radius: dto.radiusKm,
+        },
       );
     }
 
-    const sortBy = dto.sortBy === 'rating' ? 'profile.rating' : 'profile.experienceYears';
+    const sortBy =
+      dto.sortBy === 'rating' ? 'profile.rating' : 'profile.experienceYears';
     const sortOrder = dto.sortOrder === SortOrder.DESC ? 'DESC' : 'ASC';
-    query.orderBy(sortBy, sortOrder as 'ASC' | 'DESC');
+    query.orderBy(sortBy, sortOrder);
 
     const page = dto.page || 1;
     const limit = dto.limit || 20;
@@ -348,7 +388,9 @@ export class ProvidersService {
   async verifyProvider(profileId: string, status: string) {
     const validStatuses = ['verified', 'rejected'];
     if (!validStatuses.includes(status)) {
-      throw new BadRequestException('Invalid verification status. Must be "verified" or "rejected"');
+      throw new BadRequestException(
+        'Invalid verification status. Must be "verified" or "rejected"',
+      );
     }
 
     const profile = await this.providerProfileRepository.findOne({
@@ -370,12 +412,18 @@ export class ProvidersService {
       throw new NotFoundException('Provider profile not found');
     }
 
-    const user = await this.userRepository.findOne({ where: { id: profile.userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: profile.userId },
+    });
     if (user) {
       user.status = isSuspended ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
       await this.userRepository.save(user);
     }
 
-    return { message: isSuspended ? 'Provider has been suspended' : 'Provider has been reactivated' };
+    return {
+      message: isSuspended
+        ? 'Provider has been suspended'
+        : 'Provider has been reactivated',
+    };
   }
 }

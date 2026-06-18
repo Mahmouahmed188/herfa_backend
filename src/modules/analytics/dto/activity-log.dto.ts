@@ -16,7 +16,10 @@ export class ActivityLogDto {
   @ApiProperty({ example: null, nullable: true })
   entityId: string;
 
-  @ApiProperty({ example: { section: 'overview', dateRange: 'last_7_days' }, nullable: true })
+  @ApiProperty({
+    example: { section: 'overview', dateRange: 'last_7_days' },
+    nullable: true,
+  })
   metadata: Record<string, any>;
 
   @ApiProperty({ example: '2026-06-06T10:00:00Z' })

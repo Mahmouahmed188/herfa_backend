@@ -1,5 +1,11 @@
 import { Controller, Get, Query, UseGuards, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -42,20 +48,34 @@ export class AnalyticsController {
   ) {}
 
   @Get('overview')
-  @ApiOperation({ summary: 'Get dashboard overview with all 13 widget metrics' })
+  @ApiOperation({
+    summary: 'Get dashboard overview with all 13 widget metrics',
+  })
   @ApiResponse({ status: 200, type: DashboardOverviewDto })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiQuery({ name: 'dateRange', enum: DateRangePreset, required: false })
-  @ApiQuery({ name: 'startDate', required: false, description: 'Custom start date (ISO 8601)' })
-  @ApiQuery({ name: 'endDate', required: false, description: 'Custom end date (ISO 8601)' })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    description: 'Custom start date (ISO 8601)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    description: 'Custom end date (ISO 8601)',
+  })
   async getOverview(
     @Query('dateRange') dateRange?: DateRangePreset,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
     @Req() req?: any,
   ) {
-    const result = await this.dashboardService.getOverview(dateRange, startDate, endDate);
+    const result = await this.dashboardService.getOverview(
+      dateRange,
+      startDate,
+      endDate,
+    );
 
     if (req.user) {
       await this.activityLogService.create({
@@ -83,7 +103,11 @@ export class AnalyticsController {
     @Query('endDate') endDate?: string,
     @Req() req?: any,
   ) {
-    const result = await this.userAnalyticsService.getAnalytics(dateRange, startDate, endDate);
+    const result = await this.userAnalyticsService.getAnalytics(
+      dateRange,
+      startDate,
+      endDate,
+    );
 
     if (req.user) {
       await this.activityLogService.create({
@@ -111,7 +135,11 @@ export class AnalyticsController {
     @Query('endDate') endDate?: string,
     @Req() req?: any,
   ) {
-    const result = await this.bookingAnalyticsService.getAnalytics(dateRange, startDate, endDate);
+    const result = await this.bookingAnalyticsService.getAnalytics(
+      dateRange,
+      startDate,
+      endDate,
+    );
 
     if (req.user) {
       await this.activityLogService.create({
@@ -139,7 +167,11 @@ export class AnalyticsController {
     @Query('endDate') endDate?: string,
     @Req() req?: any,
   ) {
-    const result = await this.revenueAnalyticsService.getAnalytics(dateRange, startDate, endDate);
+    const result = await this.revenueAnalyticsService.getAnalytics(
+      dateRange,
+      startDate,
+      endDate,
+    );
 
     if (req.user) {
       await this.activityLogService.create({
@@ -167,7 +199,11 @@ export class AnalyticsController {
     @Query('endDate') endDate?: string,
     @Req() req?: any,
   ) {
-    const result = await this.providerAnalyticsService.getAnalytics(dateRange, startDate, endDate);
+    const result = await this.providerAnalyticsService.getAnalytics(
+      dateRange,
+      startDate,
+      endDate,
+    );
 
     if (req.user) {
       await this.activityLogService.create({
@@ -195,7 +231,11 @@ export class AnalyticsController {
     @Query('endDate') endDate?: string,
     @Req() req?: any,
   ) {
-    const result = await this.reviewAnalyticsService.getAnalytics(dateRange, startDate, endDate);
+    const result = await this.reviewAnalyticsService.getAnalytics(
+      dateRange,
+      startDate,
+      endDate,
+    );
 
     if (req.user) {
       await this.activityLogService.create({
@@ -223,7 +263,11 @@ export class AnalyticsController {
     @Query('endDate') endDate?: string,
     @Req() req?: any,
   ) {
-    const result = await this.supportAnalyticsService.getAnalytics(dateRange, startDate, endDate);
+    const result = await this.supportAnalyticsService.getAnalytics(
+      dateRange,
+      startDate,
+      endDate,
+    );
 
     if (req.user) {
       await this.activityLogService.create({
@@ -251,7 +295,11 @@ export class AnalyticsController {
     @Query('endDate') endDate?: string,
     @Req() req?: any,
   ) {
-    const result = await this.geographicAnalyticsService.getAnalytics(dateRange, startDate, endDate);
+    const result = await this.geographicAnalyticsService.getAnalytics(
+      dateRange,
+      startDate,
+      endDate,
+    );
 
     if (req.user) {
       await this.activityLogService.create({

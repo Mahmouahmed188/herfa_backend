@@ -14,7 +14,9 @@ export class ServiceImage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => ServiceListing, (listing) => listing.images, { onDelete: 'CASCADE' })
+  @ManyToOne(() => ServiceListing, (listing) => listing.images, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'service_id' })
   serviceListing: ServiceListing;
 

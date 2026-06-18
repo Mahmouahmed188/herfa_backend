@@ -30,7 +30,9 @@ export class HistoryService {
     return this.historyRepository.save(entry) as unknown as VerificationHistory;
   }
 
-  async findByVerificationId(verificationId: string): Promise<VerificationHistory[]> {
+  async findByVerificationId(
+    verificationId: string,
+  ): Promise<VerificationHistory[]> {
     return this.historyRepository.find({
       where: { verificationId },
       order: { createdAt: 'ASC' },

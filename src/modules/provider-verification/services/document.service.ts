@@ -1,7 +1,14 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { VerificationDocument, DocumentType } from '../../../entities/verification-document.entity';
+import {
+  VerificationDocument,
+  DocumentType,
+} from '../../../entities/verification-document.entity';
 import { ProviderVerification } from '../../../entities/provider-verification.entity';
 import { LocalStorageProvider } from './local-storage-provider.service';
 import { AuditService } from './audit.service';
@@ -27,7 +34,9 @@ export class DocumentService {
     });
 
     if (verification && verification.status !== 'pending') {
-      throw new BadRequestException('Cannot modify documents while verification is in progress');
+      throw new BadRequestException(
+        'Cannot modify documents while verification is in progress',
+      );
     }
 
     if (!verification) {
@@ -78,7 +87,9 @@ export class DocumentService {
     });
   }
 
-  async findByVerificationId(verificationId: string): Promise<VerificationDocument[]> {
+  async findByVerificationId(
+    verificationId: string,
+  ): Promise<VerificationDocument[]> {
     return this.documentRepository.find({
       where: { verificationId },
       order: { uploadedAt: 'DESC' },
@@ -99,7 +110,9 @@ export class DocumentService {
     });
 
     if (verification && verification.status !== 'pending') {
-      throw new BadRequestException('Cannot delete documents while verification is in progress');
+      throw new BadRequestException(
+        'Cannot delete documents while verification is in progress',
+      );
     }
 
     await this.storageProvider.delete(document.documentUrl);

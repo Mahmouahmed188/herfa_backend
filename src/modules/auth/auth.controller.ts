@@ -10,7 +10,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -35,14 +40,20 @@ export class AuthController {
   @ApiOperation({ summary: 'Login user' })
   @ApiResponse({ status: 200, description: 'User successfully logged in' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
-    const { accessToken, refreshToken, user } = await this.authService.login(loginDto.email, loginDto.password);
-    
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken, user } = await this.authService.login(
+      loginDto.email,
+      loginDto.password,
+    );
+
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      path: '/',
+      path: '/api/v1/auth/refresh',
     });
 
     return {
@@ -62,20 +73,28 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh access token' })
   async refresh(@Req() req: any, @Res({ passthrough: true }) res: Response) {
     const cookies = req.headers.cookie;
-    const refreshTokenCookie = cookies?.split('; ')?.find(cookie => cookie.startsWith('refresh_token='));
-    const refreshToken = refreshTokenCookie ? refreshTokenCookie.split('=')[1] : null;
+    const refreshTokenCookie = cookies
+      ?.split('; ')
+      ?.find((cookie) => cookie.startsWith('refresh_token='));
+    const refreshToken = refreshTokenCookie
+      ? refreshTokenCookie.split('=')[1]
+      : null;
 
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token not found');
     }
 
-    const { accessToken, refreshToken: newRefreshToken, user } = await this.authService.refreshToken(refreshToken);
+    const {
+      accessToken,
+      refreshToken: newRefreshToken,
+      user,
+    } = await this.authService.refreshToken(refreshToken);
 
     res.cookie('refresh_token', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      path: '/',
+      path: '/api/v1/auth/refresh',
     });
 
     return {

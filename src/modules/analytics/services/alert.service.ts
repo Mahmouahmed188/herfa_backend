@@ -5,7 +5,11 @@ import { Booking } from '../../../entities/booking.entity';
 import { Payment } from '../../../entities/payment.entity';
 import { User } from '../../../entities/user.entity';
 import { SupportTicket } from '../../../entities/support-ticket.entity';
-import { PaymentStatus, UserRole, UserStatus } from '../../../common/constants/user.enums';
+import {
+  PaymentStatus,
+  UserRole,
+  UserStatus,
+} from '../../../common/constants/user.enums';
 import { BookingStatus } from '../../../entities/booking.entity';
 import { OperationalAlertDto } from '../dto/operational-alert.dto';
 
@@ -56,7 +60,8 @@ export class AlertService {
     const refundAlert = await this.checkRefundVolume(oneDayAgo);
     if (refundAlert) alerts.push(refundAlert);
 
-    const suspiciousRegistrations = await this.checkSuspiciousRegistrations(oneHourAgo);
+    const suspiciousRegistrations =
+      await this.checkSuspiciousRegistrations(oneHourAgo);
     if (suspiciousRegistrations) alerts.push(suspiciousRegistrations);
 
     const providerSuspensions = await this.checkProviderSuspensions(oneDayAgo);
@@ -68,14 +73,19 @@ export class AlertService {
     return alerts;
   }
 
-  private async checkBookingFailures(since: Date): Promise<OperationalAlertDto | null> {
+  private async checkBookingFailures(
+    since: Date,
+  ): Promise<OperationalAlertDto | null> {
     const total = await this.bookingRepository.count({
       where: { createdAt: LessThanOrEqual(since) },
     });
     if (total === 0) return null;
 
     const cancelled = await this.bookingRepository.count({
-      where: { status: BookingStatus.CANCELLED, createdAt: LessThanOrEqual(since) },
+      where: {
+        status: BookingStatus.CANCELLED,
+        createdAt: LessThanOrEqual(since),
+      },
     });
 
     const rate = (cancelled / total) * 100;
@@ -91,9 +101,14 @@ export class AlertService {
     return null;
   }
 
-  private async checkPaymentFailures(since: Date): Promise<OperationalAlertDto | null> {
+  private async checkPaymentFailures(
+    since: Date,
+  ): Promise<OperationalAlertDto | null> {
     const count = await this.paymentRepository.count({
-      where: { paymentStatus: PaymentStatus.FAILED, createdAt: LessThanOrEqual(since) },
+      where: {
+        paymentStatus: PaymentStatus.FAILED,
+        createdAt: LessThanOrEqual(since),
+      },
     });
 
     if (count > this.thresholds.paymentFailureCount) {
@@ -108,11 +123,15 @@ export class AlertService {
     return null;
   }
 
-  private async checkRefundVolume(since: Date): Promise<OperationalAlertDto | null> {
+  private async checkRefundVolume(
+    since: Date,
+  ): Promise<OperationalAlertDto | null> {
     const result = await this.paymentRepository
       .createQueryBuilder('payment')
       .select('COALESCE(SUM(CAST(payment.amount AS float)), 0)', 'total')
-      .where('payment.paymentStatus = :status', { status: PaymentStatus.REFUNDED })
+      .where('payment.paymentStatus = :status', {
+        status: PaymentStatus.REFUNDED,
+      })
       .andWhere('payment.createdAt >= :since', { since })
       .getRawOne<{ total: number }>();
 
@@ -129,7 +148,9 @@ export class AlertService {
     return null;
   }
 
-  private async checkSuspiciousRegistrations(since: Date): Promise<OperationalAlertDto | null> {
+  private async checkSuspiciousRegistrations(
+    since: Date,
+  ): Promise<OperationalAlertDto | null> {
     const count = await this.userRepository.count({
       where: { createdAt: LessThanOrEqual(since) },
     });
@@ -146,12 +167,14 @@ export class AlertService {
     return null;
   }
 
-  private async checkProviderSuspensions(since: Date): Promise<OperationalAlertDto | null> {
+  private async checkProviderSuspensions(
+    since: Date,
+  ): Promise<OperationalAlertDto | null> {
     const count = await this.userRepository.count({
       where: {
         role: UserRole.PROVIDER,
         status: UserStatus.SUSPENDED,
-        updatedAt: LessThanOrEqual(since) as any,
+        updatedAt: LessThanOrEqual(since),
       },
     });
 
@@ -167,7 +190,9 @@ export class AlertService {
     return null;
   }
 
-  private async checkSupportTicketSpike(since: Date): Promise<OperationalAlertDto | null> {
+  private async checkSupportTicketSpike(
+    since: Date,
+  ): Promise<OperationalAlertDto | null> {
     const count = await this.supportTicketRepository.count({
       where: { createdAt: LessThanOrEqual(since) },
     });

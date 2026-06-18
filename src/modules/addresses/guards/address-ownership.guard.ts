@@ -1,4 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Address } from '../../../entities/address.entity';
@@ -19,7 +25,9 @@ export class AddressOwnershipGuard implements CanActivate {
       return true;
     }
 
-    const address = await this.addressRepository.findOne({ where: { id: addressId } });
+    const address = await this.addressRepository.findOne({
+      where: { id: addressId },
+    });
     if (!address) {
       throw new NotFoundException('Address not found');
     }

@@ -34,15 +34,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      message = typeof exceptionResponse === 'string'
-        ? exceptionResponse
-        : (exceptionResponse as any).message || exception.message;
+      message =
+        typeof exceptionResponse === 'string'
+          ? exceptionResponse
+          : (exceptionResponse as any).message || exception.message;
       error = (exceptionResponse as any).error || exception.name;
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       // Handle Prisma unique constraint violations, etc.
       if (exception.code === 'P2002') {
         status = HttpStatus.CONFLICT;
-        const target = (exception.meta?.target as string[])?.join(', ') || 'field';
+        const target =
+          (exception.meta?.target as string[])?.join(', ') || 'field';
         message = `Unique constraint failed on ${target}`;
         error = 'Conflict';
       } else {
@@ -55,10 +57,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
       status = HttpStatus.BAD_REQUEST;
       message = 'Database error occurred';
       error = 'Bad Request';
-      this.logger.error(`Database error: ${exception.message}`, exception.stack);
+      this.logger.error(
+        `Database error: ${exception.message}`,
+        exception.stack,
+      );
     } else if (exception instanceof Error) {
       message = exception.message;
-      this.logger.error(`Unhandled error: ${exception.message}`, exception.stack);
+      this.logger.error(
+        `Unhandled error: ${exception.message}`,
+        exception.stack,
+      );
     }
 
     const errorResponse: ErrorResponse = {

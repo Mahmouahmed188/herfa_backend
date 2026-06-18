@@ -16,12 +16,15 @@ export class VerificationEventsHandler {
       userId: data.providerId,
       type: 'verification_submitted' as any,
       title: 'Verification Submitted',
-      message: 'Your verification documents have been submitted successfully and are now under review.',
+      message:
+        'Your verification documents have been submitted successfully and are now under review.',
       relatedEntityType: 'ProviderVerification',
       relatedEntityId: data.verificationId,
     });
 
-    this.logger.log(`Verification submitted notification sent to provider ${data.providerId}`);
+    this.logger.log(
+      `Verification submitted notification sent to provider ${data.providerId}`,
+    );
   }
 
   @OnEvent('verification.approved')
@@ -32,12 +35,15 @@ export class VerificationEventsHandler {
       userId: data.providerId,
       type: 'verification_approved' as any,
       title: 'Verification Approved',
-      message: 'Congratulations! Your account has been verified. You can now receive booking requests.',
+      message:
+        'Congratulations! Your account has been verified. You can now receive booking requests.',
       relatedEntityType: 'ProviderVerification',
       relatedEntityId: data.verificationId,
     });
 
-    this.logger.log(`Verification approved notification sent to provider ${data.providerId}`);
+    this.logger.log(
+      `Verification approved notification sent to provider ${data.providerId}`,
+    );
   }
 
   @OnEvent('verification.rejected')
@@ -55,7 +61,9 @@ export class VerificationEventsHandler {
       relatedEntityId: data.verificationId,
     });
 
-    this.logger.log(`Verification rejected notification sent to provider ${data.providerId}`);
+    this.logger.log(
+      `Verification rejected notification sent to provider ${data.providerId}`,
+    );
   }
 
   @OnEvent('verification.suspended')
@@ -73,7 +81,9 @@ export class VerificationEventsHandler {
       relatedEntityId: data.verificationId,
     });
 
-    this.logger.log(`Verification suspended notification sent to provider ${data.providerId}`);
+    this.logger.log(
+      `Verification suspended notification sent to provider ${data.providerId}`,
+    );
   }
 
   @OnEvent('verification.reactivated')
@@ -84,11 +94,14 @@ export class VerificationEventsHandler {
       userId: data.providerId,
       type: 'verification_reactivated' as any,
       title: 'Account Reactivated',
-      message: 'Your account has been reactivated. You can now receive booking requests.',
+      message:
+        'Your account has been reactivated. You can now receive booking requests.',
       relatedEntityType: 'ProviderVerification',
       relatedEntityId: data.verificationId,
     });
 
-    this.logger.log(`Verification reactivated notification sent to provider ${data.providerId}`);
+    this.logger.log(
+      `Verification reactivated notification sent to provider ${data.providerId}`,
+    );
   }
 }

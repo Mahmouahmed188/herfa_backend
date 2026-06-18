@@ -55,11 +55,7 @@ import { ActivityLogsController } from './activity-logs.controller';
       { name: 'alert-detection' },
     ),
   ],
-  controllers: [
-    AnalyticsController,
-    ReportsController,
-    ActivityLogsController,
-  ],
+  controllers: [AnalyticsController, ReportsController, ActivityLogsController],
   providers: [
     ActivityLogService,
     UserAnalyticsService,
@@ -75,9 +71,6 @@ import { ActivityLogsController } from './activity-logs.controller';
     AnalyticsSnapshotService,
     DateRangeFilterService,
   ],
-  exports: [
-    ActivityLogService,
-    AnalyticsSnapshotService,
-  ],
+  exports: [ActivityLogService, AnalyticsSnapshotService],
 })
 export class AnalyticsModule {}

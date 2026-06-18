@@ -27,7 +27,9 @@ describe('ProviderTrackingController', () => {
       ],
     }).compile();
 
-    controller = module.get<ProviderTrackingController>(ProviderTrackingController);
+    controller = module.get<ProviderTrackingController>(
+      ProviderTrackingController,
+    );
     service = module.get<TrackingService>(TrackingService);
   });
 
@@ -45,18 +47,29 @@ describe('ProviderTrackingController', () => {
       };
       mockTrackingService.startSession.mockResolvedValue(session);
 
-      const result = await controller.start({ bookingId: 'booking-1' }, 'provider-1');
+      const result = await controller.start(
+        { bookingId: 'booking-1' },
+        'provider-1',
+      );
 
       expect(result.success).toBe(true);
       expect(result.data.id).toBe('session-1');
-      expect(mockTrackingService.startSession).toHaveBeenCalledWith('booking-1', 'provider-1');
+      expect(mockTrackingService.startSession).toHaveBeenCalledWith(
+        'booking-1',
+        'provider-1',
+      );
     });
   });
 
   describe('pause', () => {
     it('should pause active session', async () => {
-      mockTrackingService.getActiveSessionByProvider.mockResolvedValue({ id: 'session-1' });
-      mockTrackingService.pauseSession.mockResolvedValue({ id: 'session-1', status: 'paused' });
+      mockTrackingService.getActiveSessionByProvider.mockResolvedValue({
+        id: 'session-1',
+      });
+      mockTrackingService.pauseSession.mockResolvedValue({
+        id: 'session-1',
+        status: 'paused',
+      });
 
       const result: any = await controller.pause({ id: 'provider-1' });
 
@@ -67,7 +80,9 @@ describe('ProviderTrackingController', () => {
 
   describe('complete', () => {
     it('should complete session', async () => {
-      mockTrackingService.getActiveSessionByProvider.mockResolvedValue({ id: 'session-1' });
+      mockTrackingService.getActiveSessionByProvider.mockResolvedValue({
+        id: 'session-1',
+      });
       mockTrackingService.completeSession.mockResolvedValue({
         id: 'session-1',
         status: 'completed',

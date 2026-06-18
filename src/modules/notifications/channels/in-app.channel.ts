@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from '../../../entities/notification.entity';
-import { NotificationChannel, NotificationPayload, UserContext } from './notification-channel.interface';
+import {
+  NotificationChannel,
+  NotificationPayload,
+  UserContext,
+} from './notification-channel.interface';
 import { NotificationsGateway } from '../../tracking/notifications.gateway';
 
 @Injectable()
@@ -15,7 +19,10 @@ export class InAppChannel implements NotificationChannel {
     private notificationsGateway: NotificationsGateway,
   ) {}
 
-  async send(notification: NotificationPayload, _user: UserContext): Promise<void> {
+  async send(
+    notification: NotificationPayload,
+    _user: UserContext,
+  ): Promise<void> {
     const entity = this.notificationRepository.create({
       id: notification.id,
       userId: notification.userId,

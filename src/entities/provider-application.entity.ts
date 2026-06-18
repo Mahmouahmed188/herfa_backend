@@ -26,7 +26,9 @@ export class ProviderApplication {
   @Column({ nullable: true })
   providerProfileId: string;
 
-  @ManyToOne(() => ProviderProfile, (profile) => profile.applications, { nullable: true })
+  @ManyToOne(() => ProviderProfile, (profile) => profile.applications, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'provider_profile_id' })
   providerProfile: ProviderProfile;
 

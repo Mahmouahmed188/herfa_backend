@@ -9,7 +9,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 import { MarkAsReadDto, NotificationQueryDto } from './dto/notifications.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -23,7 +29,9 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get user notifications with pagination and filtering' })
+  @ApiOperation({
+    summary: 'Get user notifications with pagination and filtering',
+  })
   @ApiQuery({ name: 'page', required: false, example: 1 })
   @ApiQuery({ name: 'limit', required: false, example: 20 })
   @ApiQuery({ name: 'isRead', required: false, example: false })
@@ -32,7 +40,10 @@ export class NotificationsController {
   @ApiQuery({ name: 'endDate', required: false, example: '2026-06-01' })
   @ApiResponse({ status: 200, description: 'Paginated list of notifications' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getNotifications(@CurrentUser() user: any, @Query() query: NotificationQueryDto) {
+  async getNotifications(
+    @CurrentUser() user: any,
+    @Query() query: NotificationQueryDto,
+  ) {
     return this.notificationsService.findByUser(user.id, query);
   }
 
@@ -47,7 +58,10 @@ export class NotificationsController {
   @Patch(':id/read')
   @ApiOperation({ summary: 'Mark a single notification as read' })
   @ApiResponse({ status: 200, description: 'Notification marked as read' })
-  @ApiResponse({ status: 403, description: 'Cannot mark another user\'s notification' })
+  @ApiResponse({
+    status: 403,
+    description: "Cannot mark another user's notification",
+  })
   @ApiResponse({ status: 404, description: 'Notification not found' })
   async markAsRead(@Param('id') id: string, @CurrentUser() user: any) {
     return this.notificationsService.markSingleAsRead(user.id, id);

@@ -1,4 +1,13 @@
-import { IsString, IsNumber, IsInt, IsOptional, Min, Max, MaxLength, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsInt,
+  IsOptional,
+  Min,
+  Max,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateAddressDto {
@@ -11,7 +20,10 @@ export class UpdateAddressDto {
   @IsOptional()
   @IsString()
   @MinLength(5)
-  @ApiPropertyOptional({ description: 'Full address text', example: '456 Business Ave, Tower 2' })
+  @ApiPropertyOptional({
+    description: 'Full address text',
+    example: '456 Business Ave, Tower 2',
+  })
   fullAddress?: string;
 
   @IsOptional()

@@ -49,7 +49,10 @@ describe('UsersService', () => {
       const updateDto = { firstName: 'NewName' };
       const user = { id: '1', email: 'test@test.com' };
       mockPrismaService.user.findUnique.mockResolvedValue(user);
-      mockPrismaService.user.update.mockResolvedValue({ ...user, ...updateDto });
+      mockPrismaService.user.update.mockResolvedValue({
+        ...user,
+        ...updateDto,
+      });
 
       const result = await service.updateProfile('1', updateDto);
       expect(result.firstName).toBe(updateDto.firstName);

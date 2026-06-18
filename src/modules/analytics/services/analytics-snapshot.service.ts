@@ -30,20 +30,30 @@ export class AnalyticsSnapshotService {
     private geographicAnalyticsService: GeographicAnalyticsService,
   ) {}
 
-  async computeAndStore(snapshotType: SnapshotType): Promise<AnalyticsSnapshot> {
+  async computeAndStore(
+    snapshotType: SnapshotType,
+  ): Promise<AnalyticsSnapshot> {
     this.logger.log(`Computing ${snapshotType} analytics snapshot...`);
 
-    const [dashboard, userAnalytics, providerAnalytics, bookingAnalytics, revenueAnalytics, reviewAnalytics, supportAnalytics, geographicAnalytics] =
-      await Promise.all([
-        this.dashboardService.getOverview(),
-        this.userAnalyticsService.getAnalytics(),
-        this.providerAnalyticsService.getAnalytics(),
-        this.bookingAnalyticsService.getAnalytics(),
-        this.revenueAnalyticsService.getAnalytics(),
-        this.reviewAnalyticsService.getAnalytics(),
-        this.supportAnalyticsService.getAnalytics(),
-        this.geographicAnalyticsService.getAnalytics(),
-      ]);
+    const [
+      dashboard,
+      userAnalytics,
+      providerAnalytics,
+      bookingAnalytics,
+      revenueAnalytics,
+      reviewAnalytics,
+      supportAnalytics,
+      geographicAnalytics,
+    ] = await Promise.all([
+      this.dashboardService.getOverview(),
+      this.userAnalyticsService.getAnalytics(),
+      this.providerAnalyticsService.getAnalytics(),
+      this.bookingAnalyticsService.getAnalytics(),
+      this.revenueAnalyticsService.getAnalytics(),
+      this.reviewAnalyticsService.getAnalytics(),
+      this.supportAnalyticsService.getAnalytics(),
+      this.geographicAnalyticsService.getAnalytics(),
+    ]);
 
     const snapshot = this.snapshotRepository.create({
       snapshotType,
@@ -65,7 +75,9 @@ export class AnalyticsSnapshotService {
     return saved;
   }
 
-  async getLatest(snapshotType: SnapshotType): Promise<AnalyticsSnapshot | null> {
+  async getLatest(
+    snapshotType: SnapshotType,
+  ): Promise<AnalyticsSnapshot | null> {
     return this.snapshotRepository.findOne({
       where: { snapshotType },
       order: { generatedAt: 'DESC' },

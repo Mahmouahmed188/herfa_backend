@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { ReviewsService } from './reviews.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -21,7 +36,10 @@ export class ReviewsController {
   @Post()
   @ApiOperation({ summary: 'Submit a review for a completed booking' })
   @ApiResponse({ status: 201, description: 'Review created successfully' })
-  @ApiResponse({ status: 400, description: 'Booking not completed or already reviewed' })
+  @ApiResponse({
+    status: 400,
+    description: 'Booking not completed or already reviewed',
+  })
   @ApiResponse({ status: 404, description: 'Booking not found' })
   async create(@CurrentUser() user: any, @Body() dto: CreateReviewDto) {
     return this.reviewsService.create(user.id, dto);
@@ -29,7 +47,10 @@ export class ReviewsController {
 
   @Get('mine')
   @ApiOperation({ summary: 'List my submitted reviews' })
-  async findMyReviews(@CurrentUser() user: any, @Query() filter: ReviewFilterDto) {
+  async findMyReviews(
+    @CurrentUser() user: any,
+    @Query() filter: ReviewFilterDto,
+  ) {
     return this.reviewsService.findAllByCustomer(user.id, filter);
   }
 
@@ -44,9 +65,16 @@ export class ReviewsController {
   @Patch(':id')
   @ApiOperation({ summary: 'Edit my review (within 24 hours)' })
   @ApiResponse({ status: 200, description: 'Review updated' })
-  @ApiResponse({ status: 400, description: 'Edit window expired or invalid update' })
+  @ApiResponse({
+    status: 400,
+    description: 'Edit window expired or invalid update',
+  })
   @ApiResponse({ status: 404, description: 'Review not found' })
-  async update(@CurrentUser() user: any, @Param('id') id: string, @Body() dto: UpdateReviewDto) {
+  async update(
+    @CurrentUser() user: any,
+    @Param('id') id: string,
+    @Body() dto: UpdateReviewDto,
+  ) {
     return this.reviewsService.update(id, user.id, dto);
   }
 

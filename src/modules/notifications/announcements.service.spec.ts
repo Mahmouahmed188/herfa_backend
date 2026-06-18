@@ -6,6 +6,7 @@ import { NotificationAnnouncement } from '../../entities/notification-announceme
 import { NotificationsService } from './notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationTargetAudience } from '../../common/constants/notification.enums';
+import { AnnouncementQueryDto } from './dto/announcements.dto';
 
 describe('AnnouncementsService', () => {
   let service: AnnouncementsService;
@@ -32,11 +33,13 @@ describe('AnnouncementsService', () => {
 
   const mockPrisma = {
     user: {
-      findMany: jest.fn().mockResolvedValue([
-        { id: 'user-1' },
-        { id: 'user-2' },
-        { id: 'user-3' },
-      ]),
+      findMany: jest
+        .fn()
+        .mockResolvedValue([
+          { id: 'user-1' },
+          { id: 'user-2' },
+          { id: 'user-3' },
+        ]),
     },
   };
 
@@ -104,17 +107,39 @@ describe('AnnouncementsService', () => {
         targetAudience: NotificationTargetAudience.INDIVIDUAL,
       };
 
-      await expect(service.create(dto, 'admin-uuid')).rejects.toThrow(BadRequestException);
+      await expect(service.create(dto, 'admin-uuid')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
   describe('findAll', () => {
     it('should return all announcements', async () => {
-      const result = await service.findAll();
+      const query: AnnouncementQueryDto = { page: 1, limit: 20 };
+      const result = await service.findAll(query);
 
-      expect(mockAnnouncementRepository.findAndCount).toHaveBeenCalled();
+      expect(mockAnnouncementRepository.findAndCount).toHaveBeenCalledWith({
+        order: { createdAt: 'DESC' },
+        take: 20,
+        skip: 0,
+      });
       expect(result.items).toHaveLength(1);
       expect(result.total).toBe(1);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(20);
+    });
+
+    it('should return paginated announcements with custom limit', async () => {
+      const query: AnnouncementQueryDto = { page: 2, limit: 5 };
+      const result = await service.findAll(query);
+
+      expect(mockAnnouncementRepository.findAndCount).toHaveBeenCalledWith({
+        order: { createdAt: 'DESC' },
+        take: 5,
+        skip: 5,
+      });
+      expect(result.limit).toBe(5);
+      expect(result.page).toBe(2);
     });
   });
 
@@ -122,14 +147,18 @@ describe('AnnouncementsService', () => {
     it('should delete an announcement', async () => {
       const result = await service.delete('announcement-uuid');
 
-      expect(mockAnnouncementRepository.delete).toHaveBeenCalledWith('announcement-uuid');
+      expect(mockAnnouncementRepository.delete).toHaveBeenCalledWith(
+        'announcement-uuid',
+      );
       expect(result.message).toBe('Announcement deleted');
     });
 
     it('should throw NotFoundException if announcement not found', async () => {
       mockAnnouncementRepository.delete.mockResolvedValue({ affected: 0 });
 
-      await expect(service.delete('nonexistent')).rejects.toThrow(NotFoundException);
+      await expect(service.delete('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

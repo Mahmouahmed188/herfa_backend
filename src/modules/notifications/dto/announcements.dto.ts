@@ -1,6 +1,15 @@
-import { IsString, IsOptional, IsEnum, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsUUID,
+  IsNumber,
+  Min,
+  Max,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { NotificationTargetAudience } from '../../../common/constants/notification.enums';
+import { Type } from 'class-transformer';
 
 export class CreateAnnouncementDto {
   @ApiProperty({ description: 'Announcement title' })
@@ -11,11 +20,16 @@ export class CreateAnnouncementDto {
   @IsString()
   message: string;
 
-  @ApiProperty({ enum: NotificationTargetAudience, description: 'Target audience group' })
+  @ApiProperty({
+    enum: NotificationTargetAudience,
+    description: 'Target audience group',
+  })
   @IsEnum(NotificationTargetAudience)
   targetAudience: NotificationTargetAudience;
 
-  @ApiPropertyOptional({ description: 'Required when targetAudience is "individual"' })
+  @ApiPropertyOptional({
+    description: 'Required when targetAudience is "individual"',
+  })
   @IsOptional()
   @IsUUID()
   targetUserId?: string;
@@ -50,4 +64,27 @@ export class AnnouncementListResponseDto {
 
   @ApiProperty()
   total: number;
+
+  @ApiProperty({ example: 1 })
+  page: number;
+
+  @ApiProperty({ example: 20 })
+  limit: number;
+}
+
+export class AnnouncementQueryDto {
+  @ApiPropertyOptional({ description: 'Page number', default: 1 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiPropertyOptional({ description: 'Items per page', default: 20 })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number = 20;
 }

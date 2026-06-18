@@ -40,22 +40,36 @@ describe('VerificationOwnerGuard', () => {
   });
 
   it('should allow provider access to own verification', async () => {
-    verificationRepo.findOne.mockResolvedValue({ providerId: 'provider-uuid' } as ProviderVerification);
-    const context = mockRequest({ id: 'provider-uuid', role: 'provider' }, 'verification-uuid') as any;
+    verificationRepo.findOne.mockResolvedValue({
+      providerId: 'provider-uuid',
+    } as ProviderVerification);
+    const context = mockRequest(
+      { id: 'provider-uuid', role: 'provider' },
+      'verification-uuid',
+    ) as any;
     const result = await guard.canActivate(context);
     expect(result).toBe(true);
   });
 
   it('should deny provider access to another provider verification', async () => {
-    verificationRepo.findOne.mockResolvedValue({ providerId: 'other-provider' } as ProviderVerification);
-    const context = mockRequest({ id: 'provider-uuid', role: 'provider' }, 'verification-uuid') as any;
+    verificationRepo.findOne.mockResolvedValue({
+      providerId: 'other-provider',
+    } as ProviderVerification);
+    const context = mockRequest(
+      { id: 'provider-uuid', role: 'provider' },
+      'verification-uuid',
+    ) as any;
 
-    await expect(guard.canActivate(context)).rejects.toThrow(ForbiddenException);
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      ForbiddenException,
+    );
   });
 
   it('should deny access when user not authenticated', async () => {
     const context = mockRequest(null, 'verification-uuid') as any;
 
-    await expect(guard.canActivate(context)).rejects.toThrow(ForbiddenException);
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      ForbiddenException,
+    );
   });
 });

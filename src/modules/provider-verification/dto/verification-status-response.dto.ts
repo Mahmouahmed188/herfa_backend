@@ -4,7 +4,10 @@ export class VerificationStatusResponseDto {
   @ApiProperty({ example: 'uuid' })
   id: string;
 
-  @ApiProperty({ example: 'under_review', enum: ['pending', 'under_review', 'approved', 'rejected', 'suspended'] })
+  @ApiProperty({
+    example: 'under_review',
+    enum: ['pending', 'under_review', 'approved', 'rejected', 'suspended'],
+  })
   status: string;
 
   @ApiPropertyOptional({ example: '2026-06-05T10:00:00.000Z' })

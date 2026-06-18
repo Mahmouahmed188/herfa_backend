@@ -22,7 +22,11 @@ export class ReviewAnalyticsService {
     startDate?: string,
     endDate?: string,
   ): Promise<ReviewAnalyticsDto> {
-    const range = this.dateRangeFilterService.resolve(preset, startDate, endDate);
+    const range = this.dateRangeFilterService.resolve(
+      preset,
+      startDate,
+      endDate,
+    );
 
     const avgRatingResult = await this.reviewRepository
       .createQueryBuilder('review')
@@ -44,7 +48,10 @@ export class ReviewAnalyticsService {
 
     const daysDiff = Math.max(
       1,
-      Math.ceil((range.endDate.getTime() - range.startDate.getTime()) / (1000 * 60 * 60 * 24)),
+      Math.ceil(
+        (range.endDate.getTime() - range.startDate.getTime()) /
+          (1000 * 60 * 60 * 24),
+      ),
     );
     const dailyAverage = reviewsPerDay
       ? Number((parseInt(reviewsPerDay.count) / daysDiff).toFixed(1))
@@ -66,7 +73,7 @@ export class ReviewAnalyticsService {
 
     const topRatedCategories = await this.reviewRepository
       .createQueryBuilder('review')
-      .select('COALESCE(category.name, \'Unknown\')', 'category')
+      .select("COALESCE(category.name, 'Unknown')", 'category')
       .addSelect('AVG(review.rating)', 'averageRating')
       .leftJoin('review.booking', 'booking')
       .leftJoin('booking.service', 'service')
@@ -93,7 +100,13 @@ export class ReviewAnalyticsService {
       .orderBy('review.rating', 'ASC')
       .getRawMany<{ rating: string; count: string }>();
 
-    const ratingDist: Record<string, number> = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 };
+    const ratingDist: Record<string, number> = {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5': 0,
+    };
     for (const row of ratingDistributionRaw) {
       ratingDist[row.rating] = parseInt(row.count);
     }

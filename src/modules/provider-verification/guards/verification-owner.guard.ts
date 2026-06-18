@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProviderVerification } from '../../../entities/provider-verification.entity';
@@ -33,7 +38,9 @@ export class VerificationOwnerGuard implements CanActivate {
       }
 
       if (verification.providerId !== user.id) {
-        throw new ForbiddenException('You can only access your own verification data');
+        throw new ForbiddenException(
+          'You can only access your own verification data',
+        );
       }
     }
 

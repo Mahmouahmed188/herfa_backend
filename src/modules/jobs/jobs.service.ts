@@ -1,11 +1,26 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, MoreThan, LessThan } from 'typeorm';
 import { Job } from '../../entities/job.entity';
 import { JobStatusHistory } from '../../entities/job-status-history.entity';
 import { JobAssignment } from '../../entities/job-assignment.entity';
-import { JobStatus, JobAssignmentStatus, NotificationType } from '../../common/constants/user.enums';
-import { CreateJobDto, UpdateJobDto, AcceptJobDto, RejectJobDto, JobQueryDto } from './dto/jobs.dto';
+import {
+  JobStatus,
+  JobAssignmentStatus,
+  NotificationType,
+} from '../../common/constants/user.enums';
+import {
+  CreateJobDto,
+  UpdateJobDto,
+  AcceptJobDto,
+  RejectJobDto,
+  JobQueryDto,
+} from './dto/jobs.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { InjectQueue } from '@nestjs/bull';
 import { type Queue } from 'bull';
@@ -35,7 +50,9 @@ export class JobsService {
       longitude: dto.longitude,
       location: `POINT(${dto.longitude} ${dto.latitude})`,
       estimatedPrice: dto.estimatedPrice,
-      scheduledDate: dto.scheduledDate ? new Date(dto.scheduledDate) : undefined,
+      scheduledDate: dto.scheduledDate
+        ? new Date(dto.scheduledDate)
+        : undefined,
       scheduledTime: dto.scheduledTime,
       images: dto.images,
       notes: dto.notes,
@@ -92,16 +109,22 @@ export class JobsService {
     }
 
     if (query.startDate) {
-      qb.andWhere('job.createdAt >= :startDate', { startDate: new Date(query.startDate) });
+      qb.andWhere('job.createdAt >= :startDate', {
+        startDate: new Date(query.startDate),
+      });
     }
 
     if (query.endDate) {
-      qb.andWhere('job.createdAt <= :endDate', { endDate: new Date(query.endDate) });
+      qb.andWhere('job.createdAt <= :endDate', {
+        endDate: new Date(query.endDate),
+      });
     }
 
     const page = query.page || 1;
     const limit = query.limit || 20;
-    qb.skip((page - 1) * limit).take(limit).orderBy('job.createdAt', 'DESC');
+    qb.skip((page - 1) * limit)
+      .take(limit)
+      .orderBy('job.createdAt', 'DESC');
 
     const [jobs, total] = await qb.getManyAndCount();
 
@@ -125,7 +148,9 @@ export class JobsService {
 
     const page = query.page || 1;
     const limit = query.limit || 20;
-    qb.skip((page - 1) * limit).take(limit).orderBy('job.createdAt', 'DESC');
+    qb.skip((page - 1) * limit)
+      .take(limit)
+      .orderBy('job.createdAt', 'DESC');
 
     const [jobs, total] = await qb.getManyAndCount();
 
@@ -157,8 +182,13 @@ export class JobsService {
       throw new ForbiddenException('You can only cancel your own jobs');
     }
 
-    if (job.status === JobStatus.COMPLETED || job.status === JobStatus.CANCELLED) {
-      throw new BadRequestException('Cannot cancel completed or already cancelled jobs');
+    if (
+      job.status === JobStatus.COMPLETED ||
+      job.status === JobStatus.CANCELLED
+    ) {
+      throw new BadRequestException(
+        'Cannot cancel completed or already cancelled jobs',
+      );
     }
 
     job.status = JobStatus.CANCELLED;
@@ -215,7 +245,11 @@ export class JobsService {
     return assignment;
   }
 
-  async rejectAssignment(providerId: string, assignmentId: string, dto: RejectJobDto) {
+  async rejectAssignment(
+    providerId: string,
+    assignmentId: string,
+    dto: RejectJobDto,
+  ) {
     const assignment = await this.assignmentRepository.findOne({
       where: { id: assignmentId },
       relations: ['job', 'provider'],
@@ -280,7 +314,12 @@ export class JobsService {
     return assignment;
   }
 
-  private async createStatusHistory(jobId: string, status: JobStatus, changedBy: string, notes?: string) {
+  private async createStatusHistory(
+    jobId: string,
+    status: JobStatus,
+    changedBy: string,
+    notes?: string,
+  ) {
     const history = this.statusHistoryRepository.create({
       jobId,
       status,
@@ -290,7 +329,11 @@ export class JobsService {
     return this.statusHistoryRepository.save(history);
   }
 
-  async getAvailableJobs(latitude: number, longitude: number, radiusKm: number = 50) {
+  async getAvailableJobs(
+    latitude: number,
+    longitude: number,
+    radiusKm: number = 50,
+  ) {
     const jobs = await this.jobRepository
       .createQueryBuilder('job')
       .leftJoinAndSelect('job.customer', 'customer')

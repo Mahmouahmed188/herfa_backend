@@ -25,14 +25,16 @@ export class AiExceptionFilter implements ExceptionFilter {
     switch (status) {
       case HttpStatus.UNAUTHORIZED:
         errorResponse.errorCode = 'UNAUTHORIZED';
-        errorResponse.message = 'Authentication is required to access this resource.';
+        errorResponse.message =
+          'Authentication is required to access this resource.';
         break;
       case HttpStatus.UNPROCESSABLE_ENTITY:
         errorResponse.errorCode = 'VALIDATION_ERROR';
         errorResponse.message =
           typeof exceptionResponse === 'string'
             ? exceptionResponse
-            : (exceptionResponse as any).message || 'Request validation failed.';
+            : (exceptionResponse as any).message ||
+              'Request validation failed.';
         break;
       case HttpStatus.TOO_MANY_REQUESTS:
         errorResponse.errorCode = 'RATE_LIMIT_EXCEEDED';
@@ -40,7 +42,8 @@ export class AiExceptionFilter implements ExceptionFilter {
         break;
       case HttpStatus.REQUEST_TIMEOUT:
         errorResponse.errorCode = 'AI_REQUEST_TIMEOUT';
-        errorResponse.message = 'AI service did not respond in time. Please try again.';
+        errorResponse.message =
+          'AI service did not respond in time. Please try again.';
         break;
       case HttpStatus.SERVICE_UNAVAILABLE:
         errorResponse.errorCode = 'AI_SERVICE_UNAVAILABLE';
@@ -49,7 +52,8 @@ export class AiExceptionFilter implements ExceptionFilter {
         break;
       default:
         errorResponse.errorCode = 'INTERNAL_ERROR';
-        errorResponse.message = 'An unexpected error occurred. Please try again later.';
+        errorResponse.message =
+          'An unexpected error occurred. Please try again later.';
         break;
     }
 

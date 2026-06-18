@@ -15,7 +15,9 @@ import { Logger } from '@nestjs/common';
   cors: { origin: '*', credentials: true },
   namespace: '/tracking',
 })
-export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class TrackingGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -26,7 +28,9 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
 
   async handleConnection(client: Socket) {
     try {
-      const token = client.handshake.auth.token || client.handshake.headers.authorization?.replace('Bearer ', '');
+      const token =
+        client.handshake.auth.token ||
+        client.handshake.headers.authorization?.replace('Bearer ', '');
       if (!token) {
         client.disconnect();
         return;
@@ -53,7 +57,14 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
   @SubscribeMessage('updateLocation')
   handleUpdateLocation(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { latitude: number; longitude: number; speed?: number; heading?: number; bookingId?: string },
+    @MessageBody()
+    data: {
+      latitude: number;
+      longitude: number;
+      speed?: number;
+      heading?: number;
+      bookingId?: string;
+    },
   ) {
     const userId = client.data.userId;
     if (client.data.role !== 'provider') {
@@ -85,32 +96,49 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   @SubscribeMessage('joinJob')
-  handleJoinJob(@ConnectedSocket() client: Socket, @MessageBody() data: { jobId: string }) {
+  handleJoinJob(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { jobId: string },
+  ) {
     client.join(`job:${data.jobId}`);
     return { success: true };
   }
 
   @SubscribeMessage('joinBooking')
-  handleJoinBooking(@ConnectedSocket() client: Socket, @MessageBody() data: { bookingId: string }) {
+  handleJoinBooking(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { bookingId: string },
+  ) {
     client.join(`job:${data.bookingId}`);
-    this.logger.log(`Client ${client.id} joined booking room: ${data.bookingId}`);
+    this.logger.log(
+      `Client ${client.id} joined booking room: ${data.bookingId}`,
+    );
     return { success: true };
   }
 
   @SubscribeMessage('leaveJob')
-  handleLeaveJob(@ConnectedSocket() client: Socket, @MessageBody() data: { jobId: string }) {
+  handleLeaveJob(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { jobId: string },
+  ) {
     client.leave(`job:${data.jobId}`);
     return { success: true };
   }
 
   @SubscribeMessage('leaveBooking')
-  handleLeaveBooking(@ConnectedSocket() client: Socket, @MessageBody() data: { bookingId: string }) {
+  handleLeaveBooking(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { bookingId: string },
+  ) {
     client.leave(`job:${data.bookingId}`);
     return { success: true };
   }
 
   @SubscribeMessage('joinServiceRoom')
-  handleJoinServiceRoom(@ConnectedSocket() client: Socket, @MessageBody() data: { serviceId: string }) {
+  handleJoinServiceRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { serviceId: string },
+  ) {
     client.join(`service:${data.serviceId}:providers`);
     return { success: true };
   }
@@ -132,7 +160,10 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
     this.server.to(`job:${bookingId}`).emit(event, data);
   }
 
-  emitTrackingStatusChanged(userId: string, data: { sessionId: string; status: string; timestamp: Date }) {
+  emitTrackingStatusChanged(
+    userId: string,
+    data: { sessionId: string; status: string; timestamp: Date },
+  ) {
     this.emitToUser(userId, 'trackingStatusChanged', data);
   }
 }

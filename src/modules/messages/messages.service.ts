@@ -10,7 +10,13 @@ export class MessagesService {
     private messageRepository: Repository<Message>,
   ) {}
 
-  async sendMessage(senderId: string, receiverId: string, content: string, relatedType?: string, relatedId?: string) {
+  async sendMessage(
+    senderId: string,
+    receiverId: string,
+    content: string,
+    relatedType?: string,
+    relatedId?: string,
+  ) {
     const message = this.messageRepository.create({
       senderId,
       receiverId,
@@ -25,10 +31,7 @@ export class MessagesService {
     // This is a simplified version: get all messages where user is sender or receiver
     // In a real app, you'd group by the other participant
     return this.messageRepository.find({
-      where: [
-        { senderId: userId },
-        { receiverId: userId },
-      ],
+      where: [{ senderId: userId }, { receiverId: userId }],
       order: { createdAt: 'DESC' },
       relations: ['sender', 'receiver'],
     });

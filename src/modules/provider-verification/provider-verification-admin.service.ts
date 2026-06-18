@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -45,11 +49,15 @@ export class ProviderVerificationAdminService {
     }
 
     if (filter.dateFrom) {
-      qb.andWhere('v.submittedAt >= :dateFrom', { dateFrom: new Date(filter.dateFrom) });
+      qb.andWhere('v.submittedAt >= :dateFrom', {
+        dateFrom: new Date(filter.dateFrom),
+      });
     }
 
     if (filter.dateTo) {
-      qb.andWhere('v.submittedAt <= :dateTo', { dateTo: new Date(filter.dateTo) });
+      qb.andWhere('v.submittedAt <= :dateTo', {
+        dateTo: new Date(filter.dateTo),
+      });
     }
 
     const [verifications, total] = await qb
@@ -72,7 +80,8 @@ export class ProviderVerificationAdminService {
         return {
           id: v.id,
           providerId: v.providerId,
-          providerName: profile?.businessName || profile?.user?.email || 'Unknown',
+          providerName:
+            profile?.businessName || profile?.user?.email || 'Unknown',
           providerEmail: profile?.user?.email || '',
           status: v.status,
           submittedAt: v.submittedAt,
@@ -175,11 +184,15 @@ export class ProviderVerificationAdminService {
     }
 
     if (options.requireReason && !options.reason) {
-      throw new BadRequestException(`${newStatus === 'rejected' ? 'Rejection' : 'Suspension'} reason is required`);
+      throw new BadRequestException(
+        `${newStatus === 'rejected' ? 'Rejection' : 'Suspension'} reason is required`,
+      );
     }
 
     if (adminId === verification.providerId) {
-      throw new BadRequestException('Admins cannot perform actions on their own provider verification');
+      throw new BadRequestException(
+        'Admins cannot perform actions on their own provider verification',
+      );
     }
 
     const oldStatus = verification.status;
@@ -253,11 +266,19 @@ export class ProviderVerificationAdminService {
   }
 
   async reject(id: string, adminId: string, reason: string, notes?: string) {
-    return this.transitionStatus(id, 'rejected', adminId, { reason, notes, requireReason: true });
+    return this.transitionStatus(id, 'rejected', adminId, {
+      reason,
+      notes,
+      requireReason: true,
+    });
   }
 
   async suspend(id: string, adminId: string, reason: string, notes?: string) {
-    return this.transitionStatus(id, 'suspended', adminId, { reason, notes, requireReason: true });
+    return this.transitionStatus(id, 'suspended', adminId, {
+      reason,
+      notes,
+      requireReason: true,
+    });
   }
 
   async reactivate(id: string, adminId: string, notes?: string) {

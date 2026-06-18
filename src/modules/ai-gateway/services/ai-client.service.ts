@@ -14,14 +14,17 @@ export class AiClientService {
     [AiFeatureType.IMAGE_ANALYSIS]: '/api/v1/ai/image_analysis',
     [AiFeatureType.CLASSIFICATION]: '/api/v1/ai/classification',
     [AiFeatureType.COST_ESTIMATION]: '/api/v1/ai/cost_estimation',
-    [AiFeatureType.PROVIDER_RECOMMENDATION]: '/api/v1/ai/provider_recommendation',
+    [AiFeatureType.PROVIDER_RECOMMENDATION]:
+      '/api/v1/ai/provider_recommendation',
     [AiFeatureType.OCR]: '/api/v1/ai/ocr',
   };
 
   constructor(private readonly configService: ConfigService) {
     const aiServiceUrl =
-      this.configService.get<string>('AI_SERVICE_URL') || 'http://localhost:8000';
-    const timeout = this.configService.get<number>('AI_REQUEST_TIMEOUT') || 30000;
+      this.configService.get<string>('AI_SERVICE_URL') ||
+      'http://localhost:8000';
+    const timeout =
+      this.configService.get<number>('AI_REQUEST_TIMEOUT') || 30000;
     this.apiKey = this.configService.get<string>('AI_SERVICE_API_KEY') || '';
 
     this.client = axios.create({
@@ -34,10 +37,7 @@ export class AiClientService {
     });
   }
 
-  async callAiService(
-    featureType: AiFeatureType,
-    payload: any,
-  ): Promise<any> {
+  async callAiService(featureType: AiFeatureType, payload: any): Promise<any> {
     const endpoint = this.endpointMap[featureType];
     if (!endpoint) {
       throw new HttpException(
@@ -102,10 +102,24 @@ export class AiClientService {
 
       case AiFeatureType.IMAGE_ANALYSIS:
         return {
-          problemType: data.problemType || data.problem_type || data.category || '',
-          serviceCategory: data.serviceCategory || data.service_category || data.category || '',
-          confidenceScore: data.confidenceScore ?? data.confidence ?? data.confidence_score ?? 0,
-          recommendations: data.recommendations || data.suggested_actions || data.recommendedService ? [data.recommendedService] : [],
+          problemType:
+            data.problemType || data.problem_type || data.category || '',
+          serviceCategory:
+            data.serviceCategory ||
+            data.service_category ||
+            data.category ||
+            '',
+          confidenceScore:
+            data.confidenceScore ??
+            data.confidence ??
+            data.confidence_score ??
+            0,
+          recommendations:
+            data.recommendations ||
+            data.suggested_actions ||
+            data.recommendedService
+              ? [data.recommendedService]
+              : [],
         };
 
       default:

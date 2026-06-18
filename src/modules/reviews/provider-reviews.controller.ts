@@ -17,14 +17,18 @@ export class ProviderReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List reviews received by the authenticated provider' })
+  @ApiOperation({
+    summary: 'List reviews received by the authenticated provider',
+  })
   async getReviews(@CurrentUser() user: any, @Query() filter: ReviewFilterDto) {
     const providerId = user.id;
     return this.reviewsService.getProviderReviews(providerId, filter);
   }
 
   @Get('stats')
-  @ApiOperation({ summary: 'Get rating statistics for the authenticated provider' })
+  @ApiOperation({
+    summary: 'Get rating statistics for the authenticated provider',
+  })
   async getStats(@CurrentUser() user: any) {
     const providerId = user.id;
     return this.reviewsService.getProviderStats(providerId);

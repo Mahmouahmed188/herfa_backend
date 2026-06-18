@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -18,7 +12,10 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../common/constants/user.enums';
 import { TrackingService } from './tracking.service';
 import { TrackingFilterDto } from './dto/tracking-filter.dto';
-import { AdminTrackingListDto, AdminTrackingDetailDto } from './dto/tracking-session.dto';
+import {
+  AdminTrackingListDto,
+  AdminTrackingDetailDto,
+} from './dto/tracking-session.dto';
 
 @ApiTags('Tracking - Admin')
 @ApiBearerAuth()
@@ -34,16 +31,54 @@ export class AdminTrackingController {
     description:
       'Admin views all tracking sessions with filtering, pagination, and sorting',
   })
-  @ApiQuery({ name: 'status', required: false, description: 'Filter by status' })
-  @ApiQuery({ name: 'bookingId', required: false, description: 'Filter by booking ID' })
-  @ApiQuery({ name: 'providerId', required: false, description: 'Filter by provider ID' })
-  @ApiQuery({ name: 'customerId', required: false, description: 'Filter by customer ID' })
-  @ApiQuery({ name: 'dateFrom', required: false, description: 'Filter by start date (ISO 8601)' })
-  @ApiQuery({ name: 'dateTo', required: false, description: 'Filter by end date (ISO 8601)' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter by status',
+  })
+  @ApiQuery({
+    name: 'bookingId',
+    required: false,
+    description: 'Filter by booking ID',
+  })
+  @ApiQuery({
+    name: 'providerId',
+    required: false,
+    description: 'Filter by provider ID',
+  })
+  @ApiQuery({
+    name: 'customerId',
+    required: false,
+    description: 'Filter by customer ID',
+  })
+  @ApiQuery({
+    name: 'dateFrom',
+    required: false,
+    description: 'Filter by start date (ISO 8601)',
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    required: false,
+    description: 'Filter by end date (ISO 8601)',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page',
+  })
   @ApiQuery({ name: 'sortBy', required: false, description: 'Sort field' })
-  @ApiQuery({ name: 'sortOrder', required: false, description: 'Sort order (ASC/DESC)' })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    description: 'Sort order (ASC/DESC)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Tracking sessions list retrieved',
@@ -58,7 +93,8 @@ export class AdminTrackingController {
   @Get(':id')
   @ApiOperation({
     summary: 'Get tracking session detail',
-    description: 'Admin views full details of a tracking session including location history',
+    description:
+      'Admin views full details of a tracking session including location history',
   })
   @ApiResponse({
     status: 200,

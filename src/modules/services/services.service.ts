@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Brackets } from 'typeorm';
 import { ServiceListing } from '../../entities/service-listing.entity';
@@ -87,31 +92,43 @@ export class ServicesService {
       .where('listing.isActive = :isActive', { isActive: true });
 
     if (dto.categoryId) {
-      query.andWhere('listing.categoryId = :categoryId', { categoryId: dto.categoryId });
+      query.andWhere('listing.categoryId = :categoryId', {
+        categoryId: dto.categoryId,
+      });
     }
 
     if (dto.providerId) {
-      query.andWhere('listing.providerId = :providerId', { providerId: dto.providerId });
+      query.andWhere('listing.providerId = :providerId', {
+        providerId: dto.providerId,
+      });
     }
 
     if (dto.minPrice !== undefined) {
-      query.andWhere('listing.basePrice >= :minPrice', { minPrice: dto.minPrice });
+      query.andWhere('listing.basePrice >= :minPrice', {
+        minPrice: dto.minPrice,
+      });
     }
 
     if (dto.maxPrice !== undefined) {
-      query.andWhere('listing.basePrice <= :maxPrice', { maxPrice: dto.maxPrice });
+      query.andWhere('listing.basePrice <= :maxPrice', {
+        maxPrice: dto.maxPrice,
+      });
     }
 
     if (dto.search) {
       query.andWhere(
         new Brackets((qb) => {
-          qb.where('listing.title ILIKE :search', { search: `%${dto.search}%` })
-            .orWhere('listing.description ILIKE :search', { search: `%${dto.search}%` });
+          qb.where('listing.title ILIKE :search', {
+            search: `%${dto.search}%`,
+          }).orWhere('listing.description ILIKE :search', {
+            search: `%${dto.search}%`,
+          });
         }),
       );
     }
 
-    const sortBy = dto.sortBy === 'basePrice' ? 'listing.basePrice' : 'listing.createdAt';
+    const sortBy =
+      dto.sortBy === 'basePrice' ? 'listing.basePrice' : 'listing.createdAt';
     const sortOrder = dto.sortOrder === 'ASC' ? 'ASC' : 'DESC';
     query.orderBy(sortBy, sortOrder);
 
@@ -135,25 +152,36 @@ export class ServicesService {
       isPrimary: dto.isPrimary || false,
     });
     if (dto.isPrimary) {
-      await this.imageRepository.update({ serviceId, isPrimary: true }, { isPrimary: false });
+      await this.imageRepository.update(
+        { serviceId, isPrimary: true },
+        { isPrimary: false },
+      );
     }
     return this.imageRepository.save(image);
   }
 
   async setPrimaryImage(userId: string, serviceId: string, imageId: string) {
     await this.findById(serviceId, userId);
-    const image = await this.imageRepository.findOne({ where: { id: imageId, serviceId } });
+    const image = await this.imageRepository.findOne({
+      where: { id: imageId, serviceId },
+    });
     if (!image) {
       throw new NotFoundException('Image not found');
     }
-    await this.imageRepository.update({ serviceId, isPrimary: true }, { isPrimary: false });
+    await this.imageRepository.update(
+      { serviceId, isPrimary: true },
+      { isPrimary: false },
+    );
     image.isPrimary = true;
     return this.imageRepository.save(image);
   }
 
   async removeImage(userId: string, serviceId: string, imageId: string) {
     await this.findById(serviceId, userId);
-    const result = await this.imageRepository.delete({ id: imageId, serviceId });
+    const result = await this.imageRepository.delete({
+      id: imageId,
+      serviceId,
+    });
     if (result.affected === 0) {
       throw new NotFoundException('Image not found');
     }

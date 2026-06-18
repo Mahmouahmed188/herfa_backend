@@ -20,14 +20,23 @@ export class CustomersService {
   }
 
   async updateProfile(userId: string, data: Partial<CustomerProfile>) {
-    const profile = await this.customerProfileRepository.findOne({ where: { userId } });
+    const profile = await this.customerProfileRepository.findOne({
+      where: { userId },
+    });
     if (!profile) throw new NotFoundException('Customer profile not found');
     Object.assign(profile, data);
     return this.customerProfileRepository.save(profile);
   }
 
-  async setDefaultLocation(userId: string, latitude: number, longitude: number, address: string) {
-    const profile = await this.customerProfileRepository.findOne({ where: { userId } });
+  async setDefaultLocation(
+    userId: string,
+    latitude: number,
+    longitude: number,
+    address: string,
+  ) {
+    const profile = await this.customerProfileRepository.findOne({
+      where: { userId },
+    });
     if (!profile) throw new NotFoundException('Customer profile not found');
     profile.defaultLatitude = latitude;
     profile.defaultLongitude = longitude;

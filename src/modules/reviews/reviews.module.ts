@@ -14,10 +14,21 @@ import { BookingsModule } from '../bookings/bookings.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Review, ProviderRatingStats, ModerationLog, Booking, ProviderProfile]),
+    TypeOrmModule.forFeature([
+      Review,
+      ProviderRatingStats,
+      ModerationLog,
+      Booking,
+      ProviderProfile,
+    ]),
     BookingsModule,
   ],
-  controllers: [ReviewsController, ProviderReviewsController, PublicReviewsController, AdminReviewsController],
+  controllers: [
+    ReviewsController,
+    ProviderReviewsController,
+    PublicReviewsController,
+    AdminReviewsController,
+  ],
   providers: [ReviewsService],
   exports: [ReviewsService],
 })

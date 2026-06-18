@@ -50,16 +50,24 @@ export class ProviderVerificationController {
   @Post('submit')
   @ApiOperation({
     summary: 'Submit verification request',
-    description: 'Submit verification documents for admin review. Status changes from pending to under_review.',
+    description:
+      'Submit verification documents for admin review. Status changes from pending to under_review.',
   })
-  @ApiResponse({ status: 201, description: 'Verification submitted successfully', type: VerificationStatusResponseDto })
-  @ApiResponse({ status: 400, description: 'Missing documents or already submitted' })
+  @ApiResponse({
+    status: 201,
+    description: 'Verification submitted successfully',
+    type: VerificationStatusResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Missing documents or already submitted',
+  })
   @ApiResponse({ status: 404, description: 'Provider profile not found' })
-  async submit(
-    @CurrentUser() user: any,
-    @Body() dto: SubmitVerificationDto,
-  ) {
-    const verification = await this.verificationService.submit(user.id, dto.notes);
+  async submit(@CurrentUser() user: any, @Body() dto: SubmitVerificationDto) {
+    const verification = await this.verificationService.submit(
+      user.id,
+      dto.notes,
+    );
     return {
       id: verification.id,
       status: verification.status,
@@ -71,9 +79,14 @@ export class ProviderVerificationController {
   @Get('status')
   @ApiOperation({
     summary: 'Get verification status',
-    description: 'Get the current verification status for the authenticated provider.',
+    description:
+      'Get the current verification status for the authenticated provider.',
   })
-  @ApiResponse({ status: 200, description: 'Current verification status', type: VerificationStatusResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Current verification status',
+    type: VerificationStatusResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'No verification record found' })
   async getStatus(@CurrentUser() user: any) {
     const verification = await this.verificationService.getStatus(user.id);
@@ -91,13 +104,19 @@ export class ProviderVerificationController {
   @Get('history')
   @ApiOperation({
     summary: 'Get verification history',
-    description: 'Get the chronological history of all status changes for the authenticated provider.',
+    description:
+      'Get the chronological history of all status changes for the authenticated provider.',
   })
-  @ApiResponse({ status: 200, description: 'List of verification history entries' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of verification history entries',
+  })
   @ApiResponse({ status: 404, description: 'No verification record found' })
   async getHistory(@CurrentUser() user: any) {
     const verification = await this.verificationService.getStatus(user.id);
-    const history = await this.historyService.findByVerificationId(verification.id);
+    const history = await this.historyService.findByVerificationId(
+      verification.id,
+    );
     return history.map((entry) => ({
       id: entry.id,
       oldStatus: entry.oldStatus,
@@ -112,9 +131,14 @@ export class ProviderVerificationController {
   @Get('documents')
   @ApiOperation({
     summary: 'List uploaded documents',
-    description: 'List all verification documents uploaded by the authenticated provider.',
+    description:
+      'List all verification documents uploaded by the authenticated provider.',
   })
-  @ApiResponse({ status: 200, description: 'List of documents', type: [VerificationDocumentResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of documents',
+    type: [VerificationDocumentResponseDto],
+  })
   async getDocuments(@CurrentUser() user: any) {
     return this.documentService.findByProviderId(user.id);
   }
@@ -126,13 +150,19 @@ export class ProviderVerificationController {
         destination: './uploads',
         filename: (_req, file, cb) => {
           const ext = extname(file.originalname);
-          const name = Array(32).fill(null).map(() => Math.round(Math.random() * 16).toString(16)).join('');
+          const name = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
           cb(null, `${name}${ext}`);
         },
       }),
       fileFilter: (_req, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/i)) {
-          return cb(new BadRequestException('Only image and pdf files are allowed!'), false);
+          return cb(
+            new BadRequestException('Only image and pdf files are allowed!'),
+            false,
+          );
         }
         cb(null, true);
       },
@@ -141,7 +171,8 @@ export class ProviderVerificationController {
   )
   @ApiOperation({
     summary: 'Upload a verification document',
-    description: 'Upload a verification document (jpg, jpeg, png, pdf; max 10MB).',
+    description:
+      'Upload a verification document (jpg, jpeg, png, pdf; max 10MB).',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -151,12 +182,22 @@ export class ProviderVerificationController {
         file: { type: 'string', format: 'binary' },
         documentType: {
           type: 'string',
-          enum: ['national_id', 'passport', 'driver_license', 'professional_license', 'commercial_registration'],
+          enum: [
+            'national_id',
+            'passport',
+            'driver_license',
+            'professional_license',
+            'commercial_registration',
+          ],
         },
       },
     },
   })
-  @ApiResponse({ status: 201, description: 'Document uploaded successfully', type: VerificationDocumentResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Document uploaded successfully',
+    type: VerificationDocumentResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Invalid file type or size' })
   async uploadDocument(
     @CurrentUser() user: any,
@@ -166,7 +207,11 @@ export class ProviderVerificationController {
     if (!file) {
       throw new BadRequestException('File is required');
     }
-    const document = await this.documentService.upload(file, dto.documentType, user.id);
+    const document = await this.documentService.upload(
+      file,
+      dto.documentType,
+      user.id,
+    );
     return {
       id: document.id,
       documentType: document.documentType,
@@ -180,15 +225,13 @@ export class ProviderVerificationController {
   @UseGuards(VerificationOwnerGuard)
   @ApiOperation({
     summary: 'Delete a verification document',
-    description: 'Delete an uploaded document. Only allowed when verification status is pending.',
+    description:
+      'Delete an uploaded document. Only allowed when verification status is pending.',
   })
   @ApiResponse({ status: 200, description: 'Document deleted successfully' })
   @ApiResponse({ status: 400, description: 'Cannot delete when under review' })
   @ApiResponse({ status: 404, description: 'Document not found' })
-  async deleteDocument(
-    @CurrentUser() user: any,
-    @Param('id') id: string,
-  ) {
+  async deleteDocument(@CurrentUser() user: any, @Param('id') id: string) {
     await this.documentService.delete(id, user.id);
     return { message: 'Document deleted successfully' };
   }

@@ -5,11 +5,21 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AnnouncementsService } from './announcements.service';
-import { CreateAnnouncementDto } from './dto/announcements.dto';
+import {
+  CreateAnnouncementDto,
+  AnnouncementQueryDto,
+} from './dto/announcements.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -26,7 +36,10 @@ export class AnnouncementsController {
   @Post()
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new announcement' })
-  @ApiResponse({ status: 201, description: 'Announcement created and notifications sent' })
+  @ApiResponse({
+    status: 201,
+    description: 'Announcement created and notifications sent',
+  })
   @ApiResponse({ status: 400, description: 'Validation error' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
@@ -37,9 +50,11 @@ export class AnnouncementsController {
   @Get()
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'List all announcements' })
-  @ApiResponse({ status: 200, description: 'List of announcements' })
-  async findAll() {
-    return this.announcementsService.findAll();
+  @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, example: 20 })
+  @ApiResponse({ status: 200, description: 'Paginated list of announcements' })
+  async findAll(@Query() query: AnnouncementQueryDto) {
+    return this.announcementsService.findAll(query);
   }
 
   @Delete(':id')

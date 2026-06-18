@@ -92,7 +92,10 @@ describe('NotificationsService', () => {
 
   describe('findByUser', () => {
     it('should return paginated notifications', async () => {
-      const result = await service.findByUser('user-uuid', { page: 1, limit: 20 });
+      const result = await service.findByUser('user-uuid', {
+        page: 1,
+        limit: 20,
+      });
 
       expect(result.data).toHaveLength(1);
       expect(result.meta.page).toBe(1);
@@ -104,7 +107,9 @@ describe('NotificationsService', () => {
     });
 
     it('should filter by type', async () => {
-      await service.findByUser('user-uuid', { type: 'booking_accepted' as any });
+      await service.findByUser('user-uuid', {
+        type: 'booking_accepted' as any,
+      });
     });
 
     it('should filter by date range', async () => {

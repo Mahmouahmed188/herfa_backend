@@ -23,7 +23,10 @@ export class AnalyzeImageResponseDto {
 
   @ApiProperty({
     description: 'Recommendations based on analysis',
-    example: ['Plumber inspection recommended', 'Check pipe joints for corrosion'],
+    example: [
+      'Plumber inspection recommended',
+      'Check pipe joints for corrosion',
+    ],
   })
   recommendations: string[];
 }

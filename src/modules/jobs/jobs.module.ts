@@ -13,7 +13,12 @@ import { JobsMatchingProcessor } from './processors/jobs-matching.processor';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Job, JobStatusHistory, JobAssignment, ProviderLocation]),
+    TypeOrmModule.forFeature([
+      Job,
+      JobStatusHistory,
+      JobAssignment,
+      ProviderLocation,
+    ]),
     BullModule.registerQueue({
       name: 'jobs-matching',
     }),

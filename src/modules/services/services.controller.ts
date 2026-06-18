@@ -43,17 +43,26 @@ export class ServicesController {
   @Get('categories')
   @ApiOperation({ summary: 'Get all service categories' })
   async getCategories() {
-    return this.categoryRepository.find({ where: { isActive: true }, order: { sortOrder: 'ASC' } });
+    return this.categoryRepository.find({
+      where: { isActive: true },
+      order: { sortOrder: 'ASC' },
+    });
   }
 
   @Get('categories/:id')
   @ApiOperation({ summary: 'Get category by ID' })
   async getCategoryById(@Param('id') id: string) {
-    return this.categoryRepository.findOne({ where: { id }, relations: ['services'] });
+    return this.categoryRepository.findOne({
+      where: { id },
+      relations: ['services'],
+    });
   }
 
   @Get()
-  @ApiOperation({ summary: 'Browse active provider services with filtering, search, and pagination' })
+  @ApiOperation({
+    summary:
+      'Browse active provider services with filtering, search, and pagination',
+  })
   async browseServices(@Query() dto: ServiceFilterDto) {
     return this.servicesService.search(dto);
   }
@@ -92,7 +101,11 @@ export class ProviderServicesController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update my service listing' })
-  async update(@CurrentUser() user: any, @Param('id') id: string, @Body() dto: UpdateServiceDto) {
+  async update(
+    @CurrentUser() user: any,
+    @Param('id') id: string,
+    @Body() dto: UpdateServiceDto,
+  ) {
     return this.servicesService.update(user.id, id, dto);
   }
 

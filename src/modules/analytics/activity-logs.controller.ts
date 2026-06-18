@@ -1,5 +1,11 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -12,9 +18,7 @@ import { ActivityLogService } from './services/activity-log.service';
 @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
 @ApiBearerAuth()
 export class ActivityLogsController {
-  constructor(
-    private readonly activityLogService: ActivityLogService,
-  ) {}
+  constructor(private readonly activityLogService: ActivityLogService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get paginated, filterable admin activity logs' })

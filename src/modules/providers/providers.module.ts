@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProvidersController, AdminProvidersController } from './providers.controller';
+import {
+  ProvidersController,
+  AdminProvidersController,
+} from './providers.controller';
 import { ProvidersService } from './providers.service';
 import { User } from '../../entities/user.entity';
 import { ProviderProfile } from '../../entities/provider-profile.entity';

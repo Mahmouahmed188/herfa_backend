@@ -1,4 +1,12 @@
-import { Controller, Get, Delete, Param, Query, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Delete,
+  Param,
+  Query,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ReviewsService } from './reviews.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -30,7 +38,11 @@ export class AdminReviewsController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Remove a review (moderation)' })
-  async remove(@Param('id') id: string, @CurrentUser() user: any, @Body('reason') reason?: string) {
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @Body('reason') reason?: string,
+  ) {
     await this.reviewsService.adminRemoveReview(id, user.id, reason);
   }
 

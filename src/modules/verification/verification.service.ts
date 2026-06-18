@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TechnicianVerification, VerificationStatus } from '../../entities/technician-verification.entity';
+import {
+  TechnicianVerification,
+  VerificationStatus,
+} from '../../entities/technician-verification.entity';
 import { User } from '../../entities/user.entity';
 
 @Injectable()
@@ -20,7 +27,9 @@ export class VerificationService {
     });
 
     if (existing) {
-      throw new BadRequestException('You already have a pending verification request.');
+      throw new BadRequestException(
+        'You already have a pending verification request.',
+      );
     }
 
     const verification = this.verificationRepository.create({
@@ -50,7 +59,11 @@ export class VerificationService {
     return verification;
   }
 
-  async reviewVerification(id: string, status: VerificationStatus, adminNote?: string) {
+  async reviewVerification(
+    id: string,
+    status: VerificationStatus,
+    adminNote?: string,
+  ) {
     const verification = await this.verificationRepository.findOne({
       where: { id },
     });
@@ -68,7 +81,9 @@ export class VerificationService {
     if (status === VerificationStatus.APPROVED) userStatus = 'approved';
     if (status === VerificationStatus.REJECTED) userStatus = 'rejected';
 
-    await this.userRepository.update(verification.userId, { status: userStatus });
+    await this.userRepository.update(verification.userId, {
+      status: userStatus,
+    });
 
     return verification;
   }

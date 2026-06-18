@@ -49,14 +49,23 @@ export class ProviderTrackingController {
     description: 'Tracking session started successfully',
     type: StartTrackingResponseDto,
   })
-  @ApiResponse({ status: 400, description: 'Invalid booking status or session already exists' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid booking status or session already exists',
+  })
   @ApiResponse({ status: 401, description: 'Unauthenticated' })
-  @ApiResponse({ status: 403, description: 'Booking does not belong to this provider' })
+  @ApiResponse({
+    status: 403,
+    description: 'Booking does not belong to this provider',
+  })
   async start(
     @Body() dto: StartTrackingDto,
     @CurrentUser('id') userId: string,
   ) {
-    const session = await this.trackingService.startSession(dto.bookingId, userId);
+    const session = await this.trackingService.startSession(
+      dto.bookingId,
+      userId,
+    );
     return {
       success: true,
       data: {
@@ -72,22 +81,32 @@ export class ProviderTrackingController {
   @Roles(UserRole.PROVIDER)
   @ApiOperation({
     summary: 'Update provider location',
-    description: 'Provider sends a location update for their active tracking session',
+    description:
+      'Provider sends a location update for their active tracking session',
   })
   @ApiResponse({
     status: 200,
     description: 'Location updated successfully',
     type: LocationUpdateResponseDto,
   })
-  @ApiResponse({ status: 400, description: 'Invalid coordinates or session not active' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid coordinates or session not active',
+  })
   @ApiResponse({ status: 401, description: 'Unauthenticated' })
   async updateLocation(
     @Body() dto: LocationUpdateDto,
     @CurrentUser() user: any,
   ) {
-    const session = await this.trackingService.getActiveSessionByProvider(user.id);
+    const session = await this.trackingService.getActiveSessionByProvider(
+      user.id,
+    );
     if (!session) {
-      return { success: false, message: 'No active tracking session found', errorCode: 'TRACKING_006' };
+      return {
+        success: false,
+        message: 'No active tracking session found',
+        errorCode: 'TRACKING_006',
+      };
     }
     const location = await this.trackingService.updateLocation(session.id, dto);
     return {
@@ -113,9 +132,15 @@ export class ProviderTrackingController {
   @ApiResponse({ status: 400, description: 'Session is not active' })
   @ApiResponse({ status: 401, description: 'Unauthenticated' })
   async pause(@CurrentUser() user: any) {
-    const session = await this.trackingService.getActiveSessionByProvider(user.id);
+    const session = await this.trackingService.getActiveSessionByProvider(
+      user.id,
+    );
     if (!session) {
-      return { success: false, message: 'No active tracking session found', errorCode: 'TRACKING_004' };
+      return {
+        success: false,
+        message: 'No active tracking session found',
+        errorCode: 'TRACKING_004',
+      };
     }
     const updated = await this.trackingService.pauseSession(session.id);
     return {
@@ -143,9 +168,15 @@ export class ProviderTrackingController {
   @ApiResponse({ status: 400, description: 'Session is not paused' })
   @ApiResponse({ status: 401, description: 'Unauthenticated' })
   async resume(@CurrentUser() user: any) {
-    const session = await this.trackingService.getPausedSessionByProvider(user.id);
+    const session = await this.trackingService.getPausedSessionByProvider(
+      user.id,
+    );
     if (!session) {
-      return { success: false, message: 'No paused tracking session found', errorCode: 'TRACKING_005' };
+      return {
+        success: false,
+        message: 'No paused tracking session found',
+        errorCode: 'TRACKING_005',
+      };
     }
     const updated = await this.trackingService.resumeSession(session.id);
     return {
@@ -172,9 +203,15 @@ export class ProviderTrackingController {
   @ApiResponse({ status: 400, description: 'Session cannot be completed' })
   @ApiResponse({ status: 401, description: 'Unauthenticated' })
   async complete(@CurrentUser() user: any) {
-    const session = await this.trackingService.getActiveSessionByProvider(user.id);
+    const session = await this.trackingService.getActiveSessionByProvider(
+      user.id,
+    );
     if (!session) {
-      return { success: false, message: 'No active tracking session found', errorCode: 'TRACKING_006' };
+      return {
+        success: false,
+        message: 'No active tracking session found',
+        errorCode: 'TRACKING_006',
+      };
     }
     const updated = await this.trackingService.completeSession(session.id);
     return {

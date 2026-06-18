@@ -18,7 +18,10 @@ const dataSourceOptions: DataSourceOptions = {
   extra: {
     max: 20,
   },
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  ssl:
+    process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }
+      : false,
 };
 
 export const AppDataSource = new DataSource(dataSourceOptions);

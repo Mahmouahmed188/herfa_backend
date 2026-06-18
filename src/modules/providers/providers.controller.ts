@@ -35,7 +35,10 @@ export class ProvidersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Apply to become a provider' })
-  async apply(@CurrentUser() user: any, @Body() dto: CreateProviderApplicationDto) {
+  async apply(
+    @CurrentUser() user: any,
+    @Body() dto: CreateProviderApplicationDto,
+  ) {
     return this.providersService.apply(user.id, dto);
   }
 
@@ -51,7 +54,10 @@ export class ProvidersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update provider profile' })
-  async updateProfile(@CurrentUser() user: any, @Body() dto: UpdateProviderProfileDto) {
+  async updateProfile(
+    @CurrentUser() user: any,
+    @Body() dto: UpdateProviderProfileDto,
+  ) {
     return this.providersService.updateProfile(user.id, dto);
   }
 
@@ -59,7 +65,10 @@ export class ProvidersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Set provider availability' })
-  async setAvailability(@CurrentUser() user: any, @Body() dto: SetAvailabilityDto) {
+  async setAvailability(
+    @CurrentUser() user: any,
+    @Body() dto: SetAvailabilityDto,
+  ) {
     return this.providersService.setAvailability(user.id, dto);
   }
 
@@ -67,7 +76,10 @@ export class ProvidersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update provider location' })
-  async updateLocation(@CurrentUser() user: any, @Body() dto: UpdateLocationDto) {
+  async updateLocation(
+    @CurrentUser() user: any,
+    @Body() dto: UpdateLocationDto,
+  ) {
     return this.providersService.updateLocation(user.id, dto);
   }
 
@@ -83,7 +95,10 @@ export class ProvidersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Remove service from provider' })
-  async removeService(@CurrentUser() user: any, @Param('serviceId') serviceId: string) {
+  async removeService(
+    @CurrentUser() user: any,
+    @Param('serviceId') serviceId: string,
+  ) {
     return this.providersService.removeService(user.id, serviceId);
   }
 
@@ -99,7 +114,10 @@ export class ProvidersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Set categories for my profile' })
-  async setCategories(@CurrentUser() user: any, @Body() dto: ProviderCategoryDto) {
+  async setCategories(
+    @CurrentUser() user: any,
+    @Body() dto: ProviderCategoryDto,
+  ) {
     return this.providersService.setCategories(user.id, dto);
   }
 
@@ -107,12 +125,18 @@ export class ProvidersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Remove a category from my profile' })
-  async removeCategory(@CurrentUser() user: any, @Param('categoryId') categoryId: string) {
+  async removeCategory(
+    @CurrentUser() user: any,
+    @Param('categoryId') categoryId: string,
+  ) {
     return this.providersService.removeCategory(user.id, categoryId);
   }
 
   @Get()
-  @ApiOperation({ summary: 'List and search providers with filtering, sorting, and pagination' })
+  @ApiOperation({
+    summary:
+      'List and search providers with filtering, sorting, and pagination',
+  })
   async listProviders(@Query() dto: ProviderSearchDto) {
     return this.providersService.searchProviders(dto);
   }
@@ -127,7 +151,10 @@ export class ProvidersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get my jobs' })
-  async getProviderJobs(@CurrentUser() user: any, @Query('status') status?: string) {
+  async getProviderJobs(
+    @CurrentUser() user: any,
+    @Query('status') status?: string,
+  ) {
     return this.providersService.getProviderJobs(user.id, status);
   }
 

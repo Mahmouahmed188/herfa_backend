@@ -10,7 +10,10 @@ export class PublicReviewsController {
 
   @Get(':providerId/reviews')
   @ApiOperation({ summary: 'Get paginated public reviews for a provider' })
-  async getReviews(@Param('providerId') providerId: string, @Query() filter: ReviewFilterDto) {
+  async getReviews(
+    @Param('providerId') providerId: string,
+    @Query() filter: ReviewFilterDto,
+  ) {
     return this.reviewsService.getPublicProviderReviews(providerId, filter);
   }
 

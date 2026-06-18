@@ -5,7 +5,13 @@ import { User } from '../../entities/user.entity';
 import { ProviderApplication } from '../../entities/provider-application.entity';
 import { Job } from '../../entities/job.entity';
 import { Payment } from '../../entities/payment.entity';
-import { ProviderApplicationStatus, UserStatus, UserRole, JobStatus, PaymentStatus } from '../../common/constants/user.enums';
+import {
+  ProviderApplicationStatus,
+  UserStatus,
+  UserRole,
+  JobStatus,
+  PaymentStatus,
+} from '../../common/constants/user.enums';
 
 @Injectable()
 export class AdminService {
@@ -22,10 +28,18 @@ export class AdminService {
 
   async getDashboardStats() {
     const totalUsers = await this.userRepository.count();
-    const totalProviders = await this.userRepository.count({ where: { role: UserRole.PROVIDER } });
-    const totalCustomers = await this.userRepository.count({ where: { role: UserRole.CUSTOMER } });
-    const activeJobs = await this.jobRepository.count({ where: { status: JobStatus.IN_PROGRESS } });
-    const completedJobs = await this.jobRepository.count({ where: { status: JobStatus.COMPLETED } });
+    const totalProviders = await this.userRepository.count({
+      where: { role: UserRole.PROVIDER },
+    });
+    const totalCustomers = await this.userRepository.count({
+      where: { role: UserRole.CUSTOMER },
+    });
+    const activeJobs = await this.jobRepository.count({
+      where: { status: JobStatus.IN_PROGRESS },
+    });
+    const completedJobs = await this.jobRepository.count({
+      where: { status: JobStatus.COMPLETED },
+    });
     const totalRevenue = await this.paymentRepository
       .createQueryBuilder('payment')
       .select('SUM(payment.amount)', 'total')
@@ -47,19 +61,31 @@ export class AdminService {
     if (role) qb.andWhere('user.role = :role', { role });
     if (status) qb.andWhere('user.status = :status', { status });
 
-    const [users, total] = await qb.skip((page - 1) * limit).take(limit).orderBy('user.createdAt', 'DESC').getManyAndCount();
-    return { data: users, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    const [users, total] = await qb
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy('user.createdAt', 'DESC')
+      .getManyAndCount();
+    return {
+      data: users,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async getPendingApplications(page = 1, limit = 20) {
-    const [applications, total] = await this.applicationRepository.findAndCount({
-      where: { status: ProviderApplicationStatus.PENDING },
-      relations: ['user', 'providerProfile'],
-      order: { createdAt: 'DESC' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-    return { data: applications, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    const [applications, total] = await this.applicationRepository.findAndCount(
+      {
+        where: { status: ProviderApplicationStatus.PENDING },
+        relations: ['user', 'providerProfile'],
+        order: { createdAt: 'DESC' },
+        skip: (page - 1) * limit,
+        take: limit,
+      },
+    );
+    return {
+      data: applications,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async approveApplication(applicationId: string) {
@@ -83,7 +109,9 @@ export class AdminService {
   }
 
   async rejectApplication(applicationId: string, reason: string) {
-    const application = await this.applicationRepository.findOne({ where: { id: applicationId } });
+    const application = await this.applicationRepository.findOne({
+      where: { id: applicationId },
+    });
     if (!application) throw new NotFoundException('Application not found');
 
     application.status = ProviderApplicationStatus.REJECTED;
@@ -99,13 +127,21 @@ export class AdminService {
   }
 
   async getAllJobs(page = 1, limit = 20, status?: string) {
-    const qb = this.jobRepository.createQueryBuilder('job')
+    const qb = this.jobRepository
+      .createQueryBuilder('job')
       .leftJoinAndSelect('job.customer', 'customer')
       .leftJoinAndSelect('job.assignments', 'assignments');
 
     if (status) qb.where('job.status = :status', { status });
 
-    const [jobs, total] = await qb.skip((page - 1) * limit).take(limit).orderBy('job.createdAt', 'DESC').getManyAndCount();
-    return { data: jobs, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    const [jobs, total] = await qb
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy('job.createdAt', 'DESC')
+      .getManyAndCount();
+    return {
+      data: jobs,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 }

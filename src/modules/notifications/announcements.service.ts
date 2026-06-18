@@ -1,9 +1,17 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationAnnouncement } from '../../entities/notification-announcement.entity';
 import { NotificationsService } from './notifications.service';
-import { CreateAnnouncementDto } from './dto/announcements.dto';
+import {
+  CreateAnnouncementDto,
+  AnnouncementQueryDto,
+} from './dto/announcements.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationTargetAudience } from '../../common/constants/notification.enums';
 
@@ -47,17 +55,25 @@ export class AnnouncementsService {
       });
     }
 
-    this.logger.log(`Announcement ${saved.id} sent to ${targetUserIds.length} users`);
+    this.logger.log(
+      `Announcement ${saved.id} sent to ${targetUserIds.length} users`,
+    );
 
     return saved;
   }
 
-  async findAll() {
+  async findAll(query: AnnouncementQueryDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 20;
+    const skip = (page - 1) * limit;
+
     const [items, total] = await this.announcementRepository.findAndCount({
       order: { createdAt: 'DESC' },
+      take: limit,
+      skip,
     });
 
-    return { items, total };
+    return { items, total, page, limit };
   }
 
   async delete(id: string) {
@@ -68,7 +84,9 @@ export class AnnouncementsService {
     return { message: 'Announcement deleted' };
   }
 
-  private async resolveTargetAudience(dto: CreateAnnouncementDto): Promise<string[]> {
+  private async resolveTargetAudience(
+    dto: CreateAnnouncementDto,
+  ): Promise<string[]> {
     switch (dto.targetAudience) {
       case NotificationTargetAudience.ALL: {
         const users = await this.prisma.user.findMany({
@@ -93,7 +111,9 @@ export class AnnouncementsService {
       }
       case NotificationTargetAudience.INDIVIDUAL: {
         if (!dto.targetUserId) {
-          throw new BadRequestException('targetUserId is required when targetAudience is "individual"');
+          throw new BadRequestException(
+            'targetUserId is required when targetAudience is "individual"',
+          );
         }
         return [dto.targetUserId];
       }

@@ -14,7 +14,10 @@ import { SupportEventsHandler } from './handlers/support-events.handler';
 import { TrackingModule } from '../tracking/tracking.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification, NotificationAnnouncement]), TrackingModule],
+  imports: [
+    TypeOrmModule.forFeature([Notification, NotificationAnnouncement]),
+    TrackingModule,
+  ],
   controllers: [NotificationsController],
   providers: [
     NotificationsService,

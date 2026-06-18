@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, UseGuards, Param, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  Patch,
+} from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { VerificationGuard } from '../../common/guards/verification.guard';
@@ -12,9 +20,21 @@ export class MessagesController {
   @Post()
   async sendMessage(
     @CurrentUser() user: any,
-    @Body() body: { receiverId: string; content: string; relatedType?: string; relatedId?: string },
+    @Body()
+    body: {
+      receiverId: string;
+      content: string;
+      relatedType?: string;
+      relatedId?: string;
+    },
   ) {
-    return this.messagesService.sendMessage(user.id, body.receiverId, body.content, body.relatedType, body.relatedId);
+    return this.messagesService.sendMessage(
+      user.id,
+      body.receiverId,
+      body.content,
+      body.relatedType,
+      body.relatedId,
+    );
   }
 
   @Get()
@@ -23,7 +43,10 @@ export class MessagesController {
   }
 
   @Get(':otherUserId')
-  async getConversation(@CurrentUser() user: any, @Param('otherUserId') otherUserId: string) {
+  async getConversation(
+    @CurrentUser() user: any,
+    @Param('otherUserId') otherUserId: string,
+  ) {
     return this.messagesService.getConversation(user.id, otherUserId);
   }
 

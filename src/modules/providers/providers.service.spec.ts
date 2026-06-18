@@ -46,9 +46,19 @@ describe('ProvidersService', () => {
       createQueryBuilder: jest.fn(() => queryBuilder),
     },
     application: { findOne: jest.fn(), create: jest.fn(), save: jest.fn() },
-    providerService: { findOne: jest.fn(), create: jest.fn(), save: jest.fn(), delete: jest.fn() },
+    providerService: {
+      findOne: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+    },
     serviceRepo: { findOne: jest.fn(), findByIds: jest.fn() },
-    providerCategory: { find: jest.fn(), create: jest.fn(), save: jest.fn(), delete: jest.fn() },
+    providerCategory: {
+      find: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+    },
     categoryRepo: { findByIds: jest.fn() },
   };
 
@@ -57,12 +67,30 @@ describe('ProvidersService', () => {
       providers: [
         ProvidersService,
         { provide: getRepositoryToken(User), useValue: mockRepositories.user },
-        { provide: getRepositoryToken(ProviderProfile), useValue: mockRepositories.profile },
-        { provide: getRepositoryToken(ProviderApplication), useValue: mockRepositories.application },
-        { provide: getRepositoryToken(ProviderService), useValue: mockRepositories.providerService },
-        { provide: getRepositoryToken(Service), useValue: mockRepositories.serviceRepo },
-        { provide: getRepositoryToken(ProviderCategory), useValue: mockRepositories.providerCategory },
-        { provide: getRepositoryToken(ServiceCategory), useValue: mockRepositories.categoryRepo },
+        {
+          provide: getRepositoryToken(ProviderProfile),
+          useValue: mockRepositories.profile,
+        },
+        {
+          provide: getRepositoryToken(ProviderApplication),
+          useValue: mockRepositories.application,
+        },
+        {
+          provide: getRepositoryToken(ProviderService),
+          useValue: mockRepositories.providerService,
+        },
+        {
+          provide: getRepositoryToken(Service),
+          useValue: mockRepositories.serviceRepo,
+        },
+        {
+          provide: getRepositoryToken(ProviderCategory),
+          useValue: mockRepositories.providerCategory,
+        },
+        {
+          provide: getRepositoryToken(ServiceCategory),
+          useValue: mockRepositories.categoryRepo,
+        },
       ],
     }).compile();
 
@@ -82,15 +110,22 @@ describe('ProvidersService', () => {
 
     it('should throw NotFoundException if not found', async () => {
       mockRepositories.profile.findOne.mockResolvedValue(null);
-      await expect(service.getProfile('invalid')).rejects.toThrow(NotFoundException);
+      await expect(service.getProfile('invalid')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('updateProfile', () => {
     it('should update profile with experienceYears', async () => {
       mockRepositories.profile.findOne.mockResolvedValue(mockProfile);
-      mockRepositories.profile.save.mockResolvedValue({ ...mockProfile, experienceYears: 8 });
-      const result = await service.updateProfile('user-1', { experienceYears: 8 });
+      mockRepositories.profile.save.mockResolvedValue({
+        ...mockProfile,
+        experienceYears: 8,
+      });
+      const result = await service.updateProfile('user-1', {
+        experienceYears: 8,
+      });
       expect(result.experienceYears).toBe(8);
     });
   });
@@ -115,9 +150,13 @@ describe('ProvidersService', () => {
       ]);
       mockRepositories.providerCategory.create.mockReturnValue({});
       mockRepositories.providerCategory.save.mockResolvedValue([]);
-      mockRepositories.providerCategory.delete.mockResolvedValue({ affected: 1 });
+      mockRepositories.providerCategory.delete.mockResolvedValue({
+        affected: 1,
+      });
 
-      const result = await service.setCategories('user-1', { categoryIds: ['cat-1'] });
+      const result = await service.setCategories('user-1', {
+        categoryIds: ['cat-1'],
+      });
       expect(result.categoryIds).toEqual(['cat-1']);
     });
 
@@ -133,13 +172,18 @@ describe('ProvidersService', () => {
   describe('verifyProvider', () => {
     it('should verify a provider', async () => {
       mockRepositories.profile.findOne.mockResolvedValue(mockProfile);
-      mockRepositories.profile.save.mockResolvedValue({ ...mockProfile, verificationStatus: 'verified' });
+      mockRepositories.profile.save.mockResolvedValue({
+        ...mockProfile,
+        verificationStatus: 'verified',
+      });
       const result = await service.verifyProvider('profile-1', 'verified');
       expect(result.verificationStatus).toBe('verified');
     });
 
     it('should throw BadRequestException for invalid status', async () => {
-      await expect(service.verifyProvider('profile-1', 'invalid')).rejects.toThrow(BadRequestException);
+      await expect(
+        service.verifyProvider('profile-1', 'invalid'),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

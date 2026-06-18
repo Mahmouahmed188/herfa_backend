@@ -291,8 +291,7 @@ export class AiGatewayController {
   })
   @ApiOperation({
     summary: 'OCR Document Verification',
-    description:
-      'Upload a document image for OCR-based identity verification.',
+    description: 'Upload a document image for OCR-based identity verification.',
   })
   @ApiResponse({
     status: 200,

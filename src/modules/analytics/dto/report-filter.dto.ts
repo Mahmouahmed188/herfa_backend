@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsInt, IsDateString, Min } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsInt,
+  IsDateString,
+  Min,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -22,7 +28,10 @@ export class ReportFilterDto {
   @IsString()
   sortBy?: string;
 
-  @ApiPropertyOptional({ description: 'Sort order (ASC | DESC)', default: 'DESC' })
+  @ApiPropertyOptional({
+    description: 'Sort order (ASC | DESC)',
+    default: 'DESC',
+  })
   @IsOptional()
   @IsString()
   sortOrder?: 'ASC' | 'DESC' = 'DESC';
@@ -37,7 +46,9 @@ export class ReportFilterDto {
   @IsDateString()
   dateTo?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by role (e.g., customer, provider, admin)' })
+  @ApiPropertyOptional({
+    description: 'Filter by role (e.g., customer, provider, admin)',
+  })
   @IsOptional()
   @IsString()
   role?: string;

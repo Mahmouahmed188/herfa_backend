@@ -37,11 +37,19 @@ export class DashboardService {
     startDate?: string,
     endDate?: string,
   ): Promise<DashboardOverviewDto> {
-    const range = this.dateRangeFilterService.resolve(preset, startDate, endDate);
+    const range = this.dateRangeFilterService.resolve(
+      preset,
+      startDate,
+      endDate,
+    );
 
     const totalUsers = await this.userRepository.count();
-    const totalCustomers = await this.userRepository.count({ where: { role: UserRole.CUSTOMER } });
-    const totalProviders = await this.userRepository.count({ where: { role: UserRole.PROVIDER } });
+    const totalCustomers = await this.userRepository.count({
+      where: { role: UserRole.CUSTOMER },
+    });
+    const totalProviders = await this.userRepository.count({
+      where: { role: UserRole.PROVIDER },
+    });
 
     const verifiedProviders = await this.providerProfileRepository.count({
       where: { verificationStatus: 'verified' },
@@ -50,8 +58,13 @@ export class DashboardService {
       where: { isAvailable: true },
     });
 
-    const bookingWhere = this.withDateRange(range, this.bookingRepository.metadata.tablePath);
-    const totalBookings = await this.bookingRepository.count({ where: bookingWhere });
+    const bookingWhere = this.withDateRange(
+      range,
+      this.bookingRepository.metadata.tablePath,
+    );
+    const totalBookings = await this.bookingRepository.count({
+      where: bookingWhere,
+    });
     const activeBookings = await this.bookingRepository.count({
       where: { ...bookingWhere, status: 'in_progress' },
     });
@@ -108,7 +121,10 @@ export class DashboardService {
     };
   }
 
-  private withDateRange(range: DateRange, _tablePath: string): Record<string, any> {
+  private withDateRange(
+    range: DateRange,
+    _tablePath: string,
+  ): Record<string, any> {
     return {
       createdAt: Between(range.startDate, range.endDate),
     };

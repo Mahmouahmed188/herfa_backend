@@ -26,15 +26,14 @@ export class AuthService {
   async register(registerDto: RegisterUserDto) {
     const existingUser = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          { email: registerDto.email },
-          { phone: registerDto.phone },
-        ],
+        OR: [{ email: registerDto.email }, { phone: registerDto.phone }],
       },
     });
 
     if (existingUser) {
-      throw new ConflictException('User with this email or phone already exists');
+      throw new ConflictException(
+        'User with this email or phone already exists',
+      );
     }
 
     const passwordHash = await this.bcryptService.hash(registerDto.password);
@@ -64,7 +63,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await this.bcryptService.compare(pass, user.passwordHash);
+    const isPasswordValid = await this.bcryptService.compare(
+      pass,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -101,6 +103,23 @@ export class AuthService {
       throw new UnauthorizedException('User is not active');
     }
 
+    // Check if user already has a valid refresh token
+    const existingToken = await this.prisma.refreshToken.findFirst({
+      where: {
+        userId: user.id,
+        isRevoked: false,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    if (existingToken && existingToken.id !== refreshToken.id) {
+      // Revoke the existing valid token
+      await this.prisma.refreshToken.update({
+        where: { id: existingToken.id },
+        data: { isRevoked: true, revokedAt: new Date() },
+      });
+    }
+
     // Revoke old token
     await this.prisma.refreshToken.update({
       where: { id: refreshToken.id },
@@ -132,9 +151,7 @@ export class AuthService {
       expiresIn: this.configService.get('JWT_REFRESH_EXPIRES_IN') || '7d',
     });
 
-    const refreshTokenExpiry = new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000,
-    );
+    const refreshTokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     await this.prisma.refreshToken.create({
       data: {
@@ -143,7 +160,6 @@ export class AuthService {
         expiresAt: refreshTokenExpiry,
       },
     });
-
 
     return {
       accessToken,

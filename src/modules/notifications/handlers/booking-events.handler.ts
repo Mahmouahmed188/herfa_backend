@@ -15,11 +15,14 @@ export class BookingEventsHandler {
       userId: data.customerId,
       type: 'booking_created' as any,
       title: 'Booking Created',
-      message: 'Your booking request has been created and is pending provider response.',
+      message:
+        'Your booking request has been created and is pending provider response.',
       relatedEntityType: 'Booking',
       relatedEntityId: data.bookingId,
     });
-    this.logger.log(`Booking created notification sent to customer ${data.customerId}`);
+    this.logger.log(
+      `Booking created notification sent to customer ${data.customerId}`,
+    );
   }
 
   @OnEvent('booking.accepted')

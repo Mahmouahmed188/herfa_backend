@@ -49,7 +49,10 @@ export class ActivityLogService {
     if (filters.action) where.action = filters.action;
     if (filters.entityType) where.entityType = filters.entityType;
     if (filters.dateFrom && filters.dateTo) {
-      where.createdAt = Between(new Date(filters.dateFrom), new Date(filters.dateTo));
+      where.createdAt = Between(
+        new Date(filters.dateFrom),
+        new Date(filters.dateTo),
+      );
     }
 
     const [items, total] = await this.activityLogRepository.findAndCount({

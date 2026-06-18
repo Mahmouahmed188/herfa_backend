@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -22,7 +26,10 @@ export class ProviderVerificationService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async submit(providerId: string, notes?: string): Promise<ProviderVerification> {
+  async submit(
+    providerId: string,
+    notes?: string,
+  ): Promise<ProviderVerification> {
     const profile = await this.profileRepository.findOne({
       where: { userId: providerId },
     });
@@ -44,7 +51,9 @@ export class ProviderVerificationService {
     }
 
     if (verification.status === 'under_review') {
-      throw new BadRequestException('Verification already submitted. Your application is currently under review.');
+      throw new BadRequestException(
+        'Verification already submitted. Your application is currently under review.',
+      );
     }
 
     if (verification.status === 'approved') {
@@ -52,7 +61,9 @@ export class ProviderVerificationService {
     }
 
     if (verification.status === 'suspended') {
-      throw new BadRequestException('Your account is suspended. Please contact support.');
+      throw new BadRequestException(
+        'Your account is suspended. Please contact support.',
+      );
     }
 
     const docCount = await this.documentRepository.count({
@@ -60,7 +71,9 @@ export class ProviderVerificationService {
     });
 
     if (docCount === 0) {
-      throw new BadRequestException('Required documents not uploaded. Please upload at least one identity document.');
+      throw new BadRequestException(
+        'Required documents not uploaded. Please upload at least one identity document.',
+      );
     }
 
     const oldStatus = verification.status;

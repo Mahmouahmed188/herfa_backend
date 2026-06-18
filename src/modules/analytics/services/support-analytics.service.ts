@@ -24,7 +24,11 @@ export class SupportAnalyticsService {
     startDate?: string,
     endDate?: string,
   ): Promise<SupportAnalyticsDto> {
-    const range = this.dateRangeFilterService.resolve(preset, startDate, endDate);
+    const range = this.dateRangeFilterService.resolve(
+      preset,
+      startDate,
+      endDate,
+    );
 
     const openTickets = await this.supportTicketRepository.count({
       where: { status: TicketStatus.OPEN },
@@ -36,7 +40,10 @@ export class SupportAnalyticsService {
 
     const avgResolutionResult = await this.supportTicketRepository
       .createQueryBuilder('ticket')
-      .select('COALESCE(AVG(EXTRACT(EPOCH FROM (ticket.updatedAt - ticket.createdAt)) / 3600), 0)', 'averageHours')
+      .select(
+        'COALESCE(AVG(EXTRACT(EPOCH FROM (ticket.updatedAt - ticket.createdAt)) / 3600), 0)',
+        'averageHours',
+      )
       .where('ticket.status = :status', { status: TicketStatus.RESOLVED })
       .andWhere('ticket.createdAt BETWEEN :start AND :end', {
         start: range.startDate,
@@ -51,7 +58,10 @@ export class SupportAnalyticsService {
     const disputeResolutionResult = await this.disputeRepository
       .createQueryBuilder('dispute')
       .select('COUNT(*)', 'total')
-      .addSelect("COUNT(CASE WHEN dispute.status = 'resolved' THEN 1 END)", 'resolved')
+      .addSelect(
+        "COUNT(CASE WHEN dispute.status = 'resolved' THEN 1 END)",
+        'resolved',
+      )
       .where('dispute.createdAt BETWEEN :start AND :end', {
         start: range.startDate,
         end: range.endDate,
@@ -66,9 +76,10 @@ export class SupportAnalyticsService {
       resolvedTickets,
       averageResolutionHours: Number(avgResolutionResult?.averageHours || 0),
       activeDisputes,
-      disputeResolutionRate: totalDisputes > 0
-        ? Number(((resolvedDisputes / totalDisputes) * 100).toFixed(1))
-        : 0,
+      disputeResolutionRate:
+        totalDisputes > 0
+          ? Number(((resolvedDisputes / totalDisputes) * 100).toFixed(1))
+          : 0,
     };
   }
 }

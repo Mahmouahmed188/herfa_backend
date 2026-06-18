@@ -1,5 +1,19 @@
-import { Controller, Get, Param, Query, Res, UseGuards, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Res,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -68,15 +82,28 @@ export class ReportsController {
     if (format === 'csv') {
       const csv = await this.reportService.exportCSV(type as any, filter);
       res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="${type}-report.csv"`);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${type}-report.csv"`,
+      );
       res.send(csv);
     } else if (format === 'xlsx') {
       const buffer = await this.reportService.exportXLSX(type as any, filter);
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename="${type}-report.xlsx"`);
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${type}-report.xlsx"`,
+      );
       res.send(buffer);
     } else {
-      res.status(400).json({ success: false, message: 'Invalid format. Use csv or xlsx.', errorCode: 'VALIDATION_ERROR' });
+      res.status(400).json({
+        success: false,
+        message: 'Invalid format. Use csv or xlsx.',
+        errorCode: 'VALIDATION_ERROR',
+      });
       return;
     }
 

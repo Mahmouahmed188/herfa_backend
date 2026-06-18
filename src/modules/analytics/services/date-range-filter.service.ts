@@ -8,7 +8,11 @@ export interface DateRange {
 
 @Injectable()
 export class DateRangeFilterService {
-  resolve(preset?: DateRangePreset, startDate?: string, endDate?: string): DateRange {
+  resolve(
+    preset?: DateRangePreset,
+    startDate?: string,
+    endDate?: string,
+  ): DateRange {
     if (preset) {
       return this.resolvePreset(preset);
     }

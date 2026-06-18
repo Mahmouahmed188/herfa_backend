@@ -23,7 +23,11 @@ export class RevenueAnalyticsService {
     startDate?: string,
     endDate?: string,
   ): Promise<RevenueAnalyticsDto> {
-    const range = this.dateRangeFilterService.resolve(preset, startDate, endDate);
+    const range = this.dateRangeFilterService.resolve(
+      preset,
+      startDate,
+      endDate,
+    );
 
     const totalRevenueResult = await this.paymentRepository
       .createQueryBuilder('payment')
@@ -50,14 +54,14 @@ export class RevenueAnalyticsService {
 
     const weeklyRevenue = await this.paymentRepository
       .createQueryBuilder('payment')
-      .select("TO_CHAR(payment.createdAt, 'IYYY-\"W\"IW')", 'week')
+      .select('TO_CHAR(payment.createdAt, \'IYYY-"W"IW\')', 'week')
       .addSelect('COALESCE(SUM(payment.amount), 0)', 'amount')
       .where('payment.paymentStatus = :status', { status: PaymentStatus.PAID })
       .andWhere('payment.createdAt BETWEEN :start AND :end', {
         start: range.startDate,
         end: range.endDate,
       })
-      .groupBy("TO_CHAR(payment.createdAt, 'IYYY-\"W\"IW')")
+      .groupBy('TO_CHAR(payment.createdAt, \'IYYY-"W"IW\')')
       .orderBy('week', 'ASC')
       .getRawMany<{ week: string; amount: string }>();
 
@@ -76,7 +80,7 @@ export class RevenueAnalyticsService {
 
     const revenueByCategory = await this.paymentRepository
       .createQueryBuilder('payment')
-      .select('COALESCE(category.name, \'Unknown\')', 'category')
+      .select("COALESCE(category.name, 'Unknown')", 'category')
       .addSelect('COALESCE(SUM(payment.amount), 0)', 'amount')
       .leftJoin('payment.booking', 'booking')
       .leftJoin('booking.service', 'service')
@@ -93,7 +97,7 @@ export class RevenueAnalyticsService {
     const revenueByProvider = await this.paymentRepository
       .createQueryBuilder('payment')
       .select('payment.providerId', 'providerId')
-      .addSelect('COALESCE(provider.businessName, \'Unknown\')', 'businessName')
+      .addSelect("COALESCE(provider.businessName, 'Unknown')", 'businessName')
       .addSelect('COALESCE(SUM(payment.amount), 0)', 'amount')
       .leftJoin('payment.provider', 'providerUser')
       .leftJoin('providerUser.providerProfile', 'provider')
@@ -105,7 +109,11 @@ export class RevenueAnalyticsService {
       .groupBy('payment.providerId')
       .addGroupBy('provider.businessName')
       .orderBy('amount', 'DESC')
-      .getRawMany<{ providerId: string; businessName: string; amount: string }>();
+      .getRawMany<{
+        providerId: string;
+        businessName: string;
+        amount: string;
+      }>();
 
     const refundStats = await this.refundRepository
       .createQueryBuilder('refund')
@@ -121,7 +129,9 @@ export class RevenueAnalyticsService {
       .createQueryBuilder('payment')
       .select('COUNT(*)', 'count')
       .addSelect('COALESCE(SUM(payment.amount), 0)', 'volume')
-      .where('payment.paymentStatus = :status', { status: PaymentStatus.FAILED })
+      .where('payment.paymentStatus = :status', {
+        status: PaymentStatus.FAILED,
+      })
       .andWhere('payment.createdAt BETWEEN :start AND :end', {
         start: range.startDate,
         end: range.endDate,
@@ -130,10 +140,22 @@ export class RevenueAnalyticsService {
 
     return {
       totalRevenue: Number(totalRevenueResult?.total || 0),
-      dailyRevenue: dailyRevenue.map((r) => ({ date: r.date, amount: Number(r.amount) })),
-      weeklyRevenue: weeklyRevenue.map((r) => ({ date: r.week, amount: Number(r.amount) })),
-      monthlyRevenue: monthlyRevenue.map((r) => ({ date: r.month, amount: Number(r.amount) })),
-      revenueByCategory: revenueByCategory.map((r) => ({ category: r.category, amount: Number(r.amount) })),
+      dailyRevenue: dailyRevenue.map((r) => ({
+        date: r.date,
+        amount: Number(r.amount),
+      })),
+      weeklyRevenue: weeklyRevenue.map((r) => ({
+        date: r.week,
+        amount: Number(r.amount),
+      })),
+      monthlyRevenue: monthlyRevenue.map((r) => ({
+        date: r.month,
+        amount: Number(r.amount),
+      })),
+      revenueByCategory: revenueByCategory.map((r) => ({
+        category: r.category,
+        amount: Number(r.amount),
+      })),
       revenueByProvider: revenueByProvider.map((r) => ({
         providerId: r.providerId,
         businessName: r.businessName,

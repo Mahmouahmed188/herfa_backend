@@ -40,7 +40,11 @@ export class ReportService {
   }
 
   async exportCSV(type: ReportType, filter: ReportFilterDto): Promise<string> {
-    const { data } = await this.getReport(type, { ...filter, page: 1, limit: 10000 });
+    const { data } = await this.getReport(type, {
+      ...filter,
+      page: 1,
+      limit: 10000,
+    });
     if (!data || data.length === 0) return '';
 
     const headers = Object.keys(data[0]);
@@ -48,13 +52,15 @@ export class ReportService {
 
     for (const row of data) {
       csvRows.push(
-        headers.map((h) => {
-          const val = row[h];
-          const str = val == null ? '' : String(val);
-          return str.includes(',') || str.includes('"') || str.includes('\n')
-            ? `"${str.replace(/"/g, '""')}"`
-            : str;
-        }).join(','),
+        headers
+          .map((h) => {
+            const val = row[h];
+            const str = val == null ? '' : String(val);
+            return str.includes(',') || str.includes('"') || str.includes('\n')
+              ? `"${str.replace(/"/g, '""')}"`
+              : str;
+          })
+          .join(','),
       );
     }
 
@@ -62,7 +68,11 @@ export class ReportService {
   }
 
   async exportXLSX(type: ReportType, filter: ReportFilterDto): Promise<Buffer> {
-    const { data } = await this.getReport(type, { ...filter, page: 1, limit: 10000 });
+    const { data } = await this.getReport(type, {
+      ...filter,
+      page: 1,
+      limit: 10000,
+    });
     if (!data || data.length === 0) {
       const emptyBook = new ExcelJS.Workbook();
       const emptySheet = emptyBook.addWorksheet('Report');
@@ -71,7 +81,9 @@ export class ReportService {
     }
 
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
+    const sheet = workbook.addWorksheet(
+      type.charAt(0).toUpperCase() + type.slice(1),
+    );
 
     const headers = Object.keys(data[0]);
     sheet.addRow(headers);
@@ -101,9 +113,12 @@ export class ReportService {
       qb.andWhere('user.role = :role', { role: filter.role });
     }
     if (filter.search) {
-      qb.andWhere('(user.firstName ILIKE :search OR user.lastName ILIKE :search OR user.email ILIKE :search)', {
-        search: `%${filter.search}%`,
-      });
+      qb.andWhere(
+        '(user.firstName ILIKE :search OR user.lastName ILIKE :search OR user.email ILIKE :search)',
+        {
+          search: `%${filter.search}%`,
+        },
+      );
     }
 
     const sortBy = filter.sortBy || 'createdAt';
@@ -117,11 +132,15 @@ export class ReportService {
       .take(limit)
       .getManyAndCount();
 
-    return { data: items, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    return {
+      data: items,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   private async getProviderReport(filter: ReportFilterDto) {
-    const qb = this.providerProfileRepository.createQueryBuilder('profile')
+    const qb = this.providerProfileRepository
+      .createQueryBuilder('profile')
       .leftJoinAndSelect('profile.user', 'user');
 
     if (filter.dateFrom && filter.dateTo) {
@@ -134,9 +153,12 @@ export class ReportService {
       qb.andWhere('user.status = :status', { status: filter.status });
     }
     if (filter.search) {
-      qb.andWhere('(profile.businessName ILIKE :search OR user.email ILIKE :search)', {
-        search: `%${filter.search}%`,
-      });
+      qb.andWhere(
+        '(profile.businessName ILIKE :search OR user.email ILIKE :search)',
+        {
+          search: `%${filter.search}%`,
+        },
+      );
     }
     if (filter.city) {
       qb.andWhere('profile.address ILIKE :city', { city: `%${filter.city}%` });
@@ -153,11 +175,15 @@ export class ReportService {
       .take(limit)
       .getManyAndCount();
 
-    return { data: items, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    return {
+      data: items,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   private async getBookingReport(filter: ReportFilterDto) {
-    const qb = this.bookingRepository.createQueryBuilder('booking')
+    const qb = this.bookingRepository
+      .createQueryBuilder('booking')
       .leftJoinAndSelect('booking.customer', 'customer')
       .leftJoinAndSelect('booking.service', 'service');
 
@@ -171,7 +197,9 @@ export class ReportService {
       qb.andWhere('booking.status = :status', { status: filter.status });
     }
     if (filter.providerId) {
-      qb.andWhere('booking.providerId = :providerId', { providerId: filter.providerId });
+      qb.andWhere('booking.providerId = :providerId', {
+        providerId: filter.providerId,
+      });
     }
     if (filter.city) {
       qb.andWhere('booking.city ILIKE :city', { city: `%${filter.city}%` });
@@ -188,11 +216,15 @@ export class ReportService {
       .take(limit)
       .getManyAndCount();
 
-    return { data: items, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    return {
+      data: items,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   private async getPaymentReport(filter: ReportFilterDto) {
-    const qb = this.paymentRepository.createQueryBuilder('payment')
+    const qb = this.paymentRepository
+      .createQueryBuilder('payment')
       .leftJoinAndSelect('payment.booking', 'booking')
       .leftJoinAndSelect('payment.customer', 'customer')
       .leftJoinAndSelect('payment.provider', 'provider');
@@ -207,7 +239,9 @@ export class ReportService {
       qb.andWhere('payment.paymentStatus = :status', { status: filter.status });
     }
     if (filter.providerId) {
-      qb.andWhere('payment.providerId = :providerId', { providerId: filter.providerId });
+      qb.andWhere('payment.providerId = :providerId', {
+        providerId: filter.providerId,
+      });
     }
 
     const sortBy = filter.sortBy || 'createdAt';
@@ -221,6 +255,9 @@ export class ReportService {
       .take(limit)
       .getManyAndCount();
 
-    return { data: items, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    return {
+      data: items,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 }

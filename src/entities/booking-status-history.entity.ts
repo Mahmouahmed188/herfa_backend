@@ -16,7 +16,9 @@ export class BookingStatusHistory {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Booking, (booking) => booking.statusHistory, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Booking, (booking) => booking.statusHistory, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'booking_id' })
   booking: Booking;
 

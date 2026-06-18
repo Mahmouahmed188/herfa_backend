@@ -29,6 +29,11 @@ export class CustomersController {
     @CurrentUser() user: any,
     @Body() body: { latitude: number; longitude: number; address: string },
   ) {
-    return this.customersService.setDefaultLocation(user.id, body.latitude, body.longitude, body.address);
+    return this.customersService.setDefaultLocation(
+      user.id,
+      body.latitude,
+      body.longitude,
+      body.address,
+    );
   }
 }

@@ -1,4 +1,10 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Address } from '../../entities/address.entity';
@@ -18,7 +24,10 @@ export class AddressesService {
     private dataSource: DataSource,
   ) {}
 
-  async create(userId: string, dto: CreateAddressDto): Promise<AddressResponseDto> {
+  async create(
+    userId: string,
+    dto: CreateAddressDto,
+  ): Promise<AddressResponseDto> {
     this.logger.log(`Creating address for user ${userId}`);
 
     const address = this.addressRepository.create({
@@ -32,17 +41,25 @@ export class AddressesService {
     return saved;
   }
 
-  async findAllByUser(userId: string, filter: AddressFilterDto): Promise<{ data: AddressResponseDto[]; meta: { page: number; limit: number; total: number; totalPages: number } }> {
+  async findAllByUser(
+    userId: string,
+    filter: AddressFilterDto,
+  ): Promise<{
+    data: AddressResponseDto[];
+    meta: { page: number; limit: number; total: number; totalPages: number };
+  }> {
     const page = filter.page || 1;
     const limit = filter.limit || 20;
-    const sortOrder = filter.sortOrder || 'DESC' as any;
+    const sortOrder = filter.sortOrder || ('DESC' as any);
 
     const query = this.addressRepository
       .createQueryBuilder('address')
       .where('address.userId = :userId', { userId });
 
     if (filter.sortBy === AddressSortBy.IS_DEFAULT) {
-      query.orderBy('address.isDefault', 'DESC').addOrderBy('address.createdAt', sortOrder);
+      query
+        .orderBy('address.isDefault', 'DESC')
+        .addOrderBy('address.createdAt', sortOrder);
     } else {
       query.orderBy('address.createdAt', sortOrder);
     }
@@ -75,7 +92,11 @@ export class AddressesService {
     return address;
   }
 
-  async update(id: string, userId: string, dto: UpdateAddressDto): Promise<AddressResponseDto> {
+  async update(
+    id: string,
+    userId: string,
+    dto: UpdateAddressDto,
+  ): Promise<AddressResponseDto> {
     const address = await this.addressRepository.findOne({ where: { id } });
     if (!address) {
       throw new NotFoundException('Address not found');
@@ -109,12 +130,16 @@ export class AddressesService {
     await queryRunner.startTransaction();
 
     try {
-      const address = await queryRunner.manager.findOne(Address, { where: { id } });
+      const address = await queryRunner.manager.findOne(Address, {
+        where: { id },
+      });
       if (!address) {
         throw new NotFoundException('Address not found');
       }
       if (address.userId !== userId) {
-        throw new ForbiddenException('You can only set default on your own addresses');
+        throw new ForbiddenException(
+          'You can only set default on your own addresses',
+        );
       }
 
       await queryRunner.manager
@@ -146,17 +171,23 @@ export class AddressesService {
     return address || null;
   }
 
-  async getAddressById(id: string, userId: string): Promise<AddressResponseDto | null> {
+  async getAddressById(
+    id: string,
+    userId: string,
+  ): Promise<AddressResponseDto | null> {
     const address = await this.addressRepository.findOne({
       where: { id, userId },
     });
     return address || null;
   }
 
-  async adminFindAll(filter: AdminAddressFilterDto): Promise<{ data: AddressResponseDto[]; meta: { page: number; limit: number; total: number; totalPages: number } }> {
+  async adminFindAll(filter: AdminAddressFilterDto): Promise<{
+    data: AddressResponseDto[];
+    meta: { page: number; limit: number; total: number; totalPages: number };
+  }> {
     const page = filter.page || 1;
     const limit = filter.limit || 20;
-    const sortOrder = filter.sortOrder || 'DESC' as any;
+    const sortOrder = filter.sortOrder || ('DESC' as any);
 
     const query = this.addressRepository
       .createQueryBuilder('address')

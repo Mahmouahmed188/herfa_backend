@@ -19,7 +19,11 @@ describe('ProviderVerificationService', () => {
   let eventEmitter: jest.Mocked<EventEmitter2>;
 
   const mockProviderId = 'provider-uuid';
-  const mockProfile = { id: 'profile-uuid', userId: mockProviderId, businessName: 'Test Provider' } as ProviderProfile;
+  const mockProfile = {
+    id: 'profile-uuid',
+    userId: mockProviderId,
+    businessName: 'Test Provider',
+  } as ProviderProfile;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -61,7 +65,9 @@ describe('ProviderVerificationService', () => {
       ],
     }).compile();
 
-    service = module.get<ProviderVerificationService>(ProviderVerificationService);
+    service = module.get<ProviderVerificationService>(
+      ProviderVerificationService,
+    );
     verificationRepo = module.get(getRepositoryToken(ProviderVerification));
     documentRepo = module.get(getRepositoryToken(VerificationDocument));
     profileRepo = module.get(getRepositoryToken(ProviderProfile));
@@ -73,50 +79,81 @@ describe('ProviderVerificationService', () => {
     it('should throw NotFoundException when provider profile does not exist', async () => {
       profileRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.submit(mockProviderId)).rejects.toThrow(NotFoundException);
+      await expect(service.submit(mockProviderId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw BadRequestException when verification is already under_review', async () => {
       profileRepo.findOne.mockResolvedValue(mockProfile);
-      verificationRepo.findOne.mockResolvedValue({ status: 'under_review' } as ProviderVerification);
+      verificationRepo.findOne.mockResolvedValue({
+        status: 'under_review',
+      } as ProviderVerification);
 
-      await expect(service.submit(mockProviderId)).rejects.toThrow(BadRequestException);
+      await expect(service.submit(mockProviderId)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException when already approved', async () => {
       profileRepo.findOne.mockResolvedValue(mockProfile);
-      verificationRepo.findOne.mockResolvedValue({ status: 'approved' } as ProviderVerification);
+      verificationRepo.findOne.mockResolvedValue({
+        status: 'approved',
+      } as ProviderVerification);
 
-      await expect(service.submit(mockProviderId)).rejects.toThrow(BadRequestException);
+      await expect(service.submit(mockProviderId)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException when suspended', async () => {
       profileRepo.findOne.mockResolvedValue(mockProfile);
-      verificationRepo.findOne.mockResolvedValue({ status: 'suspended' } as ProviderVerification);
+      verificationRepo.findOne.mockResolvedValue({
+        status: 'suspended',
+      } as ProviderVerification);
 
-      await expect(service.submit(mockProviderId)).rejects.toThrow(BadRequestException);
+      await expect(service.submit(mockProviderId)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should throw BadRequestException when no documents uploaded', async () => {
       profileRepo.findOne.mockResolvedValue(mockProfile);
-      verificationRepo.findOne.mockResolvedValue({ id: 'verification-uuid', providerId: mockProviderId, status: 'pending' } as ProviderVerification);
+      verificationRepo.findOne.mockResolvedValue({
+        id: 'verification-uuid',
+        providerId: mockProviderId,
+        status: 'pending',
+      } as ProviderVerification);
       documentRepo.count.mockResolvedValue(0);
 
-      await expect(service.submit(mockProviderId)).rejects.toThrow(BadRequestException);
+      await expect(service.submit(mockProviderId)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should submit successfully when all conditions met', async () => {
-      const mockVerification = { id: 'verification-uuid', providerId: mockProviderId, status: 'pending' } as ProviderVerification;
+      const mockVerification = {
+        id: 'verification-uuid',
+        providerId: mockProviderId,
+        status: 'pending',
+      } as ProviderVerification;
       profileRepo.findOne.mockResolvedValue(mockProfile);
       verificationRepo.findOne.mockResolvedValue(mockVerification);
       documentRepo.count.mockResolvedValue(1);
-      verificationRepo.save.mockResolvedValue({ ...mockVerification, status: 'under_review', submittedAt: new Date() });
+      verificationRepo.save.mockResolvedValue({
+        ...mockVerification,
+        status: 'under_review',
+        submittedAt: new Date(),
+      });
 
       const result = await service.submit(mockProviderId);
 
       expect(result.status).toBe('under_review');
       expect(historyService.recordChange).toHaveBeenCalled();
-      expect(eventEmitter.emit).toHaveBeenCalledWith('verification.submitted', expect.any(Object));
+      expect(eventEmitter.emit).toHaveBeenCalledWith(
+        'verification.submitted',
+        expect.any(Object),
+      );
     });
   });
 
@@ -124,11 +161,17 @@ describe('ProviderVerificationService', () => {
     it('should throw NotFoundException when no verification exists', async () => {
       verificationRepo.findOne.mockResolvedValue(null);
 
-      await expect(service.getStatus(mockProviderId)).rejects.toThrow(NotFoundException);
+      await expect(service.getStatus(mockProviderId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should return verification when it exists', async () => {
-      const mockVerification = { id: 'uuid', providerId: mockProviderId, status: 'approved' } as ProviderVerification;
+      const mockVerification = {
+        id: 'uuid',
+        providerId: mockProviderId,
+        status: 'approved',
+      } as ProviderVerification;
       verificationRepo.findOne.mockResolvedValue(mockVerification);
 
       const result = await service.getStatus(mockProviderId);

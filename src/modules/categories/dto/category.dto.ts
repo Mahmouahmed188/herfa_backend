@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, MinLength, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsNumber,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateCategoryDto {
@@ -8,19 +15,28 @@ export class CreateCategoryDto {
   @MaxLength(100)
   name: string;
 
-  @ApiPropertyOptional({ description: 'Category description', example: 'Carpentry and woodwork services' })
+  @ApiPropertyOptional({
+    description: 'Category description',
+    example: 'Carpentry and woodwork services',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(500)
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Icon identifier or URL', example: 'carpentry-icon' })
+  @ApiPropertyOptional({
+    description: 'Icon identifier or URL',
+    example: 'carpentry-icon',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(255)
   icon?: string;
 
-  @ApiPropertyOptional({ description: 'Category image URL', example: 'https://example.com/carpentry.jpg' })
+  @ApiPropertyOptional({
+    description: 'Category image URL',
+    example: 'https://example.com/carpentry.jpg',
+  })
   @IsOptional()
   @IsString()
   image?: string;
@@ -32,14 +48,20 @@ export class CreateCategoryDto {
 }
 
 export class UpdateCategoryDto {
-  @ApiPropertyOptional({ description: 'Category name (unique)', example: 'Carpentry' })
+  @ApiPropertyOptional({
+    description: 'Category name (unique)',
+    example: 'Carpentry',
+  })
   @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(100)
   name?: string;
 
-  @ApiPropertyOptional({ description: 'Category description', example: 'Updated description' })
+  @ApiPropertyOptional({
+    description: 'Category description',
+    example: 'Updated description',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(500)
@@ -68,7 +90,9 @@ export class UpdateCategoryDto {
 }
 
 export class CategoryQueryDto {
-  @ApiPropertyOptional({ description: 'Include inactive categories (admin only)' })
+  @ApiPropertyOptional({
+    description: 'Include inactive categories (admin only)',
+  })
   @IsOptional()
   @IsBoolean()
   includeInactive?: boolean;

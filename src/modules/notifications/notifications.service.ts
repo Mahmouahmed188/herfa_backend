@@ -1,8 +1,16 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan, MoreThan } from 'typeorm';
 import { Notification } from '../../entities/notification.entity';
-import { CreateNotificationDto, NotificationQueryDto } from './dto/notifications.dto';
+import {
+  CreateNotificationDto,
+  NotificationQueryDto,
+} from './dto/notifications.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InAppChannel } from './channels/in-app.channel';
 
@@ -29,7 +37,9 @@ export class NotificationsService {
         },
       });
       if (existing) {
-        this.logger.log(`Duplicate notification suppressed: type=${dto.type} userId=${dto.userId} entity=${dto.relatedEntityId}`);
+        this.logger.log(
+          `Duplicate notification suppressed: type=${dto.type} userId=${dto.userId} entity=${dto.relatedEntityId}`,
+        );
         return existing;
       }
     }
@@ -45,7 +55,9 @@ export class NotificationsService {
       notification: saved,
     });
 
-    this.logger.log(`NOTIFICATION_CREATED: type=${dto.type} userId=${dto.userId}`);
+    this.logger.log(
+      `NOTIFICATION_CREATED: type=${dto.type} userId=${dto.userId}`,
+    );
 
     return saved;
   }
@@ -64,16 +76,22 @@ export class NotificationsService {
     }
 
     if (query.startDate) {
-      qb.andWhere('notification.createdAt >= :startDate', { startDate: new Date(query.startDate) });
+      qb.andWhere('notification.createdAt >= :startDate', {
+        startDate: new Date(query.startDate),
+      });
     }
 
     if (query.endDate) {
-      qb.andWhere('notification.createdAt <= :endDate', { endDate: new Date(query.endDate) });
+      qb.andWhere('notification.createdAt <= :endDate', {
+        endDate: new Date(query.endDate),
+      });
     }
 
     const page = query.page || 1;
     const limit = query.limit || 20;
-    qb.skip((page - 1) * limit).take(limit).orderBy('notification.createdAt', 'DESC');
+    qb.skip((page - 1) * limit)
+      .take(limit)
+      .orderBy('notification.createdAt', 'DESC');
 
     const [notifications, total] = await qb.getManyAndCount();
 
@@ -86,11 +104,13 @@ export class NotificationsService {
   async markAsRead(userId: string, notificationIds?: string[]) {
     if (notificationIds && notificationIds.length > 0) {
       const result = await this.notificationRepository.update(
-        { id: (notificationIds as any), userId },
+        { id: notificationIds as any, userId },
         { isRead: true, readAt: new Date() },
       );
       if (result.affected === 0) {
-        throw new NotFoundException('Notification not found or does not belong to user');
+        throw new NotFoundException(
+          'Notification not found or does not belong to user',
+        );
       }
     } else {
       await this.notificationRepository.update(
@@ -112,7 +132,9 @@ export class NotificationsService {
     }
 
     if (notification.userId !== userId) {
-      throw new ForbiddenException('Cannot mark another user\'s notification as read');
+      throw new ForbiddenException(
+        "Cannot mark another user's notification as read",
+      );
     }
 
     notification.isRead = true;

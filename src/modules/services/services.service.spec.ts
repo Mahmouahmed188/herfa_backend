@@ -4,7 +4,11 @@ import { ServicesService } from './services.service';
 import { ServiceListing } from '../../entities/service-listing.entity';
 import { ServiceImage } from '../../entities/service-image.entity';
 import { ServiceCategory } from '../../entities/service-category.entity';
-import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 
 describe('ServicesService', () => {
   let service: ServicesService;
@@ -57,9 +61,18 @@ describe('ServicesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ServicesService,
-        { provide: getRepositoryToken(ServiceListing), useValue: mockRepositories.listing },
-        { provide: getRepositoryToken(ServiceImage), useValue: mockRepositories.image },
-        { provide: getRepositoryToken(ServiceCategory), useValue: mockRepositories.category },
+        {
+          provide: getRepositoryToken(ServiceListing),
+          useValue: mockRepositories.listing,
+        },
+        {
+          provide: getRepositoryToken(ServiceImage),
+          useValue: mockRepositories.image,
+        },
+        {
+          provide: getRepositoryToken(ServiceCategory),
+          useValue: mockRepositories.category,
+        },
       ],
     }).compile();
 
@@ -72,7 +85,10 @@ describe('ServicesService', () => {
 
   describe('create', () => {
     it('should create a service listing', async () => {
-      mockRepositories.category.findOne.mockResolvedValue({ id: 'cat-1', isActive: true });
+      mockRepositories.category.findOne.mockResolvedValue({
+        id: 'cat-1',
+        isActive: true,
+      });
       mockRepositories.listing.create.mockReturnValue(mockListing);
       mockRepositories.listing.save.mockResolvedValue(mockListing);
 
@@ -109,20 +125,29 @@ describe('ServicesService', () => {
 
     it('should throw NotFoundException if not found', async () => {
       mockRepositories.listing.findOne.mockResolvedValue(null);
-      await expect(service.findById('invalid')).rejects.toThrow(NotFoundException);
+      await expect(service.findById('invalid')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw ForbiddenException if userId does not match', async () => {
       mockRepositories.listing.findOne.mockResolvedValue(mockListing);
-      await expect(service.findById('listing-1', 'other-user')).rejects.toThrow(ForbiddenException);
+      await expect(service.findById('listing-1', 'other-user')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
   describe('update', () => {
     it('should update a service listing', async () => {
       mockRepositories.listing.findOne.mockResolvedValue(mockListing);
-      mockRepositories.listing.save.mockResolvedValue({ ...mockListing, title: 'Updated' });
-      const result = await service.update('user-1', 'listing-1', { title: 'Updated' });
+      mockRepositories.listing.save.mockResolvedValue({
+        ...mockListing,
+        title: 'Updated',
+      });
+      const result = await service.update('user-1', 'listing-1', {
+        title: 'Updated',
+      });
       expect(result.title).toBe('Updated');
     });
   });
@@ -139,7 +164,10 @@ describe('ServicesService', () => {
   describe('toggleStatus', () => {
     it('should toggle service active status', async () => {
       mockRepositories.listing.findOne.mockResolvedValue(mockListing);
-      mockRepositories.listing.save.mockResolvedValue({ ...mockListing, isActive: false });
+      mockRepositories.listing.save.mockResolvedValue({
+        ...mockListing,
+        isActive: false,
+      });
       const result = await service.toggleStatus('user-1', 'listing-1', false);
       expect(result.isActive).toBe(false);
     });
@@ -164,9 +192,21 @@ describe('ServicesService', () => {
   describe('addImage', () => {
     it('should add an image to a service', async () => {
       mockRepositories.listing.findOne.mockResolvedValue(mockListing);
-      mockRepositories.image.create.mockReturnValue({ id: 'img-1', serviceId: 'listing-1', imageUrl: 'url', isPrimary: false });
-      mockRepositories.image.save.mockResolvedValue({ id: 'img-1', serviceId: 'listing-1', imageUrl: 'url', isPrimary: false });
-      const result = await service.addImage('user-1', 'listing-1', { imageUrl: 'url' });
+      mockRepositories.image.create.mockReturnValue({
+        id: 'img-1',
+        serviceId: 'listing-1',
+        imageUrl: 'url',
+        isPrimary: false,
+      });
+      mockRepositories.image.save.mockResolvedValue({
+        id: 'img-1',
+        serviceId: 'listing-1',
+        imageUrl: 'url',
+        isPrimary: false,
+      });
+      const result = await service.addImage('user-1', 'listing-1', {
+        imageUrl: 'url',
+      });
       expect(result.imageUrl).toBe('url');
     });
   });
@@ -174,10 +214,22 @@ describe('ServicesService', () => {
   describe('setPrimaryImage', () => {
     it('should set primary image', async () => {
       mockRepositories.listing.findOne.mockResolvedValue(mockListing);
-      mockRepositories.image.findOne.mockResolvedValue({ id: 'img-1', serviceId: 'listing-1', isPrimary: false });
+      mockRepositories.image.findOne.mockResolvedValue({
+        id: 'img-1',
+        serviceId: 'listing-1',
+        isPrimary: false,
+      });
       mockRepositories.image.update.mockResolvedValue({ affected: 1 });
-      mockRepositories.image.save.mockResolvedValue({ id: 'img-1', serviceId: 'listing-1', isPrimary: true });
-      const result = await service.setPrimaryImage('user-1', 'listing-1', 'img-1');
+      mockRepositories.image.save.mockResolvedValue({
+        id: 'img-1',
+        serviceId: 'listing-1',
+        isPrimary: true,
+      });
+      const result = await service.setPrimaryImage(
+        'user-1',
+        'listing-1',
+        'img-1',
+      );
       expect(result.isPrimary).toBe(true);
     });
   });
@@ -185,7 +237,10 @@ describe('ServicesService', () => {
   describe('deactivateAsAdmin', () => {
     it('should deactivate a service as admin', async () => {
       mockRepositories.listing.findOne.mockResolvedValue(mockListing);
-      mockRepositories.listing.save.mockResolvedValue({ ...mockListing, isActive: false });
+      mockRepositories.listing.save.mockResolvedValue({
+        ...mockListing,
+        isActive: false,
+      });
       const result = await service.deactivateAsAdmin('listing-1');
       expect(result.isActive).toBe(false);
     });

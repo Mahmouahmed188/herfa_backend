@@ -1,4 +1,15 @@
-import { IsString, IsOptional, IsNumber, IsBoolean, IsUUID, Min, Max, IsArray, MinLength, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  IsUUID,
+  Min,
+  Max,
+  IsArray,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -9,7 +20,10 @@ export class CreateServiceDto {
   @MaxLength(200)
   title: string;
 
-  @ApiProperty({ description: 'Service description', example: 'Professional faucet installation service' })
+  @ApiProperty({
+    description: 'Service description',
+    example: 'Professional faucet installation service',
+  })
   @IsString()
   @MinLength(10)
   description: string;
@@ -18,12 +32,16 @@ export class CreateServiceDto {
   @IsUUID()
   categoryId: string;
 
-  @ApiProperty({ description: 'Base price', example: 150.00 })
+  @ApiProperty({ description: 'Base price', example: 150.0 })
   @IsNumber()
   @Min(0.01)
   basePrice: number;
 
-  @ApiPropertyOptional({ description: 'Currency', default: 'SAR', example: 'SAR' })
+  @ApiPropertyOptional({
+    description: 'Currency',
+    default: 'SAR',
+    example: 'SAR',
+  })
   @IsOptional()
   @IsString()
   currency?: string;
@@ -35,7 +53,10 @@ export class CreateServiceDto {
 }
 
 export class UpdateServiceDto {
-  @ApiPropertyOptional({ description: 'Service title', example: 'Updated Faucet Installation' })
+  @ApiPropertyOptional({
+    description: 'Service title',
+    example: 'Updated Faucet Installation',
+  })
   @IsOptional()
   @IsString()
   @MinLength(3)
@@ -48,7 +69,7 @@ export class UpdateServiceDto {
   @MinLength(10)
   description?: string;
 
-  @ApiPropertyOptional({ description: 'Base price', example: 180.00 })
+  @ApiPropertyOptional({ description: 'Base price', example: 180.0 })
   @IsOptional()
   @IsNumber()
   @Min(0.01)
@@ -59,7 +80,10 @@ export class UpdateServiceDto {
   @IsString()
   currency?: string;
 
-  @ApiPropertyOptional({ description: 'Estimated duration in minutes', example: 90 })
+  @ApiPropertyOptional({
+    description: 'Estimated duration in minutes',
+    example: 90,
+  })
   @IsOptional()
   @IsNumber()
   @Min(1)
@@ -96,7 +120,10 @@ export class ServiceFilterDto {
   @Min(0)
   maxPrice?: number;
 
-  @ApiPropertyOptional({ description: 'Search by title keyword', example: 'plumbing' })
+  @ApiPropertyOptional({
+    description: 'Search by title keyword',
+    example: 'plumbing',
+  })
   @IsOptional()
   @IsString()
   search?: string;
@@ -134,11 +161,17 @@ export class ToggleStatusDto {
 }
 
 export class ServiceImageDto {
-  @ApiProperty({ description: 'Image URL', example: 'https://example.com/image.jpg' })
+  @ApiProperty({
+    description: 'Image URL',
+    example: 'https://example.com/image.jpg',
+  })
   @IsString()
   imageUrl: string;
 
-  @ApiPropertyOptional({ description: 'Whether this is the primary image', default: false })
+  @ApiPropertyOptional({
+    description: 'Whether this is the primary image',
+    default: false,
+  })
   @IsOptional()
   @IsBoolean()
   isPrimary?: boolean;
