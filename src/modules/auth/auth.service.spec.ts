@@ -83,7 +83,6 @@ describe('AuthService', () => {
 
       const result = await service.register(registerDto);
       expect(result).toHaveProperty('accessToken');
-      expect(result).toHaveProperty('refreshToken');
       expect(result.user.email).toBe(registerDto.email);
     });
   });
@@ -101,7 +100,7 @@ describe('AuthService', () => {
     });
 
     it('should return tokens if login successful', async () => {
-      const user = { id: '1', email: 'test@test.com', passwordHash: 'hash', isActive: true };
+      const user = { id: '1', email: 'test@test.com', passwordHash: 'hash', status: 'active' };
       mockPrismaService.user.findUnique.mockResolvedValue(user);
       mockBcryptService.compare.mockResolvedValue(true);
       mockPrismaService.user.update.mockResolvedValue(user);
@@ -124,7 +123,7 @@ describe('AuthService', () => {
         token: 'valid',
         isRevoked: false,
         expiresAt: new Date(Date.now() + 100000),
-        user: { id: '1', isActive: true },
+        user: { id: '1', status: 'active' },
       };
       mockPrismaService.refreshToken.findUnique.mockResolvedValue(refreshToken);
       mockPrismaService.refreshToken.update.mockResolvedValue({ ...refreshToken, isRevoked: true });
