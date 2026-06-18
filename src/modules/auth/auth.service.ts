@@ -47,6 +47,7 @@ export class AuthService {
         phone: registerDto.phone,
         passwordHash,
         role: registerDto.role || UserRole.CUSTOMER,
+        status: 'active',
       },
     });
 
