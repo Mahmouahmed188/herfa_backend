@@ -9,6 +9,7 @@ import { ProviderVerificationService } from './provider-verification.service';
 import { ProviderVerificationAdminService } from './provider-verification-admin.service';
 import { ProviderVerificationController } from './provider-verification.controller';
 import { ProviderVerificationAdminController } from './provider-verification-admin.controller';
+import { ProviderOnboardingController } from './provider-onboarding.controller';
 import { DocumentService } from './services/document.service';
 import { HistoryService } from './services/history.service';
 import { AuditService } from './services/audit.service';
@@ -28,6 +29,7 @@ import { VerificationOwnerGuard } from './guards/verification-owner.guard';
   controllers: [
     ProviderVerificationController,
     ProviderVerificationAdminController,
+    ProviderOnboardingController,
   ],
   providers: [
     ProviderVerificationService,

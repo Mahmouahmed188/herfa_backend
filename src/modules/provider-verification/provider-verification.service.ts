@@ -11,6 +11,7 @@ import { VerificationDocument } from '../../entities/verification-document.entit
 import { ProviderProfile } from '../../entities/provider-profile.entity';
 import { HistoryService } from './services/history.service';
 import { AuditService } from './services/audit.service';
+import { SubmitProviderOnboardingDto } from './dto/submit-provider-onboarding.dto';
 
 @Injectable()
 export class ProviderVerificationService {
@@ -152,5 +153,107 @@ export class ProviderVerificationService {
     }
 
     return verification;
+  }
+
+  async submitOnboarding(
+    providerId: string,
+    dto: SubmitProviderOnboardingDto,
+  ): Promise<ProviderVerification> {
+    const profile = await this.profileRepository.findOne({
+      where: { userId: providerId },
+    });
+
+    if (!profile) {
+      throw new NotFoundException('Provider profile not found');
+    }
+
+    let verification = await this.verificationRepository.findOne({
+      where: { providerId },
+    });
+
+    if (!verification) {
+      verification = this.verificationRepository.create({
+        providerId,
+        status: 'pending',
+      });
+    }
+
+    if (verification.status === 'under_review') {
+      throw new BadRequestException(
+        'Verification already submitted. Your application is currently under review.',
+      );
+    }
+
+    if (verification.status === 'approved') {
+      throw new BadRequestException('Your account is already verified.');
+    }
+
+    if (verification.status === 'suspended') {
+      throw new BadRequestException(
+        'Your account is suspended. Please contact support.',
+      );
+    }
+
+    const oldStatus = verification.status;
+    verification.frontIdImage = dto.frontIdImage;
+    verification.backIdImage = dto.backIdImage;
+    verification.personalPhoto = dto.personalPhoto;
+    verification.documentUrls = dto.documents || [];
+    verification.portfolio = dto.portfolio || [];
+    verification.status = 'under_review';
+    verification.submittedAt = new Date();
+    (verification as any).reviewedAt = null;
+    (verification as any).reviewedBy = null;
+    (verification as any).rejectionReason = null;
+    (verification as any).suspensionReason = null;
+    (verification as any).adminNote = null;
+
+    const saved = await this.verificationRepository.save(verification);
+
+    await this.historyService.recordChange({
+      verificationId: saved.id,
+      oldStatus,
+      newStatus: 'under_review',
+      changedBy: providerId,
+      changedByRole: 'provider',
+      notes: 'Provider submitted onboarding verification',
+    });
+
+    await this.auditService.log({
+      action: 'VERIFICATION_SUBMITTED',
+      entityType: 'provider_verification',
+      entityId: saved.id,
+      actorId: providerId,
+      actorRole: 'provider',
+      metadata: {
+        previousStatus: oldStatus,
+        newStatus: 'under_review',
+        hasDocuments: (dto.documents || []).length > 0,
+        hasPortfolio: (dto.portfolio || []).length > 0,
+      },
+    });
+
+    this.eventEmitter.emit('verification.submitted', {
+      event: 'verification.submitted',
+      timestamp: new Date().toISOString(),
+      data: {
+        verificationId: saved.id,
+        providerId,
+        providerName: profile.businessName || 'Provider',
+        status: 'under_review',
+      },
+    });
+
+    return saved;
+  }
+
+  async findOnboardingStatus(
+    providerId: string,
+  ): Promise<ProviderVerification | null> {
+    const verification = await this.verificationRepository.findOne({
+      where: { providerId },
+    });
+
+    return verification || null;
   }
 }

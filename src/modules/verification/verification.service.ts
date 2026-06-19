@@ -9,41 +9,74 @@ import {
   TechnicianVerification,
   VerificationStatus,
 } from '../../entities/technician-verification.entity';
-import { User } from '../../entities/user.entity';
 
 @Injectable()
 export class VerificationService {
   constructor(
     @InjectRepository(TechnicianVerification)
     private verificationRepository: Repository<TechnicianVerification>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
   ) {}
 
-  async submitVerification(userId: string, data: any) {
-    // Check if there is already a pending verification
-    const existing = await this.verificationRepository.findOne({
-      where: { userId, status: VerificationStatus.PENDING },
+  async submitVerification(
+    userId: string,
+    files: {
+      frontIdImage?: Express.Multer.File[];
+      backIdImage?: Express.Multer.File[];
+      personalPhoto?: Express.Multer.File[];
+      'certificates[]'?: Express.Multer.File[];
+      'portfolio[]'?: Express.Multer.File[];
+    },
+  ): Promise<TechnicianVerification> {
+    let verification = await this.verificationRepository.findOne({
+      where: { userId },
     });
 
-    if (existing) {
-      throw new BadRequestException(
-        'You already have a pending verification request.',
-      );
+    if (verification) {
+      if (verification.status === VerificationStatus.PENDING) {
+        throw new BadRequestException(
+          'You already have a pending verification request.',
+        );
+      }
+      if (verification.status === VerificationStatus.APPROVED) {
+        throw new BadRequestException('Your account is already verified.');
+      }
     }
 
-    const verification = this.verificationRepository.create({
-      userId,
-      ...data,
-      status: VerificationStatus.PENDING,
-    });
+    const frontIdImageUrl = `/uploads/verification/${files.frontIdImage![0].filename}`;
+    const backIdImageUrl = `/uploads/verification/${files.backIdImage![0].filename}`;
+    const personalPhotoUrl = `/uploads/verification/${files.personalPhoto![0].filename}`;
 
-    const saved = await this.verificationRepository.save(verification);
+    const certificatesUrls =
+      files['certificates[]']?.map((f) => `/uploads/verification/${f.filename}`) || [];
+    const portfolioUrls =
+      files['portfolio[]']?.map((f) => `/uploads/verification/${f.filename}`) || [];
 
-    // Update user status to pending
-    await this.userRepository.update(userId, { status: 'pending' });
+    if (verification) {
+      verification.frontIdImageUrl = frontIdImageUrl;
+      verification.backIdImageUrl = backIdImageUrl;
+      verification.personalPhotoUrl = personalPhotoUrl;
+      verification.certificatesUrls =
+        certificatesUrls.length > 0 ? certificatesUrls : [];
+      verification.portfolioUrls =
+        portfolioUrls.length > 0 ? portfolioUrls : [];
+      verification.status = VerificationStatus.PENDING;
+      verification.submittedAt = new Date();
+      (verification as any).reviewedAt = null;
+      (verification as any).adminNote = null;
+    } else {
+      verification = this.verificationRepository.create({
+        userId,
+        frontIdImageUrl,
+        backIdImageUrl,
+        personalPhotoUrl,
+        certificatesUrls,
+        portfolioUrls,
+        status: VerificationStatus.PENDING,
+        submittedAt: new Date(),
+      });
+    }
 
-    return saved;
+    return this.verificationRepository.save(verification);
   }
 
   async getStatus(userId: string) {
@@ -53,17 +86,27 @@ export class VerificationService {
     });
 
     if (!verification) {
-      return { status: 'unverified' };
+      return {
+        status: VerificationStatus.UNVERIFIED,
+        adminNote: null,
+        submittedAt: null,
+        reviewedAt: null,
+      };
     }
 
-    return verification;
+    return {
+      status: verification.status,
+      adminNote: verification.adminNote || null,
+      submittedAt: verification.submittedAt || null,
+      reviewedAt: verification.reviewedAt || null,
+    };
   }
 
   async reviewVerification(
     id: string,
     status: VerificationStatus,
     adminNote?: string,
-  ) {
+  ): Promise<TechnicianVerification> {
     const verification = await this.verificationRepository.findOne({
       where: { id },
     });
@@ -73,18 +116,9 @@ export class VerificationService {
     }
 
     verification.status = status;
-    verification.adminNote = adminNote;
-    await this.verificationRepository.save(verification);
+    (verification as any).adminNote = adminNote || null;
+    verification.reviewedAt = new Date();
 
-    // Update user status
-    let userStatus = 'unverified';
-    if (status === VerificationStatus.APPROVED) userStatus = 'approved';
-    if (status === VerificationStatus.REJECTED) userStatus = 'rejected';
-
-    await this.userRepository.update(verification.userId, {
-      status: userStatus,
-    });
-
-    return verification;
+    return this.verificationRepository.save(verification);
   }
 }

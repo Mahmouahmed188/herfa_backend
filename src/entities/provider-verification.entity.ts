@@ -39,6 +39,24 @@ export class ProviderVerification {
   @Column({ type: 'text', nullable: true })
   suspensionReason: string;
 
+  @Column({ type: 'text', nullable: true })
+  adminNote: string;
+
+  @Column({ type: 'text', nullable: true })
+  frontIdImage: string;
+
+  @Column({ type: 'text', nullable: true })
+  backIdImage: string;
+
+  @Column({ type: 'text', nullable: true })
+  personalPhoto: string;
+
+  @Column({ type: 'simple-json', nullable: true })
+  documentUrls: string[];
+
+  @Column({ type: 'simple-json', nullable: true })
+  portfolio: string[];
+
   @Column({ nullable: true })
   submittedAt: Date;
 

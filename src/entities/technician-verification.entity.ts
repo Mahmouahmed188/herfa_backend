@@ -4,18 +4,19 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
+  Index,
 } from 'typeorm';
-import { User } from './user.entity';
 
 export enum VerificationStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
+  UNVERIFIED = 'UNVERIFIED',
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
 }
 
 @Entity('technician_verifications')
+@Index(['userId'])
+@Index(['status'])
 export class TechnicianVerification {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -23,33 +24,35 @@ export class TechnicianVerification {
   @Column()
   userId: string;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  @Column({ nullable: true })
+  frontIdImageUrl: string;
 
   @Column({ nullable: true })
-  frontIdImage: string;
+  backIdImageUrl: string;
 
   @Column({ nullable: true })
-  backIdImage: string;
-
-  @Column({ nullable: true })
-  personalPhoto: string;
+  personalPhotoUrl: string;
 
   @Column('simple-array', { nullable: true })
-  documents: string[];
+  certificatesUrls: string[];
 
   @Column('simple-array', { nullable: true })
-  portfolio: string[];
+  portfolioUrls: string[];
 
   @Column({
     type: 'varchar',
-    default: VerificationStatus.PENDING,
+    default: VerificationStatus.UNVERIFIED,
   })
   status: VerificationStatus;
 
   @Column({ nullable: true })
-  adminNote?: string;
+  adminNote: string;
+
+  @Column({ nullable: true })
+  submittedAt: Date;
+
+  @Column({ nullable: true })
+  reviewedAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;
