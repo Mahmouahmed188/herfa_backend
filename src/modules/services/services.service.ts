@@ -38,7 +38,7 @@ export class ServicesService {
     const listing = this.listingRepository.create({
       ...dto,
       providerId: userId,
-      currency: dto.currency || 'SAR',
+      currency: dto.currency || 'EGP',
     });
     return this.listingRepository.save(listing);
   }

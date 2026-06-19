@@ -20,7 +20,7 @@ describe('ServicesService', () => {
     title: 'Faucet Installation',
     description: 'Professional faucet installation',
     basePrice: 150,
-    currency: 'SAR',
+    currency: 'EGP',
     estimatedDurationMinutes: 60,
     isActive: true,
     images: [],

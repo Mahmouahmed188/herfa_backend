@@ -39,8 +39,8 @@ export class CreateServiceDto {
 
   @ApiPropertyOptional({
     description: 'Currency',
-    default: 'SAR',
-    example: 'SAR',
+    default: 'EGP',
+    example: 'EGP',
   })
   @IsOptional()
   @IsString()
@@ -75,7 +75,7 @@ export class UpdateServiceDto {
   @Min(0.01)
   basePrice?: number;
 
-  @ApiPropertyOptional({ description: 'Currency', default: 'SAR' })
+  @ApiPropertyOptional({ description: 'Currency', default: 'EGP' })
   @IsOptional()
   @IsString()
   currency?: string;

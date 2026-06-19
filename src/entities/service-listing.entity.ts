@@ -42,7 +42,7 @@ export class ServiceListing {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   basePrice: number;
 
-  @Column({ default: 'SAR' })
+  @Column({ default: 'EGP' })
   currency: string;
 
   @Column()

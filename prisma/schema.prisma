@@ -419,7 +419,7 @@ model service_listings {
   title                    String             @db.VarChar
   description              String
   basePrice                Decimal            @db.Decimal(10, 2)
-  currency                 String             @default("SAR") @db.VarChar
+  currency                 String             @default("EGP") @db.VarChar
   estimatedDurationMinutes Int
   isActive                 Boolean            @default(true)
   createdAt                DateTime           @default(now()) @db.Timestamp(6)
